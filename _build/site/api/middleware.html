@@ -311,34 +311,985 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="middleware-package">
-<h1>middleware package<a class="headerlink" href="#middleware-package" title="Link to this heading">¶</a></h1>
+          <section id="module-middleware">
+<span id="middleware-package"></span><h1>middleware package<a class="headerlink" href="#module-middleware" title="Link to this heading">¶</a></h1>
+<p>OpenZync HTTP middleware — request ID, logging, audit, auth, rate limiting, tracing.</p>
+<p>All middleware classes in this package are Starlette <code class="docutils literal notranslate"><span class="pre">BaseHTTPMiddleware</span></code>
+subclasses.  They are registered in <code class="docutils literal notranslate"><span class="pre">main.py</span></code> via <code class="docutils literal notranslate"><span class="pre">app.add_middleware(...)</span></code>.
+The order of registration matters:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">RequestIDMiddleware</span></code> — earliest, captures X-Request-ID before any logic.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code> — logs every request after completion.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AuthMiddleware</span></code> — authenticates API keys / JWTs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AuditMiddleware</span></code> — records every request to audit_logs (post-response).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code> — enforces per-IP and per-org rate limits.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TracingMiddleware</span></code> — OpenTelemetry span management (outermost).</p></li>
+</ol>
+<dl class="py class">
+<dt class="sig sig-object py" id="middleware.AuditMiddleware">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">middleware.</span></span><span class="sig-name descname"><span class="pre">AuditMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/audit.html#AuditMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.AuditMiddleware" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Raw ASGI middleware that enqueues an audit job for every non-exempt request.</p>
+<p>Operates in the <strong>post-response</strong> phase so that <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code>
+is fully populated by <code class="xref py py-class docutils literal notranslate"><span class="pre">AuthMiddleware</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>ASGIApp</em>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.AuditMiddleware.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/audit.html#AuditMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.AuditMiddleware.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="middleware.AuthMiddleware">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">middleware.</span></span><span class="sig-name descname"><span class="pre">AuthMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth.html#AuthMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.AuthMiddleware" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Raw ASGI auth middleware — no <code class="docutils literal notranslate"><span class="pre">BaseHTTPMiddleware</span></code> overhead.</p>
+<p>Authenticates requests via <code class="docutils literal notranslate"><span class="pre">Authorization:</span> <span class="pre">Bearer</span> <span class="pre">&lt;api_key|jwt&gt;</span></code>.
+Sets <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code> for downstream middleware and route handlers.</p>
+<p>Supports two authentication methods:</p>
+<ul class="simple">
+<li><p><strong>API key</strong> (SDK clients): Identified by <code class="docutils literal notranslate"><span class="pre">oz_live_</span></code> / <code class="docutils literal notranslate"><span class="pre">oz_test_</span></code>
+prefix.  Validated against the <code class="docutils literal notranslate"><span class="pre">api_keys</span></code> table with Redis caching.</p></li>
+<li><p><strong>JWT</strong> (dashboard users):  Identified by a three-segment JWT string.
+Validated with <code class="docutils literal notranslate"><span class="pre">OZ_SECRET_KEY</span></code> via HS256.</p></li>
+</ul>
+<p>This middleware reads:
+- <code class="docutils literal notranslate"><span class="pre">scope[&quot;app&quot;].state.redis</span></code> — an <code class="docutils literal notranslate"><span class="pre">aioredis.Redis</span></code> client.
+- <code class="docutils literal notranslate"><span class="pre">scope[&quot;app&quot;].state.db_session_factory</span></code> — an <code class="docutils literal notranslate"><span class="pre">async_sessionmaker</span></code>.</p>
+<p>It sets the following keys on <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code>:
+- <code class="docutils literal notranslate"><span class="pre">org_id</span></code> — the authenticated organization’s UUID (or <code class="docutils literal notranslate"><span class="pre">None</span></code>).
+- <code class="docutils literal notranslate"><span class="pre">user_id</span></code> — the authenticated user’s UUID (JWT only; <code class="docutils literal notranslate"><span class="pre">None</span></code> for API key).
+- <code class="docutils literal notranslate"><span class="pre">role</span></code> — user role string (JWT only; <code class="docutils literal notranslate"><span class="pre">None</span></code> for API key).
+- <code class="docutils literal notranslate"><span class="pre">auth_type</span></code> — <code class="docutils literal notranslate"><span class="pre">&quot;jwt&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;api_key&quot;</span></code>.
+- <code class="docutils literal notranslate"><span class="pre">api_key_scopes</span></code> — list of permission strings (or <code class="docutils literal notranslate"><span class="pre">[]</span></code>).
+- <code class="docutils literal notranslate"><span class="pre">api_key_project_id</span></code> — optional project UUID string this API key is</p>
+<blockquote>
+<div><p>restricted to (<code class="docutils literal notranslate"><span class="pre">None</span></code> means org-wide access).</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>ASGIApp</em>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.AuthMiddleware.__call__">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth.html#AuthMiddleware.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.AuthMiddleware.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Authenticate the request and set <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>) – The ASGI connection scope.</p></li>
+<li><p><strong>receive</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em>) – The ASGI receive callable.</p></li>
+<li><p><strong>send</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em>) – The ASGI send callable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.AuthMiddleware.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth.html#AuthMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.AuthMiddleware.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialise the middleware.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em>) – The ASGI application.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="middleware.LoggingMiddleware">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">middleware.</span></span><span class="sig-name descname"><span class="pre">LoggingMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/logging.html#LoggingMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.LoggingMiddleware" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Structured request/response logging middleware.</p>
+<p>Logs every HTTP request at INFO level after completion with:
+- <code class="docutils literal notranslate"><span class="pre">method</span></code> (GET, POST, …)
+- <code class="docutils literal notranslate"><span class="pre">path</span></code> (URL path)
+- <code class="docutils literal notranslate"><span class="pre">status_code</span></code> (HTTP response status)
+- <code class="docutils literal notranslate"><span class="pre">duration_ms</span></code> (wall-clock time in milliseconds)
+- <code class="docutils literal notranslate"><span class="pre">request_id</span></code> (from <a class="reference internal" href="#middleware.RequestIDMiddleware" title="middleware.RequestIDMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestIDMiddleware</span></code></a>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>ASGIApp</em>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.LoggingMiddleware.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/logging.html#LoggingMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.LoggingMiddleware.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="middleware.RateLimitMiddleware">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">middleware.</span></span><span class="sig-name descname"><span class="pre">RateLimitMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/rate_limit.html#RateLimitMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.RateLimitMiddleware" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Sliding-window rate limiting via Redis sorted sets — raw ASGI.</p>
+<p>This middleware depends on <code class="docutils literal notranslate"><span class="pre">app.state.redis</span></code> — an async Redis client
+initialised during the application lifespan.</p>
+<p>If the rate limit is exceeded the middleware responds with a 429 RFC 7807
+JSON body directly — it never calls the downstream app.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>ASGIApp</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="middleware.RateLimitMiddleware.BYPASS_PATHS">
+<span class="sig-name descname"><span class="pre">BYPASS_PATHS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'/health',</span> <span class="pre">'/ready'}</span></span><a class="headerlink" href="#middleware.RateLimitMiddleware.BYPASS_PATHS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.RateLimitMiddleware.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/rate_limit.html#RateLimitMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.RateLimitMiddleware.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="middleware.RequestIDMiddleware">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">middleware.</span></span><span class="sig-name descname"><span class="pre">RequestIDMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/request_id.html#RequestIDMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.RequestIDMiddleware" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Raw ASGI middleware that adds or propagates <code class="docutils literal notranslate"><span class="pre">X-Request-ID</span></code>.</p>
+<p>Registered innermost (closest to the router) so every downstream layer
+(logging, auth, rate-limiting) has access to the request ID via
+<code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;][&quot;request_id&quot;]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>ASGIApp</em>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.RequestIDMiddleware.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/request_id.html#RequestIDMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.RequestIDMiddleware.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="middleware.TracingMiddleware">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">middleware.</span></span><span class="sig-name descname"><span class="pre">TracingMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/tracing.html#TracingMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.TracingMiddleware" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>OpenTelemetry tracing middleware — raw ASGI, no BaseHTTPMiddleware.</p>
+<p>Creates a span for each request with HTTP semantic convention attributes.
+If OpenTelemetry is not configured (<code class="docutils literal notranslate"><span class="pre">OZ_OTLP_ENDPOINT</span></code> not set), this
+middleware is a zero-overhead pass-through.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>ASGIApp</em>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.TracingMiddleware.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/tracing.html#TracingMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.TracingMiddleware.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="middleware-audit-module">
-<h2>middleware.audit module<a class="headerlink" href="#middleware-audit-module" title="Link to this heading">¶</a></h2>
+<section id="module-middleware.audit">
+<span id="middleware-audit-module"></span><h2>middleware.audit module<a class="headerlink" href="#module-middleware.audit" title="Link to this heading">¶</a></h2>
+<p>Audit middleware — records every HTTP request to the audit log.</p>
+<p>Runs after <a class="reference internal" href="../domains/auth.html#AuthMiddleware" title="AuthMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthMiddleware</span></code></a> in the middleware stack (see
+<code class="docutils literal notranslate"><span class="pre">main.py</span></code> for registration order) <strong>but</strong> captures its payload
+in the <em>post-response</em> phase when <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code> is fully
+populated by the auth layer.</p>
+<p><code class="docutils literal notranslate"><span class="pre">AuditMiddleware</span></code> enqueues an ARQ job for every non-exempt request.
+The ARQ worker (low-priority queue) writes the entry to <code class="docutils literal notranslate"><span class="pre">audit_logs</span></code>.
+This design means:</p>
+<ul class="simple">
+<li><p>The request-response cycle is never blocked by audit I/O.</p></li>
+<li><p>Audit jobs survive an API process restart (they are in Redis).</p></li>
+<li><p>A backlog of audit jobs does not starve data-processing tasks
+(audit uses the <code class="docutils literal notranslate"><span class="pre">&quot;low&quot;</span></code> queue).</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="middleware.audit.AuditMiddleware">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">middleware.audit.</span></span><span class="sig-name descname"><span class="pre">AuditMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/audit.html#AuditMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.audit.AuditMiddleware" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Raw ASGI middleware that enqueues an audit job for every non-exempt request.</p>
+<p>Operates in the <strong>post-response</strong> phase so that <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code>
+is fully populated by <code class="xref py py-class docutils literal notranslate"><span class="pre">AuthMiddleware</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>ASGIApp</em>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.audit.AuditMiddleware.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/audit.html#AuditMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.audit.AuditMiddleware.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="middleware-auth-module">
-<h2>middleware.auth module<a class="headerlink" href="#middleware-auth-module" title="Link to this heading">¶</a></h2>
+<section id="module-middleware.auth">
+<span id="middleware-auth-module"></span><h2>middleware.auth module<a class="headerlink" href="#module-middleware.auth" title="Link to this heading">¶</a></h2>
+<p>Authentication middleware supporting both API keys and JWT tokens.</p>
+<p>Dual-mode authentication flow:</p>
+<p><strong>API key mode</strong> (for SDK clients):
+1. Bearer token starts with <code class="docutils literal notranslate"><span class="pre">oz_live_</span></code> or <code class="docutils literal notranslate"><span class="pre">oz_test_</span></code> prefix.
+2. Compute unsalted lookup hash via <code class="docutils literal notranslate"><span class="pre">compute_lookup_hash</span></code>.
+3. Check Redis cache at <code class="docutils literal notranslate"><span class="pre">auth:key:{lookup_hash}</span></code> (TTL: 300 s).
+4. On miss, query <code class="docutils literal notranslate"><span class="pre">api_keys</span></code> table, verify salted hash.
+5. Set <code class="docutils literal notranslate"><span class="pre">request.state.org_id</span></code>, <code class="docutils literal notranslate"><span class="pre">request.state.api_key_scopes</span></code>.
+6. Set PostgreSQL RLS context.</p>
+<p><strong>JWT mode</strong> (for dashboard users):
+1. Bearer token is a three-segment JWT (starts with <code class="docutils literal notranslate"><span class="pre">eyJ</span></code>).
+2. Verify signature with <code class="docutils literal notranslate"><span class="pre">OZ_SECRET_KEY</span></code> (HS256).
+3. Extract <code class="docutils literal notranslate"><span class="pre">sub</span></code> (user_id), <code class="docutils literal notranslate"><span class="pre">org_id</span></code>, <code class="docutils literal notranslate"><span class="pre">role</span></code> claims.
+4. Set <code class="docutils literal notranslate"><span class="pre">request.state.org_id</span></code>, <code class="docutils literal notranslate"><span class="pre">request.state.user_id</span></code>,</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">request.state.role</span></code>, <code class="docutils literal notranslate"><span class="pre">request.state.auth_type</span> <span class="pre">=</span> <span class="pre">&quot;jwt&quot;</span></code>.</p>
+</div></blockquote>
+<p>Public endpoints (<code class="docutils literal notranslate"><span class="pre">/health</span></code>, <code class="docutils literal notranslate"><span class="pre">/docs</span></code>, <code class="docutils literal notranslate"><span class="pre">/v1/auth/*</span></code>, etc.) pass
+through without authentication.</p>
+<p>RFC 7807 error bodies are returned for all 401/403 responses.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="middleware.auth.API_KEY_PREFIXES">
+<span class="sig-prename descclassname"><span class="pre">middleware.auth.</span></span><span class="sig-name descname"><span class="pre">API_KEY_PREFIXES</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('oz_live_',</span> <span class="pre">'oz_test_')</span></span><a class="headerlink" href="#middleware.auth.API_KEY_PREFIXES" title="Link to this definition">¶</a></dt>
+<dd><p>Recognised API key prefixes.  Tokens not starting with one of these
+are attempted as JWT first.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="middleware.auth.AUTH_CACHE_PREFIX">
+<span class="sig-prename descclassname"><span class="pre">middleware.auth.</span></span><span class="sig-name descname"><span class="pre">AUTH_CACHE_PREFIX</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'auth:key:'</span></span><a class="headerlink" href="#middleware.auth.AUTH_CACHE_PREFIX" title="Link to this definition">¶</a></dt>
+<dd><p>Redis key prefix for cached API key authentication data.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="middleware.auth.AUTH_CACHE_TTL">
+<span class="sig-prename descclassname"><span class="pre">middleware.auth.</span></span><span class="sig-name descname"><span class="pre">AUTH_CACHE_TTL</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">300</span></span><a class="headerlink" href="#middleware.auth.AUTH_CACHE_TTL" title="Link to this definition">¶</a></dt>
+<dd><p>TTL in seconds for cached auth lookups (5 minutes).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="middleware.auth.AUTH_MISS_RATE_LIMIT">
+<span class="sig-prename descclassname"><span class="pre">middleware.auth.</span></span><span class="sig-name descname"><span class="pre">AUTH_MISS_RATE_LIMIT</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></span><a class="headerlink" href="#middleware.auth.AUTH_MISS_RATE_LIMIT" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum DB auth misses per IP per window before throttling.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="middleware.auth.AUTH_MISS_RATE_LIMIT_PREFIX">
+<span class="sig-prename descclassname"><span class="pre">middleware.auth.</span></span><span class="sig-name descname"><span class="pre">AUTH_MISS_RATE_LIMIT_PREFIX</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'auth:miss_ip:'</span></span><a class="headerlink" href="#middleware.auth.AUTH_MISS_RATE_LIMIT_PREFIX" title="Link to this definition">¶</a></dt>
+<dd><p>Redis key prefix for per-IP auth miss-rate counters.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="middleware.auth.AUTH_MISS_RATE_WINDOW">
+<span class="sig-prename descclassname"><span class="pre">middleware.auth.</span></span><span class="sig-name descname"><span class="pre">AUTH_MISS_RATE_WINDOW</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></span><a class="headerlink" href="#middleware.auth.AUTH_MISS_RATE_WINDOW" title="Link to this definition">¶</a></dt>
+<dd><p>Sliding window in seconds for per-IP miss-rate limiting.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="middleware.auth.AUTH_NEG_CACHE_PREFIX">
+<span class="sig-prename descclassname"><span class="pre">middleware.auth.</span></span><span class="sig-name descname"><span class="pre">AUTH_NEG_CACHE_PREFIX</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'auth:neg:'</span></span><a class="headerlink" href="#middleware.auth.AUTH_NEG_CACHE_PREFIX" title="Link to this definition">¶</a></dt>
+<dd><p>Redis key prefix for negative cache entries (key not found in DB).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="middleware.auth.AUTH_NEG_CACHE_TTL">
+<span class="sig-prename descclassname"><span class="pre">middleware.auth.</span></span><span class="sig-name descname"><span class="pre">AUTH_NEG_CACHE_TTL</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></span><a class="headerlink" href="#middleware.auth.AUTH_NEG_CACHE_TTL" title="Link to this definition">¶</a></dt>
+<dd><p>TTL in seconds for negative cache entries (1 minute).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="middleware.auth.AuthMiddleware">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">middleware.auth.</span></span><span class="sig-name descname"><span class="pre">AuthMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth.html#AuthMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.auth.AuthMiddleware" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Raw ASGI auth middleware — no <code class="docutils literal notranslate"><span class="pre">BaseHTTPMiddleware</span></code> overhead.</p>
+<p>Authenticates requests via <code class="docutils literal notranslate"><span class="pre">Authorization:</span> <span class="pre">Bearer</span> <span class="pre">&lt;api_key|jwt&gt;</span></code>.
+Sets <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code> for downstream middleware and route handlers.</p>
+<p>Supports two authentication methods:</p>
+<ul class="simple">
+<li><p><strong>API key</strong> (SDK clients): Identified by <code class="docutils literal notranslate"><span class="pre">oz_live_</span></code> / <code class="docutils literal notranslate"><span class="pre">oz_test_</span></code>
+prefix.  Validated against the <code class="docutils literal notranslate"><span class="pre">api_keys</span></code> table with Redis caching.</p></li>
+<li><p><strong>JWT</strong> (dashboard users):  Identified by a three-segment JWT string.
+Validated with <code class="docutils literal notranslate"><span class="pre">OZ_SECRET_KEY</span></code> via HS256.</p></li>
+</ul>
+<p>This middleware reads:
+- <code class="docutils literal notranslate"><span class="pre">scope[&quot;app&quot;].state.redis</span></code> — an <code class="docutils literal notranslate"><span class="pre">aioredis.Redis</span></code> client.
+- <code class="docutils literal notranslate"><span class="pre">scope[&quot;app&quot;].state.db_session_factory</span></code> — an <code class="docutils literal notranslate"><span class="pre">async_sessionmaker</span></code>.</p>
+<p>It sets the following keys on <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code>:
+- <code class="docutils literal notranslate"><span class="pre">org_id</span></code> — the authenticated organization’s UUID (or <code class="docutils literal notranslate"><span class="pre">None</span></code>).
+- <code class="docutils literal notranslate"><span class="pre">user_id</span></code> — the authenticated user’s UUID (JWT only; <code class="docutils literal notranslate"><span class="pre">None</span></code> for API key).
+- <code class="docutils literal notranslate"><span class="pre">role</span></code> — user role string (JWT only; <code class="docutils literal notranslate"><span class="pre">None</span></code> for API key).
+- <code class="docutils literal notranslate"><span class="pre">auth_type</span></code> — <code class="docutils literal notranslate"><span class="pre">&quot;jwt&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;api_key&quot;</span></code>.
+- <code class="docutils literal notranslate"><span class="pre">api_key_scopes</span></code> — list of permission strings (or <code class="docutils literal notranslate"><span class="pre">[]</span></code>).
+- <code class="docutils literal notranslate"><span class="pre">api_key_project_id</span></code> — optional project UUID string this API key is</p>
+<blockquote>
+<div><p>restricted to (<code class="docutils literal notranslate"><span class="pre">None</span></code> means org-wide access).</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>ASGIApp</em>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.auth.AuthMiddleware.__call__">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth.html#AuthMiddleware.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.auth.AuthMiddleware.__call__" title="Link to this definition">¶</a></dt>
+<dd><p>Authenticate the request and set <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>) – The ASGI connection scope.</p></li>
+<li><p><strong>receive</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em>) – The ASGI receive callable.</p></li>
+<li><p><strong>send</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em>) – The ASGI send callable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.auth.AuthMiddleware.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth.html#AuthMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.auth.AuthMiddleware.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialise the middleware.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em>) – The ASGI application.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="middleware.auth.PUBLIC_ENDPOINTS">
+<span class="sig-prename descclassname"><span class="pre">middleware.auth.</span></span><span class="sig-name descname"><span class="pre">PUBLIC_ENDPOINTS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'/admin/org/config/defaults',</span> <span class="pre">'/admin/organizations',</span> <span class="pre">'/docs',</span> <span class="pre">'/health',</span> <span class="pre">'/openapi.json',</span> <span class="pre">'/ready',</span> <span class="pre">'/redoc',</span> <span class="pre">'/v1/auth/forgot-password',</span> <span class="pre">'/v1/auth/login',</span> <span class="pre">'/v1/auth/login/otp/send',</span> <span class="pre">'/v1/auth/login/otp/verify',</span> <span class="pre">'/v1/auth/mfa/verify',</span> <span class="pre">'/v1/auth/refresh',</span> <span class="pre">'/v1/auth/resend-otp',</span> <span class="pre">'/v1/auth/reset-password',</span> <span class="pre">'/v1/auth/signup',</span> <span class="pre">'/v1/auth/verify-email'}</span></span><a class="headerlink" href="#middleware.auth.PUBLIC_ENDPOINTS" title="Link to this definition">¶</a></dt>
+<dd><p>Paths that are allowed without authentication.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">/metrics</span></code> path is handled by an exact-path exemption in
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">AuthMiddleware.dispatch()</span></code> — it must be unauthenticated so
+Prometheus scrapers can reach it, but sub-paths (<code class="docutils literal notranslate"><span class="pre">/metrics/summary</span></code>
+etc.) go through normal auth.</p>
+<p>These endpoints do not require an <code class="docutils literal notranslate"><span class="pre">Authorization</span></code> header.  The set may be
+extended at the application level.  Paths are matched suffix-wise so that
+versioned routes (e.g. <code class="docutils literal notranslate"><span class="pre">/v1/health</span></code>) are also recognised.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="middleware.auth.SCHEMA_AUTH_HEADER">
+<span class="sig-prename descclassname"><span class="pre">middleware.auth.</span></span><span class="sig-name descname"><span class="pre">SCHEMA_AUTH_HEADER</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Bearer'</span></span><a class="headerlink" href="#middleware.auth.SCHEMA_AUTH_HEADER" title="Link to this definition">¶</a></dt>
+<dd><p>Expected Authorization header scheme.</p>
+</dd></dl>
+
 </section>
-<section id="middleware-auth-throttle-module">
-<h2>middleware.auth_throttle module<a class="headerlink" href="#middleware-auth-throttle-module" title="Link to this heading">¶</a></h2>
+<section id="module-middleware.auth_throttle">
+<span id="middleware-auth-throttle-module"></span><h2>middleware.auth_throttle module<a class="headerlink" href="#module-middleware.auth_throttle" title="Link to this heading">¶</a></h2>
+<p>Auth throttle — Redis-backed rate limiting for login/signup endpoints.</p>
+<p>Protects public authentication endpoints from brute-force and
+credential-stuffing attacks by limiting attempts per-email and per-IP.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="middleware.auth_throttle.AuthThrottle">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">middleware.auth_throttle.</span></span><span class="sig-name descname"><span class="pre">AuthThrottle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">redis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login_max_per_ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login_window_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">900</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login_max_per_email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signup_max_per_ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signup_window_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3600</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth_throttle.html#AuthThrottle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.auth_throttle.AuthThrottle" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Rate-limits authentication attempts per-email and per-IP.</p>
+<p>Uses Redis counters for login (per-email and per-IP) and signup
+(per-IP).  Limits are configurable at construction time; defaults
+match the original hardcoded values for backward compatibility.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>redis</strong> (<em>AsyncRedis</em>) – An async Redis client.</p></li>
+<li><p><strong>login_max_per_ip</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Max failed login attempts per IP before
+throttling (default 20).</p></li>
+<li><p><strong>login_window_sec</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Login throttle window in seconds (default 900
+= 15 minutes).</p></li>
+<li><p><strong>login_max_per_email</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Max failed login attempts per email before
+throttling (default 5).</p></li>
+<li><p><strong>signup_max_per_ip</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Max signup attempts per IP before throttling
+(default 3).</p></li>
+<li><p><strong>signup_window_sec</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Signup throttle window in seconds (default
+3600 = 1 hour).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.auth_throttle.AuthThrottle.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">redis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login_max_per_ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login_window_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">900</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">login_max_per_email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signup_max_per_ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signup_window_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3600</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth_throttle.html#AuthThrottle.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.auth_throttle.AuthThrottle.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>redis</strong> (<em>Redis</em>)</p></li>
+<li><p><strong>login_max_per_ip</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>login_window_sec</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>login_max_per_email</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>signup_max_per_ip</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>signup_window_sec</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.auth_throttle.AuthThrottle.check_forgot_password_attempt">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_forgot_password_attempt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth_throttle.html#AuthThrottle.check_forgot_password_attempt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.auth_throttle.AuthThrottle.check_forgot_password_attempt" title="Link to this definition">¶</a></dt>
+<dd><p>Check and increment forgot-password request counters.</p>
+<p>Limits: 3 requests per email per hour, 10 per IP per 15 min.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The email requesting a password reset.</p></li>
+<li><p><strong>ip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The client IP address.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../domains/core.html#RateLimitError" title="RateLimitError"><strong>RateLimitError</strong></a> – If the rate limit is exceeded.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.auth_throttle.AuthThrottle.check_login_attempt">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_login_attempt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth_throttle.html#AuthThrottle.check_login_attempt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.auth_throttle.AuthThrottle.check_login_attempt" title="Link to this definition">¶</a></dt>
+<dd><p>Check and increment login attempt counters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The email address being used to log in.</p></li>
+<li><p><strong>ip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The client IP address.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../domains/core.html#RateLimitError" title="RateLimitError"><strong>RateLimitError</strong></a> – If the rate limit is exceeded.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.auth_throttle.AuthThrottle.check_mfa_send">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_mfa_send</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth_throttle.html#AuthThrottle.check_mfa_send"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.auth_throttle.AuthThrottle.check_mfa_send" title="Link to this definition">¶</a></dt>
+<dd><p>Check and increment MFA OTP send attempt counters.</p>
+<p>Limits: 5 MFA sends per email per hour, 10 per IP per 15 min.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The email requesting an MFA code.</p></li>
+<li><p><strong>ip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The client IP address.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../domains/core.html#RateLimitError" title="RateLimitError"><strong>RateLimitError</strong></a> – If the rate limit is exceeded.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.auth_throttle.AuthThrottle.check_mfa_verify">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_mfa_verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth_throttle.html#AuthThrottle.check_mfa_verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.auth_throttle.AuthThrottle.check_mfa_verify" title="Link to this definition">¶</a></dt>
+<dd><p>Check and increment MFA OTP verify attempt counters.</p>
+<p>Limits: 10 verify attempts per email per 15 min, 20 per IP per 15 min.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The email verifying an MFA code.</p></li>
+<li><p><strong>ip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The client IP address.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../domains/core.html#RateLimitError" title="RateLimitError"><strong>RateLimitError</strong></a> – If the rate limit is exceeded.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.auth_throttle.AuthThrottle.check_passwordless_send">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_passwordless_send</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth_throttle.html#AuthThrottle.check_passwordless_send"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.auth_throttle.AuthThrottle.check_passwordless_send" title="Link to this definition">¶</a></dt>
+<dd><p>Check and increment passwordless-login OTP send counters.</p>
+<p>Limits: 5 sends per email per hour, 10 per IP per 15 min.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The email requesting a login code.</p></li>
+<li><p><strong>ip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The client IP address.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../domains/core.html#RateLimitError" title="RateLimitError"><strong>RateLimitError</strong></a> – If the rate limit is exceeded.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.auth_throttle.AuthThrottle.check_passwordless_verify">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_passwordless_verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth_throttle.html#AuthThrottle.check_passwordless_verify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.auth_throttle.AuthThrottle.check_passwordless_verify" title="Link to this definition">¶</a></dt>
+<dd><p>Check and increment passwordless-login OTP verify counters.</p>
+<p>Limits: 10 attempts per email per 15 min, 20 per IP per 15 min.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The email verifying a login code.</p></li>
+<li><p><strong>ip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The client IP address.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../domains/core.html#RateLimitError" title="RateLimitError"><strong>RateLimitError</strong></a> – If the rate limit is exceeded.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.auth_throttle.AuthThrottle.check_reset_attempt">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_reset_attempt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth_throttle.html#AuthThrottle.check_reset_attempt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.auth_throttle.AuthThrottle.check_reset_attempt" title="Link to this definition">¶</a></dt>
+<dd><p>Check and increment password-reset (OTP verify) attempt counters.</p>
+<p>Protects the <code class="docutils literal notranslate"><span class="pre">/v1/auth/reset-password</span></code> endpoint from brute-force
+OTP guessing.  Limits: 10 attempts per email per 15 min, 20 per IP
+per 15 min.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The email being reset.</p></li>
+<li><p><strong>ip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The client IP address.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../domains/core.html#RateLimitError" title="RateLimitError"><strong>RateLimitError</strong></a> – If the rate limit is exceeded.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.auth_throttle.AuthThrottle.check_signup_attempt">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_signup_attempt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth_throttle.html#AuthThrottle.check_signup_attempt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.auth_throttle.AuthThrottle.check_signup_attempt" title="Link to this definition">¶</a></dt>
+<dd><p>Check and increment signup attempt counter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The client IP address.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../domains/core.html#RateLimitError" title="RateLimitError"><strong>RateLimitError</strong></a> – If the rate limit is exceeded.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.auth_throttle.AuthThrottle.check_verify_attempt">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">check_verify_attempt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/auth_throttle.html#AuthThrottle.check_verify_attempt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.auth_throttle.AuthThrottle.check_verify_attempt" title="Link to this definition">¶</a></dt>
+<dd><p>Check and increment email-verification attempt counter.</p>
+<p>Protects the <code class="docutils literal notranslate"><span class="pre">/v1/auth/verify-email</span></code> endpoint from brute-force
+OTP guessing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The email being verified.</p></li>
+<li><p><strong>ip</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The client IP address.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="../domains/core.html#RateLimitError" title="RateLimitError"><strong>RateLimitError</strong></a> – If the rate limit is exceeded.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="middleware-logging-module">
-<h2>middleware.logging module<a class="headerlink" href="#middleware-logging-module" title="Link to this heading">¶</a></h2>
+<section id="module-middleware.logging">
+<span id="middleware-logging-module"></span><h2>middleware.logging module<a class="headerlink" href="#module-middleware.logging" title="Link to this heading">¶</a></h2>
+<p>Request logging middleware and structlog processor.</p>
+<p>Provides two components:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code> — a raw ASGI middleware that records start time,
+processes the request, and logs a structured <code class="docutils literal notranslate"><span class="pre">&quot;request.completed&quot;</span></code>
+message at INFO with method, path, status code, and duration.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">add_request_context</span></code> — a structlog processor that injects bound context
+(request_id, method, path, etc.) into every log entry automatically.</p></li>
+</ol>
+<p>Usage:</p>
+<blockquote>
+<div><p># In main.py:
+import structlog
+from middleware.logging import LoggingMiddleware, add_request_context</p>
+<p>app.add_middleware(LoggingMiddleware)</p>
+<p># In structlog configuration:
+structlog.configure(</p>
+<blockquote>
+<div><dl class="simple">
+<dt>processors=[</dt><dd><p>add_request_context,
+# … other processors</p>
+</dd>
+</dl>
+<p>],</p>
+</div></blockquote>
+<p>)</p>
+</div></blockquote>
+<dl class="py class">
+<dt class="sig sig-object py" id="middleware.logging.LoggingMiddleware">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">middleware.logging.</span></span><span class="sig-name descname"><span class="pre">LoggingMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/logging.html#LoggingMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.logging.LoggingMiddleware" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Structured request/response logging middleware.</p>
+<p>Logs every HTTP request at INFO level after completion with:
+- <code class="docutils literal notranslate"><span class="pre">method</span></code> (GET, POST, …)
+- <code class="docutils literal notranslate"><span class="pre">path</span></code> (URL path)
+- <code class="docutils literal notranslate"><span class="pre">status_code</span></code> (HTTP response status)
+- <code class="docutils literal notranslate"><span class="pre">duration_ms</span></code> (wall-clock time in milliseconds)
+- <code class="docutils literal notranslate"><span class="pre">request_id</span></code> (from <code class="xref py py-class docutils literal notranslate"><span class="pre">RequestIDMiddleware</span></code>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>ASGIApp</em>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.logging.LoggingMiddleware.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/logging.html#LoggingMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.logging.LoggingMiddleware.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="middleware.logging.add_request_context">
+<span class="sig-prename descclassname"><span class="pre">middleware.logging.</span></span><span class="sig-name descname"><span class="pre">add_request_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/logging.html#add_request_context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.logging.add_request_context" title="Link to this definition">¶</a></dt>
+<dd><p>structlog processor that merges bound contextvars into every log entry.</p>
+<p>This processor reads context variables set by <code class="xref py py-class docutils literal notranslate"><span class="pre">RequestIDMiddleware</span></code>
+and <a class="reference internal" href="#middleware.logging.LoggingMiddleware" title="middleware.logging.LoggingMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code></a> (e.g. <code class="docutils literal notranslate"><span class="pre">request_id</span></code>) and adds them to
+every structured log message without explicit propagation.</p>
+<p>Register this as the <strong>first</strong> processor in your structlog configuration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">structlog</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span>
+    <span class="n">processors</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">add_request_context</span><span class="p">,</span>
+        <span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">filter_by_level</span><span class="p">,</span>
+        <span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">add_log_level</span><span class="p">,</span>
+        <span class="n">structlog</span><span class="o">.</span><span class="n">dev</span><span class="o">.</span><span class="n">ConsoleRenderer</span><span class="p">(),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.14)"><em>Logger</em></a>) – The stdlib logger instance (unused).</p></li>
+<li><p><strong>method_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The logging method name (unused).</p></li>
+<li><p><strong>event_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – The mutable event dictionary being built.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The event dictionary with any bound context merged in.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="middleware-metrics-module">
-<h2>middleware.metrics module<a class="headerlink" href="#middleware-metrics-module" title="Link to this heading">¶</a></h2>
+<section id="module-middleware.metrics">
+<span id="middleware-metrics-module"></span><h2>middleware.metrics module<a class="headerlink" href="#module-middleware.metrics" title="Link to this heading">¶</a></h2>
+<p>Prometheus metrics for the FastAPI application.</p>
+<p>Exposes a set of standard RED (Rate, Errors, Duration) metrics suitable for
+Grafana dashboarding.  Metrics are registered on a custom <code class="docutils literal notranslate"><span class="pre">REGISTRY</span></code> to
+isolate application metrics from system/client metrics.</p>
+<dl>
+<dt>Usage:</dt><dd><p>from middleware.metrics import METRICS_REGISTRY, http_requests_total</p>
+<p># Increment in middleware or service code
+http_requests_total.labels(method=”GET”, path=”/v1/users”, status=”200”).inc()</p>
+</dd>
+</dl>
+<p>To expose the metrics, mount <code class="docutils literal notranslate"><span class="pre">routers/metrics.py</span></code> at <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/metrics</span></code>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="middleware.metrics.MetricsMiddleware">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">middleware.metrics.</span></span><span class="sig-name descname"><span class="pre">MetricsMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/metrics.html#MetricsMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.metrics.MetricsMiddleware" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>ASGI middleware that records RED metrics for every request.</p>
+<p>Must be placed outermost (registered last) so it wraps everything
+including the 404 handler for unknown routes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>callable</em>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.metrics.MetricsMiddleware.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/metrics.html#MetricsMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.metrics.MetricsMiddleware.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>callable</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="middleware-rate-limit-module">
-<h2>middleware.rate_limit module<a class="headerlink" href="#middleware-rate-limit-module" title="Link to this heading">¶</a></h2>
+<section id="module-middleware.rate_limit">
+<span id="middleware-rate-limit-module"></span><h2>middleware.rate_limit module<a class="headerlink" href="#module-middleware.rate_limit" title="Link to this heading">¶</a></h2>
+<p>Sliding-window rate limiting middleware using Redis sorted sets.</p>
+<p>Implements a sliding-window counter with Redis <code class="docutils literal notranslate"><span class="pre">ZREMRANGEBYSCORE</span></code> /
+<code class="docutils literal notranslate"><span class="pre">ZADD</span></code> / <code class="docutils literal notranslate"><span class="pre">ZCOUNT</span></code> for precise per-second granularity without race
+conditions inherent to fixed-window counters.</p>
+<p>Two tiers of rate limiting are enforced:</p>
+<ol class="arabic simple">
+<li><p><strong>IP-based</strong> — for unauthenticated endpoints (health, docs, etc.).
+Key: <code class="docutils literal notranslate"><span class="pre">rate:auth:{ip}</span></code> — 10 requests per 60-second window.</p></li>
+<li><p><strong>Org-based</strong> — for authenticated API endpoints.
+Key: <code class="docutils literal notranslate"><span class="pre">rate:api:{org_id}</span></code> — rate determined by org quota or fallback.</p></li>
+</ol>
+<p>All responses include RFC 7807 body on 429.</p>
+<p>Fail-closed: if Redis is unreachable the request is rejected with HTTP 503
+via <a class="reference internal" href="../domains/core.html#RateLimitUnavailableError" title="RateLimitUnavailableError"><code class="xref py py-class docutils literal notranslate"><span class="pre">RateLimitUnavailableError</span></code></a>.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="middleware.rate_limit.AUTH_RATE_LIMIT">
+<span class="sig-prename descclassname"><span class="pre">middleware.rate_limit.</span></span><span class="sig-name descname"><span class="pre">AUTH_RATE_LIMIT</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></span><a class="headerlink" href="#middleware.rate_limit.AUTH_RATE_LIMIT" title="Link to this definition">¶</a></dt>
+<dd><p>Default max requests per window for unauthenticated (IP-based) requests.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="middleware.rate_limit.AUTH_RATE_WINDOW">
+<span class="sig-prename descclassname"><span class="pre">middleware.rate_limit.</span></span><span class="sig-name descname"><span class="pre">AUTH_RATE_WINDOW</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></span><a class="headerlink" href="#middleware.rate_limit.AUTH_RATE_WINDOW" title="Link to this definition">¶</a></dt>
+<dd><p>Window in seconds for unauthenticated requests.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="middleware.rate_limit.FALLBACK_ORG_RATE_LIMIT">
+<span class="sig-prename descclassname"><span class="pre">middleware.rate_limit.</span></span><span class="sig-name descname"><span class="pre">FALLBACK_ORG_RATE_LIMIT</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000</span></span><a class="headerlink" href="#middleware.rate_limit.FALLBACK_ORG_RATE_LIMIT" title="Link to this definition">¶</a></dt>
+<dd><p>Fallback max requests per window for org-based requests when no quota is set.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="middleware.rate_limit.FALLBACK_ORG_WINDOW">
+<span class="sig-prename descclassname"><span class="pre">middleware.rate_limit.</span></span><span class="sig-name descname"><span class="pre">FALLBACK_ORG_WINDOW</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></span><a class="headerlink" href="#middleware.rate_limit.FALLBACK_ORG_WINDOW" title="Link to this definition">¶</a></dt>
+<dd><p>Window in seconds for org-based requests.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="middleware.rate_limit.RateLimitMiddleware">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">middleware.rate_limit.</span></span><span class="sig-name descname"><span class="pre">RateLimitMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/rate_limit.html#RateLimitMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.rate_limit.RateLimitMiddleware" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Sliding-window rate limiting via Redis sorted sets — raw ASGI.</p>
+<p>This middleware depends on <code class="docutils literal notranslate"><span class="pre">app.state.redis</span></code> — an async Redis client
+initialised during the application lifespan.</p>
+<p>If the rate limit is exceeded the middleware responds with a 429 RFC 7807
+JSON body directly — it never calls the downstream app.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>ASGIApp</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="middleware.rate_limit.RateLimitMiddleware.BYPASS_PATHS">
+<span class="sig-name descname"><span class="pre">BYPASS_PATHS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'/health',</span> <span class="pre">'/ready'}</span></span><a class="headerlink" href="#middleware.rate_limit.RateLimitMiddleware.BYPASS_PATHS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.rate_limit.RateLimitMiddleware.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/rate_limit.html#RateLimitMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.rate_limit.RateLimitMiddleware.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="middleware-request-id-module">
-<h2>middleware.request_id module<a class="headerlink" href="#middleware-request-id-module" title="Link to this heading">¶</a></h2>
+<section id="module-middleware.request_id">
+<span id="middleware-request-id-module"></span><h2>middleware.request_id module<a class="headerlink" href="#module-middleware.request_id" title="Link to this heading">¶</a></h2>
+<p>Request ID middleware — ensures every request has a traceable X-Request-ID.</p>
+<p>The middleware:
+1. Reads <code class="docutils literal notranslate"><span class="pre">X-Request-ID</span></code> from the incoming request headers, or generates a</p>
+<blockquote>
+<div><p>UUID if absent.</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>Stores it on <code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;][&quot;request_id&quot;]</span></code> for use by downstream code.</p></li>
+<li><p>Binds it to structlog contextvars so all log entries in the request lifecycle
+include the request ID.</p></li>
+<li><p>Adds <code class="docutils literal notranslate"><span class="pre">X-Request-ID</span></code> to the response headers for client-side tracing.</p></li>
+</ol>
+<p>Usage in <code class="docutils literal notranslate"><span class="pre">main.py</span></code>:</p>
+<blockquote>
+<div><p>app.add_middleware(RequestIDMiddleware)  # must be innermost middleware</p>
+</div></blockquote>
+<dl class="py class">
+<dt class="sig sig-object py" id="middleware.request_id.RequestIDMiddleware">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">middleware.request_id.</span></span><span class="sig-name descname"><span class="pre">RequestIDMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/request_id.html#RequestIDMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.request_id.RequestIDMiddleware" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Raw ASGI middleware that adds or propagates <code class="docutils literal notranslate"><span class="pre">X-Request-ID</span></code>.</p>
+<p>Registered innermost (closest to the router) so every downstream layer
+(logging, auth, rate-limiting) has access to the request ID via
+<code class="docutils literal notranslate"><span class="pre">scope[&quot;state&quot;][&quot;request_id&quot;]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>ASGIApp</em>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.request_id.RequestIDMiddleware.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/request_id.html#RequestIDMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.request_id.RequestIDMiddleware.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="middleware-tracing-module">
-<h2>middleware.tracing module<a class="headerlink" href="#middleware-tracing-module" title="Link to this heading">¶</a></h2>
+<section id="module-middleware.tracing">
+<span id="middleware-tracing-module"></span><h2>middleware.tracing module<a class="headerlink" href="#module-middleware.tracing" title="Link to this heading">¶</a></h2>
+<p>OpenTelemetry distributed tracing middleware.</p>
+<p>Provides an <code class="docutils literal notranslate"><span class="pre">TracingMiddleware</span></code> that creates OpenTelemetry spans for every
+HTTP request and attaches relevant attributes (method, URL, status code).</p>
+<p>The middleware initialises OpenTelemetry on first use if the environment
+variable <code class="docutils literal notranslate"><span class="pre">OZ_OTLP_ENDPOINT</span></code> is set.  If OpenTelemetry is not configured,
+the middleware is a no-op pass-through — no spans are created, no data is
+exported.</p>
+<p>Configuration environment variables (via <code class="docutils literal notranslate"><span class="pre">pydantic-settings</span></code> / <code class="docutils literal notranslate"><span class="pre">.env</span></code>):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">OZ_OTLP_ENDPOINT</span></code> — OTLP gRPC endpoint (e.g. <code class="docutils literal notranslate"><span class="pre">http://localhost:4317</span></code>).
+If unset or empty, tracing is disabled.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OZ_OTLP_HEADERS</span></code> — Optional comma-separated <code class="docutils literal notranslate"><span class="pre">key=value</span></code> headers for
+the OTLP exporter (e.g. <code class="docutils literal notranslate"><span class="pre">Authorization=Bearer</span> <span class="pre">token123</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OZ_TRACE_SAMPLE_RATE</span></code> — Sampling rate as a float between 0.0 and 1.0.
+Default: <code class="docutils literal notranslate"><span class="pre">0.05</span></code> (5 %).  Set to <code class="docutils literal notranslate"><span class="pre">1.0</span></code> for full tracing in dev/staging.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OZ_SERVICE_NAME</span></code> — OpenTelemetry service name.  Default: <code class="docutils literal notranslate"><span class="pre">openzync</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OZ_ENVIRONMENT</span></code> — Deployment environment, added as a span attribute.</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="middleware.tracing.TracingMiddleware">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">middleware.tracing.</span></span><span class="sig-name descname"><span class="pre">TracingMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/tracing.html#TracingMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.tracing.TracingMiddleware" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>OpenTelemetry tracing middleware — raw ASGI, no BaseHTTPMiddleware.</p>
+<p>Creates a span for each request with HTTP semantic convention attributes.
+If OpenTelemetry is not configured (<code class="docutils literal notranslate"><span class="pre">OZ_OTLP_ENDPOINT</span></code> not set), this
+middleware is a zero-overhead pass-through.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<em>ASGIApp</em>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="middleware.tracing.TracingMiddleware.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/middleware/tracing.html#TracingMiddleware.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#middleware.tracing.TracingMiddleware.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>app</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.MutableMapping" title="(in Python v3.14)"><em>MutableMapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><em>None</em><em>]</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
@@ -398,15 +1349,115 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">middleware package</a><ul>
+<li><a class="reference internal" href="#middleware.AuditMiddleware"><code class="docutils literal notranslate"><span class="pre">AuditMiddleware</span></code></a><ul>
+<li><a class="reference internal" href="#middleware.AuditMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">AuditMiddleware.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#middleware.AuthMiddleware"><code class="docutils literal notranslate"><span class="pre">AuthMiddleware</span></code></a><ul>
+<li><a class="reference internal" href="#middleware.AuthMiddleware.__call__"><code class="docutils literal notranslate"><span class="pre">AuthMiddleware.__call__()</span></code></a></li>
+<li><a class="reference internal" href="#middleware.AuthMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">AuthMiddleware.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#middleware.LoggingMiddleware"><code class="docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code></a><ul>
+<li><a class="reference internal" href="#middleware.LoggingMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">LoggingMiddleware.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#middleware.RateLimitMiddleware"><code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code></a><ul>
+<li><a class="reference internal" href="#middleware.RateLimitMiddleware.BYPASS_PATHS"><code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware.BYPASS_PATHS</span></code></a></li>
+<li><a class="reference internal" href="#middleware.RateLimitMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#middleware.RequestIDMiddleware"><code class="docutils literal notranslate"><span class="pre">RequestIDMiddleware</span></code></a><ul>
+<li><a class="reference internal" href="#middleware.RequestIDMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">RequestIDMiddleware.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#middleware.TracingMiddleware"><code class="docutils literal notranslate"><span class="pre">TracingMiddleware</span></code></a><ul>
+<li><a class="reference internal" href="#middleware.TracingMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">TracingMiddleware.__init__()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#middleware-audit-module">middleware.audit module</a></li>
-<li><a class="reference internal" href="#middleware-auth-module">middleware.auth module</a></li>
-<li><a class="reference internal" href="#middleware-auth-throttle-module">middleware.auth_throttle module</a></li>
-<li><a class="reference internal" href="#middleware-logging-module">middleware.logging module</a></li>
-<li><a class="reference internal" href="#middleware-metrics-module">middleware.metrics module</a></li>
-<li><a class="reference internal" href="#middleware-rate-limit-module">middleware.rate_limit module</a></li>
-<li><a class="reference internal" href="#middleware-request-id-module">middleware.request_id module</a></li>
-<li><a class="reference internal" href="#middleware-tracing-module">middleware.tracing module</a></li>
+<li><a class="reference internal" href="#module-middleware.audit">middleware.audit module</a><ul>
+<li><a class="reference internal" href="#middleware.audit.AuditMiddleware"><code class="docutils literal notranslate"><span class="pre">AuditMiddleware</span></code></a><ul>
+<li><a class="reference internal" href="#middleware.audit.AuditMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">AuditMiddleware.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-middleware.auth">middleware.auth module</a><ul>
+<li><a class="reference internal" href="#middleware.auth.API_KEY_PREFIXES"><code class="docutils literal notranslate"><span class="pre">API_KEY_PREFIXES</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth.AUTH_CACHE_PREFIX"><code class="docutils literal notranslate"><span class="pre">AUTH_CACHE_PREFIX</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth.AUTH_CACHE_TTL"><code class="docutils literal notranslate"><span class="pre">AUTH_CACHE_TTL</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth.AUTH_MISS_RATE_LIMIT"><code class="docutils literal notranslate"><span class="pre">AUTH_MISS_RATE_LIMIT</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth.AUTH_MISS_RATE_LIMIT_PREFIX"><code class="docutils literal notranslate"><span class="pre">AUTH_MISS_RATE_LIMIT_PREFIX</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth.AUTH_MISS_RATE_WINDOW"><code class="docutils literal notranslate"><span class="pre">AUTH_MISS_RATE_WINDOW</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth.AUTH_NEG_CACHE_PREFIX"><code class="docutils literal notranslate"><span class="pre">AUTH_NEG_CACHE_PREFIX</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth.AUTH_NEG_CACHE_TTL"><code class="docutils literal notranslate"><span class="pre">AUTH_NEG_CACHE_TTL</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth.AuthMiddleware"><code class="docutils literal notranslate"><span class="pre">AuthMiddleware</span></code></a><ul>
+<li><a class="reference internal" href="#middleware.auth.AuthMiddleware.__call__"><code class="docutils literal notranslate"><span class="pre">AuthMiddleware.__call__()</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth.AuthMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">AuthMiddleware.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#middleware.auth.PUBLIC_ENDPOINTS"><code class="docutils literal notranslate"><span class="pre">PUBLIC_ENDPOINTS</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth.SCHEMA_AUTH_HEADER"><code class="docutils literal notranslate"><span class="pre">SCHEMA_AUTH_HEADER</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-middleware.auth_throttle">middleware.auth_throttle module</a><ul>
+<li><a class="reference internal" href="#middleware.auth_throttle.AuthThrottle"><code class="docutils literal notranslate"><span class="pre">AuthThrottle</span></code></a><ul>
+<li><a class="reference internal" href="#middleware.auth_throttle.AuthThrottle.__init__"><code class="docutils literal notranslate"><span class="pre">AuthThrottle.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth_throttle.AuthThrottle.check_forgot_password_attempt"><code class="docutils literal notranslate"><span class="pre">AuthThrottle.check_forgot_password_attempt()</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth_throttle.AuthThrottle.check_login_attempt"><code class="docutils literal notranslate"><span class="pre">AuthThrottle.check_login_attempt()</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth_throttle.AuthThrottle.check_mfa_send"><code class="docutils literal notranslate"><span class="pre">AuthThrottle.check_mfa_send()</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth_throttle.AuthThrottle.check_mfa_verify"><code class="docutils literal notranslate"><span class="pre">AuthThrottle.check_mfa_verify()</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth_throttle.AuthThrottle.check_passwordless_send"><code class="docutils literal notranslate"><span class="pre">AuthThrottle.check_passwordless_send()</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth_throttle.AuthThrottle.check_passwordless_verify"><code class="docutils literal notranslate"><span class="pre">AuthThrottle.check_passwordless_verify()</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth_throttle.AuthThrottle.check_reset_attempt"><code class="docutils literal notranslate"><span class="pre">AuthThrottle.check_reset_attempt()</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth_throttle.AuthThrottle.check_signup_attempt"><code class="docutils literal notranslate"><span class="pre">AuthThrottle.check_signup_attempt()</span></code></a></li>
+<li><a class="reference internal" href="#middleware.auth_throttle.AuthThrottle.check_verify_attempt"><code class="docutils literal notranslate"><span class="pre">AuthThrottle.check_verify_attempt()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-middleware.logging">middleware.logging module</a><ul>
+<li><a class="reference internal" href="#middleware.logging.LoggingMiddleware"><code class="docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code></a><ul>
+<li><a class="reference internal" href="#middleware.logging.LoggingMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">LoggingMiddleware.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#middleware.logging.add_request_context"><code class="docutils literal notranslate"><span class="pre">add_request_context()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-middleware.metrics">middleware.metrics module</a><ul>
+<li><a class="reference internal" href="#middleware.metrics.MetricsMiddleware"><code class="docutils literal notranslate"><span class="pre">MetricsMiddleware</span></code></a><ul>
+<li><a class="reference internal" href="#middleware.metrics.MetricsMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">MetricsMiddleware.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-middleware.rate_limit">middleware.rate_limit module</a><ul>
+<li><a class="reference internal" href="#middleware.rate_limit.AUTH_RATE_LIMIT"><code class="docutils literal notranslate"><span class="pre">AUTH_RATE_LIMIT</span></code></a></li>
+<li><a class="reference internal" href="#middleware.rate_limit.AUTH_RATE_WINDOW"><code class="docutils literal notranslate"><span class="pre">AUTH_RATE_WINDOW</span></code></a></li>
+<li><a class="reference internal" href="#middleware.rate_limit.FALLBACK_ORG_RATE_LIMIT"><code class="docutils literal notranslate"><span class="pre">FALLBACK_ORG_RATE_LIMIT</span></code></a></li>
+<li><a class="reference internal" href="#middleware.rate_limit.FALLBACK_ORG_WINDOW"><code class="docutils literal notranslate"><span class="pre">FALLBACK_ORG_WINDOW</span></code></a></li>
+<li><a class="reference internal" href="#middleware.rate_limit.RateLimitMiddleware"><code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code></a><ul>
+<li><a class="reference internal" href="#middleware.rate_limit.RateLimitMiddleware.BYPASS_PATHS"><code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware.BYPASS_PATHS</span></code></a></li>
+<li><a class="reference internal" href="#middleware.rate_limit.RateLimitMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-middleware.request_id">middleware.request_id module</a><ul>
+<li><a class="reference internal" href="#middleware.request_id.RequestIDMiddleware"><code class="docutils literal notranslate"><span class="pre">RequestIDMiddleware</span></code></a><ul>
+<li><a class="reference internal" href="#middleware.request_id.RequestIDMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">RequestIDMiddleware.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-middleware.tracing">middleware.tracing module</a><ul>
+<li><a class="reference internal" href="#middleware.tracing.TracingMiddleware"><code class="docutils literal notranslate"><span class="pre">TracingMiddleware</span></code></a><ul>
+<li><a class="reference internal" href="#middleware.tracing.TracingMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">TracingMiddleware.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

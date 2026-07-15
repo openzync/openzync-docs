@@ -1,0 +1,966 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>workers.tasks.extract_entities - OpenZync Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">OpenZync Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <span class="sidebar-brand-text">OpenZync Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/contributing.html">Contributing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/core.html">Core Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/llm.html">LLM Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/graph_backends.html">Graph Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/reranker.html">Re-ranking &amp; Community Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/reranker.html#community-detection">Community Detection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Domain Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/auth.html">Authentication &amp; Authorization Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/memory_context.html">Memory &amp; Context Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/admin_webhooks.html">Admin &amp; Webhooks Domain</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API &amp; Workers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/api_layer.html">API Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/workers.html">Worker System — ARQ Background Job Processing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SDK, MCP &amp; Frontend</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/sdk_python.html">Python SDK (openzync)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/mcp_server.html">MCP Server (FastMCP)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/frontend.html">OpenZync Frontend</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Infra</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../domains/infrastructure.html">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</a><input aria-label="Toggle navigation of Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture Decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference (Auto-generated)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/core.html">core package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/routers.html">routers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/models.html">models package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/schemas.html">schemas package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/services.html">services package</a><input aria-label="Toggle navigation of services package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/services.api.html">services.api package</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/services.mcp.html">services.mcp package</a><input aria-label="Toggle navigation of services.mcp package" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/services.mcp.tools.html">services.mcp.tools package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/services.mcp.transport.html">services.mcp.transport package</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/services.worker.html">services.worker package</a><input aria-label="Toggle navigation of services.worker package" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/services.worker.prompts.html">services.worker.prompts package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/services.worker.tasks.html">services.worker.tasks package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/repositories.html">repositories package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/middleware.html">middleware package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/dependencies.html">dependencies package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/workers.html">workers package</a><input aria-label="Toggle navigation of workers package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/workers.tasks.html">workers.tasks package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/utils.html">utils package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/packages.html">packages package</a><input aria-label="Toggle navigation of packages package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/packages.community.html">packages.community package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/packages.graph_backend.html">packages.graph_backend package</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for workers.tasks.extract_entities</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Entity extraction worker — ARQ task that extracts entities from messages.</span>
+
+<span class="sd">Runs after an episode is committed to PostgreSQL.  Uses an LLM to extract</span>
+<span class="sd">named entities (people, organisations, products, locations, etc.) and the</span>
+<span class="sd">relationships between them from a single conversation turn.  Persists</span>
+<span class="sd">entities to the knowledge graph (if available) and relationships</span>
+<span class="sd">to the ``facts`` table in PostgreSQL.</span>
+
+<span class="sd">Bitmask:</span>
+<span class="sd">    Sets ``episodes.enrichment_status`` bit 0 (``ENRICHMENT_ENTITIES``)</span>
+<span class="sd">    on success.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSession</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">packages.graph_backend.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphBackend</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">repositories.entity_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntityRepository</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">repositories.episode_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">EpisodeRepository</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">schemas.llm_outputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntityExtractionOutput</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">structlog</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">EpisodeNotFoundError</span><span class="p">,</span> <span class="n">GraphBackendUnavailableError</span>
+
+<span class="c1"># note: Import prompt_renderer at module level — it is a local</span>
+<span class="c1"># Jinja2 utility with no heavy dependencies, so eager import is safe</span>
+<span class="c1"># and avoids re-import overhead on every task invocation.</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">services.worker.prompt_renderer</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_enrichment_prompt</span><span class="p">,</span> <span class="n">render_prompt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">workers.backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_graph_backend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">workers.tasks.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ENRICHMENT_ENTITIES</span><span class="p">,</span> <span class="n">with_retry</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+
+
+<span class="c1"># ── Public ARQ task (decorated with retry) ────────────────────────────────────</span>
+
+
+<div class="viewcode-block" id="extract_entities">
+<a class="viewcode-back" href="../../../api/workers.tasks.html#workers.tasks.extract_entities">[docs]</a>
+<span class="nd">@with_retry</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">base_delay_s</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">extract_entities</span><span class="p">(</span>
+    <span class="n">ctx</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="n">episode_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">session_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">trace_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract named entities and relationships from a message and persist them.</span>
+
+<span class="sd">    This function is designed as an ARQ task — the ``ctx`` parameter provides</span>
+<span class="sd">    a shared DB engine from the worker process (``ctx[&quot;db_engine&quot;]``).</span>
+<span class="sd">    When ``ctx`` is absent (direct invocation), a short-lived engine is</span>
+<span class="sd">    created as a fallback.</span>
+
+<span class="sd">    Pipeline:</span>
+<span class="sd">        1. Fetch organization&#39;s entity type ontology from</span>
+<span class="sd">           ``extraction_schemas (type=&#39;entity_type&#39;)``.</span>
+<span class="sd">        2. If ``session_id`` is provided, fetch known entities from previous</span>
+<span class="sd">           turns of this session for delta extraction (v3 prompt).</span>
+<span class="sd">        3. Render the extract prompt:</span>
+<span class="sd">            - ``extract_entities_v4.jinja2`` when known entities exist (delta).</span>
+<span class="sd">            - ``extract_entities_v3.jinja2`` for the first extraction.</span>
+<span class="sd">        4. Call the LLM backend (via ``resolve_backend()``, temperature 0.1).</span>
+<span class="sd">        5. Parse the JSON response (handles markdown fence wrapping).</span>
+<span class="sd">        6. Validate entity types against the allowed ontology (reassign</span>
+<span class="sd">           invalid types to ``&quot;Custom&quot;``).</span>
+<span class="sd">        7. Persist entity nodes to Graphiti via ``EntityRepository``.</span>
+<span class="sd">        8. Persist relationships as facts in PostgreSQL.</span>
+<span class="sd">        9. Update ``episodes.enrichment_status`` bit 0.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ctx: ARQ worker context (unused — required by ARQ contract).</span>
+<span class="sd">        episode_id: UUID of the source episode (string, from ARQ).</span>
+<span class="sd">        org_id: UUID of the owning organization.</span>
+<span class="sd">        project_id: UUID of the project for project scoping.</span>
+<span class="sd">        content: The message text to extract entities from.</span>
+<span class="sd">        session_id: UUID of the session (passed from MemoryService).</span>
+<span class="sd">            Used to fetch known entities for delta extraction.</span>
+<span class="sd">        trace_id: Request trace ID for end-to-end correlation across ARQ tasks.</span>
+<span class="sd">        metadata: Optional metadata dict forwarded from the enrichment pipeline.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        Exception: Re-raises the last LLM or DB error after retry exhaustion</span>
+<span class="sd">            (``on_exhaustion=&quot;raise&quot;`` default behaviour).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">trace_id</span><span class="p">:</span>
+        <span class="n">structlog</span><span class="o">.</span><span class="n">contextvars</span><span class="o">.</span><span class="n">bind_contextvars</span><span class="p">(</span><span class="n">trace_id</span><span class="o">=</span><span class="n">trace_id</span><span class="p">)</span>
+
+    <span class="c1"># Lazy imports to keep the module importable without the full async</span>
+    <span class="c1"># stack at definition time — ARQ workers run in a separate process.</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">core.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_async_session</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">core.llm</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_backend</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">core.org_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_org_config</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">repositories.entity_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntityRepository</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">repositories.episode_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">EpisodeRepository</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">schemas.llm_outputs</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntityExtractionOutput</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;entity_extraction.started&quot;</span><span class="p">,</span>
+        <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+        <span class="n">org_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+        <span class="n">session_id</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
+        <span class="n">content_length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">),</span>
+        <span class="n">trace_id</span><span class="o">=</span><span class="n">trace_id</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Use the shared engine from worker context.</span>
+    <span class="n">engine</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;db_engine&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">core.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">init_db_engine</span>
+
+        <span class="n">engine</span> <span class="o">=</span> <span class="n">init_db_engine</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DATABASE_URL</span><span class="p">),</span> <span class="n">pool_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_overflow</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">_own_engine</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_own_engine</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">session_factory</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;db_session_factory&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">session_factory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">session_factory</span> <span class="o">=</span> <span class="n">get_async_session</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
+
+    <span class="c1"># ── 0. Resolve user_id from episode record ──────────────────────────────</span>
+    <span class="c1"># user_id is stored on the episode at creation time (from the API key&#39;s</span>
+    <span class="c1"># created_by via the auth middleware).  The worker resolves it from the</span>
+    <span class="c1"># episode rather than receiving it as an ARQ parameter.</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">models.episode</span><span class="w"> </span><span class="kn">import</span> <span class="n">Episode</span>
+
+    <span class="n">backend</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">resolve_db</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resolve_db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+            <span class="n">select</span><span class="p">(</span><span class="n">Episode</span><span class="o">.</span><span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Episode</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">episode_id</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">user_id_row</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">user_id_row</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;entity_extraction.episode_not_found&quot;</span><span class="p">,</span>
+                <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">EpisodeNotFoundError</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Episode </span><span class="si">{</span><span class="n">episode_id</span><span class="si">}</span><span class="s2"> not found for entity extraction.&quot;</span><span class="p">,</span>
+                <span class="n">detail</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;episode_id&quot;</span><span class="p">:</span> <span class="n">episode_id</span><span class="p">},</span>
+            <span class="p">)</span>
+        <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">user_id_row</span><span class="p">)</span>
+
+        <span class="c1"># ── Resolve graph backend (same session, avoids extra connection) ──</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">backend</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resolve_graph_backend</span><span class="p">(</span>
+                <span class="n">ctx</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{},</span>
+                <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">org_id</span><span class="p">),</span>
+                <span class="n">resolve_db</span><span class="p">,</span>
+                <span class="n">fallback_to_postgres</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;entity_extraction.backend_resolve_failed&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># ── 1-2. Render prompt (system instructions) with auto-injected context ──</span>
+    <span class="n">system_prompt</span><span class="p">,</span> <span class="n">prompt_context</span> <span class="o">=</span> <span class="k">await</span> <span class="n">render_prompt</span><span class="p">(</span>
+        <span class="s2">&quot;entity_extraction&quot;</span><span class="p">,</span>
+        <span class="n">org_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span>
+        <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+        <span class="n">session_id</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
+        <span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+        <span class="n">graph_backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+        <span class="n">db_session_factory</span><span class="o">=</span><span class="n">session_factory</span><span class="p">,</span>
+        <span class="n">return_context</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span> <span class="ow">or</span> <span class="p">{},</span>
+    <span class="p">)</span>
+    <span class="n">entity_types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">prompt_context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;entity_types&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
+    <span class="c1"># ── 1b. Build full prompt with context sections ────────────────────────</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">build_enrichment_prompt</span><span class="p">(</span><span class="n">system_prompt</span><span class="p">,</span> <span class="n">prompt_context</span><span class="p">)</span>
+
+    <span class="c1"># ── 2b. Fetch per-organization config ─────────────────────────────────</span>
+    <span class="n">llm_config_dict</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">bao_client</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;openbao_client&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">bao_client</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">org_cfg</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_org_config</span><span class="p">(</span>
+                <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">org_id</span><span class="p">),</span> <span class="n">redis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bao_client</span><span class="o">=</span><span class="n">bao_client</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">BootstrapSettings</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">core.openbao</span><span class="w"> </span><span class="kn">import</span> <span class="n">OpenBaoClient</span>
+
+            <span class="n">bootstrap</span> <span class="o">=</span> <span class="n">BootstrapSettings</span><span class="p">()</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">OpenBaoClient</span><span class="p">(</span>
+                <span class="n">bootstrap</span><span class="o">.</span><span class="n">OPENBAO_ADDR</span><span class="p">,</span>
+                <span class="n">bootstrap</span><span class="o">.</span><span class="n">OPENBAO_ROLE_ID</span><span class="p">,</span>
+                <span class="n">bootstrap</span><span class="o">.</span><span class="n">OPENBAO_SECRET_ID</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">_tmp_bao</span><span class="p">:</span>
+                <span class="n">org_cfg</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_org_config</span><span class="p">(</span>
+                    <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">org_id</span><span class="p">),</span> <span class="n">redis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bao_client</span><span class="o">=</span><span class="n">_tmp_bao</span>
+                <span class="p">)</span>
+        <span class="n">llm_config_dict</span> <span class="o">=</span> <span class="n">org_cfg</span><span class="o">.</span><span class="n">to_llm_config_dict</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;entity_extraction.org_config_fetch_failed&quot;</span><span class="p">,</span>
+            <span class="n">org_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span>
+            <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># ── 3-4. Call LLM with structured-output validation ──────────────────────</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">llm</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resolve_backend</span><span class="p">(</span><span class="n">org_config</span><span class="o">=</span><span class="n">llm_config_dict</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">llm</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;You are an entity extraction system.&quot;</span><span class="p">),</span>
+                <span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
+            <span class="p">],</span>
+            <span class="n">response_model</span><span class="o">=</span><span class="n">EntityExtractionOutput</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+            <span class="n">max_tokens</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;entity_extraction.llm_failed&quot;</span><span class="p">,</span>
+            <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+            <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">raise</span>  <span class="c1"># Let the @with_retry decorator handle transient failures</span>
+
+    <span class="n">parsed</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">validated_data</span>  <span class="c1"># EntityExtractionOutput instance</span>
+
+    <span class="c1"># ── Post-processing via extracted helper ────────────────────────────────</span>
+    <span class="c1"># Persist entities, relationships, and set enrichment bits.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">_db</span><span class="p">:</span>
+            <span class="n">backend</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resolve_graph_backend</span><span class="p">(</span>
+                <span class="n">ctx</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="p">{},</span>
+                <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">org_id</span><span class="p">),</span>
+                <span class="n">_db</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">GraphBackendUnavailableError</span><span class="p">(</span>
+                    <span class="s2">&quot;Graph backend unavailable for entity extraction.&quot;</span><span class="p">,</span>
+                    <span class="n">detail</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;org_id&quot;</span><span class="p">:</span> <span class="n">org_id</span><span class="p">},</span>
+                <span class="p">)</span>
+            <span class="n">entity_repo</span> <span class="o">=</span> <span class="n">EntityRepository</span><span class="p">(</span><span class="n">db</span><span class="o">=</span><span class="n">_db</span><span class="p">,</span> <span class="n">graph_backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
+            <span class="n">episode_repo</span> <span class="o">=</span> <span class="n">EpisodeRepository</span><span class="p">(</span><span class="n">_db</span><span class="p">)</span>
+
+            <span class="n">entity_name_map</span> <span class="o">=</span> <span class="k">await</span> <span class="n">process_entities_output</span><span class="p">(</span>
+                <span class="n">db</span><span class="o">=</span><span class="n">_db</span><span class="p">,</span>
+                <span class="n">graph_backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+                <span class="n">entity_repo</span><span class="o">=</span><span class="n">entity_repo</span><span class="p">,</span>
+                <span class="n">episode_repo</span><span class="o">=</span><span class="n">episode_repo</span><span class="p">,</span>
+                <span class="n">org_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span>
+                <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+                <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+                <span class="n">parsed</span><span class="o">=</span><span class="n">parsed</span><span class="p">,</span>
+                <span class="n">entity_types</span><span class="o">=</span><span class="n">entity_types</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># ⚠️ Commit is required — SQLAlchemy AsyncSession does NOT</span>
+            <span class="c1"># auto-commit when the context manager exits. Without this,</span>
+            <span class="c1"># all entity/relationship writes are silently rolled back.</span>
+            <span class="k">await</span> <span class="n">_db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_own_engine</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">engine</span><span class="o">.</span><span class="n">dispose</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">entity_name_map</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;entity_extraction.completed&quot;</span><span class="p">,</span>
+            <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+            <span class="n">entities</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">entity_name_map</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;entity_extraction.done&quot;</span><span class="p">,</span> <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">)</span>
+
+    <span class="c1"># ── 10. Enqueue fact extraction (now that entities are committed) ──</span>
+    <span class="c1"># extract_facts must run AFTER entities are in the DB so that entity</span>
+    <span class="c1"># IDs can be resolved for graph_relationship edges.  Chaining via</span>
+    <span class="c1"># enqueue eliminates the race condition.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">services.worker.worker_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_queue_name</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">services.worker.worker_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span> <span class="k">as</span> <span class="n">w_settings</span>
+
+        <span class="n">arq_redis</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;redis&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">arq_redis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">arq_redis</span><span class="o">.</span><span class="n">enqueue_job</span><span class="p">(</span>
+                <span class="s2">&quot;extract_facts&quot;</span><span class="p">,</span>
+                <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+                <span class="n">org_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span>
+                <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+                <span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">,</span>
+                <span class="n">session_id</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
+                <span class="n">trace_id</span><span class="o">=</span><span class="n">trace_id</span><span class="p">,</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+                <span class="n">_queue_name</span><span class="o">=</span><span class="n">get_queue_name</span><span class="p">(</span><span class="n">w_settings</span><span class="o">.</span><span class="n">ENV</span><span class="p">,</span> <span class="s2">&quot;high&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;entity_extraction.facts_enqueue_failed&quot;</span><span class="p">,</span>
+            <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+            <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">raise</span>  <span class="c1"># Propagate so ARQ retry mechanism handles it</span></div>
+
+
+
+<span class="c1"># ── Shared post-processing (exported for combined worker) ──────────────────</span>
+
+
+<div class="viewcode-block" id="process_entities_output">
+<a class="viewcode-back" href="../../../api/workers.tasks.html#workers.tasks.process_entities_output">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">process_entities_output</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">graph_backend</span><span class="p">:</span> <span class="n">GraphBackend</span><span class="p">,</span>
+    <span class="n">entity_repo</span><span class="p">:</span> <span class="n">EntityRepository</span><span class="p">,</span>
+    <span class="n">episode_repo</span><span class="p">:</span> <span class="n">EpisodeRepository</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">episode_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">parsed</span><span class="p">:</span> <span class="n">EntityExtractionOutput</span><span class="p">,</span>
+    <span class="n">entity_types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process and persist entity extraction output from LLM.</span>
+
+<span class="sd">    Filters pronouns, validates entity types, upserts entities and</span>
+<span class="sd">    relationships in the graph backend, and links entities to the episode.</span>
+<span class="sd">    Does NOT manage transactions — caller is responsible for commit/rollback.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        db: Active database session.</span>
+<span class="sd">        graph_backend: Resolved graph backend for entity/relationship CRUD.</span>
+<span class="sd">        entity_repo: Entity repository for upsert operations.</span>
+<span class="sd">        episode_repo: Optional episode repository for setting enrichment bits.</span>
+<span class="sd">            If None, bits are not set (caller manages this).</span>
+<span class="sd">        org_id: Organization UUID string.</span>
+<span class="sd">        episode_id: Episode UUID string.</span>
+<span class="sd">        project_id: Project UUID string.</span>
+<span class="sd">        parsed: The validated EntityExtractionOutput from the LLM.</span>
+<span class="sd">        entity_types: List of allowed entity type strings from org config.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dict mapping entity names to their UUID strings, for use by</span>
+<span class="sd">        downstream fact processing.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        Various DB/graph errors on persistence failure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># ── 1. Convert parsed output to mutable dicts ──────────────────────────</span>
+    <span class="n">entities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">parsed</span><span class="o">.</span><span class="n">entities</span><span class="p">]</span>
+    <span class="n">relationships</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">parsed</span><span class="o">.</span><span class="n">relationships</span><span class="p">]</span>
+
+    <span class="c1"># ── Pronoun filter — skip entities that are pronouns or common    ───</span>
+    <span class="c1">#    misspellings.  Pronouns like &quot;I&quot;, &quot;me&quot;, &quot;my&quot; should never be</span>
+    <span class="c1">#    persisted as graph entities — they are resolved to the speaker</span>
+    <span class="c1">#    during fact extraction (see _match_entity in extract_facts.py).</span>
+    <span class="n">_pronoun_skip_names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="c1"># First‑person</span>
+        <span class="s2">&quot;i&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;me&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;my&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;mine&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;myself&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;we&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;us&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;our&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ours&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ourselves&quot;</span><span class="p">,</span>
+        <span class="c1"># Second‑person</span>
+        <span class="s2">&quot;you&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;your&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;yours&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;yourself&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;yourselves&quot;</span><span class="p">,</span>
+        <span class="c1"># Third‑person</span>
+        <span class="s2">&quot;he&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;him&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;his&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;himself&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;she&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;her&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;hers&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;herself&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;it&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;its&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;itself&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;they&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;them&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;their&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;theirs&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;themselves&quot;</span><span class="p">,</span>
+        <span class="c1"># Ambiguous / filler</span>
+        <span class="s2">&quot;this&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;that&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;these&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;those&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;someone&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;somebody&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;everyone&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;everybody&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;nobody&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;anyone&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;anybody&quot;</span><span class="p">,</span>
+        <span class="c1"># Common misspellings (observed: &quot;shhe&quot;)</span>
+        <span class="s2">&quot;shhe&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;hhe&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;thei&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;theyr&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;thereselves&quot;</span><span class="p">,</span>
+        <span class="c1"># Questions / catch‑all that leak through extraction</span>
+        <span class="s2">&quot;what&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;who&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;whom&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;whose&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;which&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">filtered_entities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="p">(</span><span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;entity_extraction.entity_without_name_skipped&quot;</span><span class="p">,</span>
+                <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">_pronoun_skip_names</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;entity_extraction.pronoun_skipped&quot;</span><span class="p">,</span>
+                <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">filtered_entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+    <span class="n">entities</span> <span class="o">=</span> <span class="n">filtered_entities</span>
+
+    <span class="c1"># Clean relationships that reference skipped pronouns</span>
+    <span class="n">clean_relationships</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">relationships</span><span class="p">:</span>
+        <span class="n">subj</span> <span class="o">=</span> <span class="p">(</span><span class="n">rel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;subject&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="p">(</span><span class="n">rel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">subj</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;entity_extraction.relationship_without_subject_or_object_skipped&quot;</span><span class="p">,</span>
+                <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+                <span class="n">subject</span><span class="o">=</span><span class="n">subj</span><span class="p">,</span>
+                <span class="n">predicate</span><span class="o">=</span><span class="n">rel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;predicate&quot;</span><span class="p">),</span>
+                <span class="nb">object</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">subj</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">_pronoun_skip_names</span> <span class="ow">or</span> <span class="n">obj</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">_pronoun_skip_names</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;entity_extraction.relationship_pronoun_skipped&quot;</span><span class="p">,</span>
+                <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+                <span class="n">subject</span><span class="o">=</span><span class="n">subj</span><span class="p">,</span>
+                <span class="n">predicate</span><span class="o">=</span><span class="n">rel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;predicate&quot;</span><span class="p">),</span>
+                <span class="nb">object</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">clean_relationships</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rel</span><span class="p">)</span>
+    <span class="n">relationships</span> <span class="o">=</span> <span class="n">clean_relationships</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">entities</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">relationships</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;entity_extraction.empty&quot;</span><span class="p">,</span> <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;entity_extraction.parsed&quot;</span><span class="p">,</span>
+        <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+        <span class="n">entities</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">entities</span><span class="p">),</span>
+        <span class="n">relationships</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">relationships</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="c1"># ── 2. Validate entity types against allowed ontology ────────────────</span>
+    <span class="n">allowed_types</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">entity_types</span><span class="p">)</span> <span class="o">|</span> <span class="p">{</span><span class="s2">&quot;Custom&quot;</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+        <span class="n">raw_type</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">raw_type</span> <span class="ow">or</span> <span class="n">raw_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_types</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;entity_extraction.invalid_type&quot;</span><span class="p">,</span>
+                <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">),</span>
+                <span class="n">original_type</span><span class="o">=</span><span class="n">raw_type</span><span class="p">,</span>
+                <span class="n">reassigned_to</span><span class="o">=</span><span class="s2">&quot;Custom&quot;</span><span class="p">,</span>
+                <span class="n">allowed</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span><span class="n">allowed_types</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">entity</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Custom&quot;</span>
+
+    <span class="c1"># ── 3. Upsert entities to graph ────────────────────────────────────</span>
+    <span class="n">name_to_node</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># ── Failure counters for enrichment-bit gating ─────────────────────</span>
+    <span class="c1"># Note: entity failures now raise GraphBackendUnavailableError and trigger</span>
+    <span class="c1"># retry via @with_retry. Only relationship failures (entity-not-found in</span>
+    <span class="c1"># graph) are counted here since they are non-fatal edge cases.</span>
+    <span class="n">relationship_failure_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">relationship_skip_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+        <span class="n">entity_name</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">entity_type</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;Custom&quot;</span><span class="p">)</span>
+        <span class="n">mentions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mentions&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="c1"># ── Normalize entity name casing ────────────────────────────</span>
+        <span class="n">normalized_name</span> <span class="o">=</span> <span class="n">entity_name</span>
+        <span class="k">if</span> <span class="n">mentions</span><span class="p">:</span>
+            <span class="n">first_mention</span> <span class="o">=</span> <span class="n">mentions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">first_mention</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">first_mention</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">normalized_name</span> <span class="o">=</span> <span class="n">first_mention</span>
+        <span class="k">elif</span> <span class="n">entity_name</span> <span class="ow">and</span> <span class="n">entity_name</span><span class="o">.</span><span class="n">islower</span><span class="p">():</span>
+            <span class="n">normalized_name</span> <span class="o">=</span> <span class="n">entity_name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+
+        <span class="n">summary</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">normalized_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">entity_type</span><span class="si">}</span><span class="s2">) — &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;mentioned as: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">mentions</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">mentions</span>
+            <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">normalized_name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">entity_type</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">node</span> <span class="o">=</span> <span class="k">await</span> <span class="n">entity_repo</span><span class="o">.</span><span class="n">upsert_entity</span><span class="p">(</span>
+            <span class="n">org_id</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">org_id</span><span class="p">),</span>
+            <span class="n">project_id</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">project_id</span><span class="p">),</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">normalized_name</span><span class="p">,</span>
+            <span class="n">entity_type</span><span class="o">=</span><span class="n">entity_type</span><span class="p">,</span>
+            <span class="n">summary</span><span class="o">=</span><span class="n">summary</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">name_to_node</span><span class="p">[</span><span class="n">normalized_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="c1"># Also key by original name as fallback for callers</span>
+        <span class="c1"># that might use the raw LLM output</span>
+        <span class="k">if</span> <span class="n">normalized_name</span> <span class="o">!=</span> <span class="n">entity_name</span><span class="p">:</span>
+            <span class="n">name_to_node</span><span class="p">[</span><span class="n">entity_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+
+    <span class="c1"># ── 4. Upsert relationships to graph ─────────────────────────────</span>
+    <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">relationships</span><span class="p">:</span>
+        <span class="n">subject</span> <span class="o">=</span> <span class="n">rel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;subject&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">predicate</span> <span class="o">=</span> <span class="n">rel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;predicate&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">rel</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">subject</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">predicate</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># ── On-the-fly entity recovery pass ────────────────────────</span>
+        <span class="c1"># If the LLM included a name in a relationship but didn&#39;t</span>
+        <span class="c1"># declare it in the entities array, auto-create it as a</span>
+        <span class="c1"># &quot;Custom&quot; type entity so the graph edge is not lost.</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">name_to_node</span><span class="p">:</span>
+                <span class="n">fallback_node</span> <span class="o">=</span> <span class="k">await</span> <span class="n">entity_repo</span><span class="o">.</span><span class="n">upsert_entity</span><span class="p">(</span>
+                    <span class="n">org_id</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">org_id</span><span class="p">),</span>
+                    <span class="n">project_id</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">project_id</span><span class="p">),</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">entity_type</span><span class="o">=</span><span class="s2">&quot;Custom&quot;</span><span class="p">,</span>
+                    <span class="n">summary</span><span class="o">=</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Auto-created from relationship: &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">predicate</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+                <span class="n">name_to_node</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">fallback_node</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;entity_extraction.relationship_entity_recovered&quot;</span><span class="p">,</span>
+                    <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+                    <span class="n">entity_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">relationship</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">predicate</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">subject</span> <span class="ow">in</span> <span class="n">name_to_node</span> <span class="ow">and</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">name_to_node</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">entity_repo</span><span class="o">.</span><span class="n">upsert_relationship</span><span class="p">(</span>
+                <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span>
+                <span class="n">predicate</span><span class="o">=</span><span class="n">predicate</span><span class="p">,</span>
+                <span class="n">obj</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span>
+                <span class="n">org_id</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">org_id</span><span class="p">),</span>
+                <span class="n">project_id</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">project_id</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">relationship_failure_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">relationship_skip_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;entity_extraction.relationship_skipped_missing_entity&quot;</span><span class="p">,</span>
+                <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+                <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span>
+                <span class="n">predicate</span><span class="o">=</span><span class="n">predicate</span><span class="p">,</span>
+                <span class="nb">object</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span>
+                <span class="n">subject_in_graph</span><span class="o">=</span><span class="n">subject</span> <span class="ow">in</span> <span class="n">name_to_node</span><span class="p">,</span>
+                <span class="n">object_in_graph</span><span class="o">=</span><span class="n">obj</span> <span class="ow">in</span> <span class="n">name_to_node</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="c1"># ── 5. Link entities to this episode via graph backend ──────────</span>
+    <span class="n">episode_uuid</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">episode_id</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">entity_node</span> <span class="ow">in</span> <span class="n">name_to_node</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">await</span> <span class="n">graph_backend</span><span class="o">.</span><span class="n">link_entity_to_episode</span><span class="p">(</span>
+            <span class="n">org_id</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">org_id</span><span class="p">),</span>
+            <span class="n">project_id</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">project_id</span><span class="p">),</span>
+            <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_uuid</span><span class="p">,</span>
+            <span class="n">entity_id</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">entity_node</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]),</span>
+        <span class="p">)</span>
+
+    <span class="c1"># ── 6. Set enrichment_status bit 0 (if repo provided) ──────────</span>
+    <span class="k">if</span> <span class="n">episode_repo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">episode_repo</span><span class="o">.</span><span class="n">apply_enrichment_bits</span><span class="p">(</span>
+            <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">episode_id</span><span class="p">),</span> <span class="n">ENRICHMENT_ENTITIES</span>
+        <span class="p">)</span>
+
+    <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;entity_extraction.persisted&quot;</span><span class="p">,</span>
+        <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+        <span class="n">org_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+        <span class="n">entity_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">name_to_node</span><span class="p">),</span>
+        <span class="n">relationship_failure_count</span><span class="o">=</span><span class="n">relationship_failure_count</span><span class="p">,</span>
+        <span class="n">relationship_skip_count</span><span class="o">=</span><span class="n">relationship_skip_count</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">node</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">name_to_node</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Rohan Shaw
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

@@ -1,0 +1,1428 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>services.worker.prompt_renderer - OpenZync Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">OpenZync Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <span class="sidebar-brand-text">OpenZync Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guides/contributing.html">Contributing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/core.html">Core Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/llm.html">LLM Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/graph_backends.html">Graph Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/reranker.html">Re-ranking &amp; Community Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/reranker.html#community-detection">Community Detection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Domain Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/auth.html">Authentication &amp; Authorization Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/memory_context.html">Memory &amp; Context Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/admin_webhooks.html">Admin &amp; Webhooks Domain</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API &amp; Workers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/api_layer.html">API Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/workers.html">Worker System — ARQ Background Job Processing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SDK, MCP &amp; Frontend</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/sdk_python.html">Python SDK (openzync)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/mcp_server.html">MCP Server (FastMCP)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../domains/frontend.html">OpenZync Frontend</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Infra</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../domains/infrastructure.html">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</a><input aria-label="Toggle navigation of Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture Decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference (Auto-generated)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/core.html">core package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/routers.html">routers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/models.html">models package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/schemas.html">schemas package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/services.html">services package</a><input aria-label="Toggle navigation of services package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/services.api.html">services.api package</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/services.mcp.html">services.mcp package</a><input aria-label="Toggle navigation of services.mcp package" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/services.mcp.tools.html">services.mcp.tools package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/services.mcp.transport.html">services.mcp.transport package</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api/services.worker.html">services.worker package</a><input aria-label="Toggle navigation of services.worker package" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/services.worker.prompts.html">services.worker.prompts package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/services.worker.tasks.html">services.worker.tasks package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/repositories.html">repositories package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/middleware.html">middleware package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/dependencies.html">dependencies package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/workers.html">workers package</a><input aria-label="Toggle navigation of workers package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/workers.tasks.html">workers.tasks package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/utils.html">utils package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/packages.html">packages package</a><input aria-label="Toggle navigation of packages package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/packages.community.html">packages.community package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/packages.graph_backend.html">packages.graph_backend package</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for services.worker.prompt_renderer</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Prompt template resolution with auto-injected context.</span>
+
+<span class="sd">All prompt templates live in the ``prompt_templates`` database table and are</span>
+<span class="sd">resolved at runtime via :func:`resolve_prompt_template_by_type`.  The resolved</span>
+<span class="sd">``template_text`` is returned as-is (plain text, no Jinja2) — context is</span>
+<span class="sd">assembled and injected by the caller via :func:`build_enrichment_prompt`.</span>
+
+<span class="sd">The ``.jinja2`` files under ``prompts/`` are the canonical source of truth</span>
+<span class="sd">for system-default prompts (Option A).  They are read at signup time by</span>
+<span class="sd">:meth:`PromptTemplateRepository.seed_default_prompts` and at import time by</span>
+<span class="sd">:meth:`~.PromptTemplateRepository.import_system_template`.  The runtime</span>
+<span class="sd">resolution path (``get_active_by_type``) only queries org-scoped DB rows.</span>
+
+<span class="sd">Usage (workers):</span>
+<span class="sd">    from services.worker.prompt_renderer import render_prompt</span>
+
+<span class="sd">    system_prompt, ctx = await render_prompt(</span>
+<span class="sd">        &quot;fact_extraction&quot;,</span>
+<span class="sd">        org_id=org_id,</span>
+<span class="sd">        episode_id=episode_id,</span>
+<span class="sd">        session_id=session_id,</span>
+<span class="sd">        db_session_factory=session_factory,</span>
+<span class="sd">        return_context=True,</span>
+<span class="sd">    )</span>
+<span class="sd">    prompt = build_enrichment_prompt(system_prompt, ctx)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">orjson</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSession</span><span class="p">,</span> <span class="n">async_sessionmaker</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">packages.graph_backend.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">GraphBackend</span>
+
+<span class="c1"># ── Module layout ──────────────────────────────────────────────────────────────</span>
+<span class="c1"># 1. DataSource enum — every DB-backed variable type the system knows about</span>
+<span class="c1"># 2. TYPE_DATA_SOURCES — static registry: prompt_type → set of DataSource</span>
+<span class="c1"># 3. Provider functions — one per DataSource, each returns dict[str, Any]</span>
+<span class="c1"># 4. Provider dispatch</span>
+<span class="c1"># 5. render_prompt() — async, auto-injects context from DB</span>
+<span class="c1"># 6. resolve_prompt_template_by_type() — kept for compat</span>
+<span class="c1"># ────────────────────────────────────────────────────────────────────────────────</span>
+
+
+<span class="c1"># ── 1. DataSource enum ─────────────────────────────────────────────────────────</span>
+
+
+<div class="viewcode-block" id="DataSource">
+<a class="viewcode-back" href="../../../api/services.worker.html#services.worker.prompt_renderer.DataSource">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataSource</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Known DB-backed sources for prompt context variables.</span>
+
+<span class="sd">    Each value is a dot-separated descriptor.  The actual DB logic lives</span>
+<span class="sd">    in the corresponding provider function in ``_PROVIDER_DISPATCH``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">EPISODE_CONTENT</span> <span class="o">=</span> <span class="s2">&quot;episode.content&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The ``content`` column of the current episode being enriched.&quot;&quot;&quot;</span>
+
+    <span class="n">SESSION_ENTITIES</span> <span class="o">=</span> <span class="s2">&quot;session.entities&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Known entities for a session (from ``FactRepository``).&quot;&quot;&quot;</span>
+
+    <span class="n">SESSION_FACTS</span> <span class="o">=</span> <span class="s2">&quot;session.facts&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Existing facts for a session (from ``FactRepository.list_by_session``).&quot;&quot;&quot;</span>
+
+    <span class="n">SESSION_RECENT_HISTORY</span> <span class="o">=</span> <span class="s2">&quot;session.recent_history&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Recent conversation turns for a session (last 10, chronological).&quot;&quot;&quot;</span>
+
+    <span class="n">ORG_ENTITY_TYPES</span> <span class="o">=</span> <span class="s2">&quot;org.entity_types&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Entity type ontology from ``extraction_schemas WHERE type=&#39;entity_type&#39;``.&quot;&quot;&quot;</span>
+
+    <span class="n">ORG_CLASSIFICATION_LABELS</span> <span class="o">=</span> <span class="s2">&quot;org.classification_labels&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Classification labels from ``extraction_schemas WHERE type=&#39;classification&#39;``.</span>
+<span class="sd">    Returns a dict with keys ``intent_labels``, ``emotion_labels``,</span>
+<span class="sd">    ``valence_options``, ``arousal_options``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ORG_STRUCTURED_SCHEMAS</span> <span class="o">=</span> <span class="s2">&quot;org.structured_schemas&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Active structured extraction schemas (``extraction_schemas WHERE</span>
+<span class="sd">    type=&#39;structured&#39;``).  Returns a list of dicts with ``name``,</span>
+<span class="sd">    ``json_schema``, ``prompt_template``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">USER_EPISODES</span> <span class="o">=</span> <span class="s2">&quot;user.episodes&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Last 100 episodes for a user (chronological, for user summary).&quot;&quot;&quot;</span>
+
+    <span class="n">USER_FACTS</span> <span class="o">=</span> <span class="s2">&quot;user.facts&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Last 100 extracted facts for a user.&quot;&quot;&quot;</span>
+
+    <span class="n">USER_ENTITIES</span> <span class="o">=</span> <span class="s2">&quot;user.entities&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Distinct graph entities linked to a user&#39;s sessions (up to 50).&quot;&quot;&quot;</span>
+
+    <span class="n">USER_CLASSIFICATIONS</span> <span class="o">=</span> <span class="s2">&quot;user.classifications&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Aggregate classification labels (top intents / emotions) for a user.&quot;&quot;&quot;</span>
+
+    <span class="n">CUSTOM_INSTRUCTIONS</span> <span class="o">=</span> <span class="s2">&quot;org.custom_instructions&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom instructions for the prompt&#39;s scope (currently used by user_summary).&quot;&quot;&quot;</span>
+
+    <span class="n">EPISODE_METADATA</span> <span class="o">=</span> <span class="s2">&quot;episode.metadata&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The ``metadata`` JSONB of the current episode being enriched.&quot;&quot;&quot;</span>
+
+    <span class="n">SIMILAR_EPISODES</span> <span class="o">=</span> <span class="s2">&quot;similar.episodes&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Semantically similar episodes via BM25 full-text search (scoped to user).&quot;&quot;&quot;</span>
+
+    <span class="n">SIMILAR_FACTS</span> <span class="o">=</span> <span class="s2">&quot;similar.facts&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Semantically similar facts via BM25 full-text search (scoped to user).&quot;&quot;&quot;</span></div>
+
+
+
+<span class="c1"># ── 2. Static registry: prompt_type → set of DataSource ──────────────────────</span>
+
+<span class="n">TYPE_DATA_SOURCES</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="n">DataSource</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;fact_extraction&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">EPISODE_CONTENT</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">EPISODE_METADATA</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SESSION_ENTITIES</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SESSION_FACTS</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SESSION_RECENT_HISTORY</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SIMILAR_EPISODES</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SIMILAR_FACTS</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;entity_extraction&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">EPISODE_CONTENT</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">EPISODE_METADATA</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SESSION_ENTITIES</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">ORG_ENTITY_TYPES</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SIMILAR_EPISODES</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SIMILAR_FACTS</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;classification&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">EPISODE_CONTENT</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">EPISODE_METADATA</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SESSION_RECENT_HISTORY</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SIMILAR_EPISODES</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SIMILAR_FACTS</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">ORG_CLASSIFICATION_LABELS</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;structured_extraction&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">EPISODE_CONTENT</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">EPISODE_METADATA</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SESSION_ENTITIES</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SESSION_FACTS</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SESSION_RECENT_HISTORY</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SIMILAR_EPISODES</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SIMILAR_FACTS</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">ORG_STRUCTURED_SCHEMAS</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;enrich_episode&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">EPISODE_CONTENT</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">EPISODE_METADATA</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SESSION_ENTITIES</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SESSION_FACTS</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SESSION_RECENT_HISTORY</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SIMILAR_EPISODES</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">SIMILAR_FACTS</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">ORG_ENTITY_TYPES</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">ORG_CLASSIFICATION_LABELS</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">ORG_STRUCTURED_SCHEMAS</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">CUSTOM_INSTRUCTIONS</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;user_summary&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">USER_EPISODES</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">USER_FACTS</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">USER_ENTITIES</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">USER_CLASSIFICATIONS</span><span class="p">,</span>
+        <span class="n">DataSource</span><span class="o">.</span><span class="n">CUSTOM_INSTRUCTIONS</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+
+<span class="c1"># ── 3. Provider functions — one per DataSource ──────────────────────────────</span>
+
+<span class="n">_RECENT_HISTORY_WINDOW</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_episode_content</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="n">episode_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch the content of the current episode being enriched.</span>
+
+<span class="sd">    Returns ``{&quot;conversation&quot;: &quot;&lt;content&gt;&quot;}`` or ``{&quot;conversation&quot;: &quot;&quot;}``</span>
+<span class="sd">    if no ``episode_id`` is provided or the episode is not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">episode_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;conversation&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">models.episode</span><span class="w"> </span><span class="kn">import</span> <span class="n">Episode</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="n">select</span><span class="p">(</span><span class="n">Episode</span><span class="o">.</span><span class="n">content</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">Episode</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">episode_id</span><span class="p">,</span>
+            <span class="n">Episode</span><span class="o">.</span><span class="n">organization_id</span> <span class="o">==</span> <span class="n">org_id</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;conversation&quot;</span><span class="p">:</span> <span class="n">row</span> <span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_session_entities</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="n">session_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">graph_backend</span><span class="p">:</span> <span class="n">GraphBackend</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">project_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">extra</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch known entities for a session via the graph backend.</span>
+
+<span class="sd">    Returns ``{&quot;known_entities&quot;: [...]}`` or an empty list if no session_id</span>
+<span class="sd">    or missing parameters.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        PostgresGraphBackend stores a reference to its DB session.  If that</span>
+<span class="sd">        session is closed and later reused, SQLAlchemy silently acquires a</span>
+<span class="sd">        new connection that is never returned to the pool (connection leak).</span>
+<span class="sd">        To avoid this, we create a **fresh**, short-lived session specifically</span>
+<span class="sd">        for the Postgres backend call and close it immediately after.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">session_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">project_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">graph_backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;known_entities&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="c1"># Fresh session to avoid connection leak from PostgresGraphBackend&#39;s</span>
+    <span class="c1"># stale session reference (see docstring note).</span>
+    <span class="n">db_session_factory</span> <span class="o">=</span> <span class="n">extra</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;db_session_factory&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">db_session_factory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">packages.graph_backend.postgres</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">PostgresGraphBackend</span><span class="p">,</span>  <span class="c1"># noqa: PLC0415</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">graph_backend</span><span class="p">,</span> <span class="n">PostgresGraphBackend</span><span class="p">):</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">db_session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">fresh_db</span><span class="p">:</span>
+                <span class="n">fresh_backend</span> <span class="o">=</span> <span class="n">PostgresGraphBackend</span><span class="p">(</span><span class="n">db</span><span class="o">=</span><span class="n">fresh_db</span><span class="p">)</span>
+                <span class="n">entities</span> <span class="o">=</span> <span class="k">await</span> <span class="n">fresh_backend</span><span class="o">.</span><span class="n">get_entities_for_session</span><span class="p">(</span>
+                    <span class="n">org_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span>
+                    <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+                    <span class="n">session_id</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;known_entities&quot;</span><span class="p">:</span> <span class="n">entities</span><span class="p">}</span>
+
+    <span class="c1"># SurrealDB and FalkorDB manage their own connections — safe to use</span>
+    <span class="c1"># the backend&#39;s internal session directly.</span>
+    <span class="n">entities</span> <span class="o">=</span> <span class="k">await</span> <span class="n">graph_backend</span><span class="o">.</span><span class="n">get_entities_for_session</span><span class="p">(</span>
+        <span class="n">org_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+        <span class="n">session_id</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;known_entities&quot;</span><span class="p">:</span> <span class="n">entities</span><span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_session_facts</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="n">session_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch existing facts for a session.</span>
+
+<span class="sd">    Returns ``{&quot;existing_facts&quot;: [...]}`` or an empty list if no session_id.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">session_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;existing_facts&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">repositories.fact_repository</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">FactRepository</span><span class="p">,</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+    <span class="p">)</span>
+
+    <span class="n">repo</span> <span class="o">=</span> <span class="n">FactRepository</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+    <span class="n">facts</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">list_by_session</span><span class="p">(</span>
+        <span class="n">organization_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span>
+        <span class="n">session_id</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
+        <span class="n">limit</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;existing_facts&quot;</span><span class="p">:</span> <span class="n">facts</span><span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_session_recent_history</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="n">session_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">episode_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch recent conversation turns for a session (before current episode).</span>
+
+<span class="sd">    Returns ``{&quot;recent_history&quot;: [...]}`` — chronological list of</span>
+<span class="sd">    ``{&quot;role&quot;: str, &quot;content&quot;: str}`` dicts, or empty list if no session_id.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">session_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;recent_history&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">models.episode</span><span class="w"> </span><span class="kn">import</span> <span class="n">Episode</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">select</span><span class="p">(</span><span class="n">Episode</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">Episode</span><span class="o">.</span><span class="n">session_id</span> <span class="o">==</span> <span class="n">session_id</span><span class="p">,</span>
+            <span class="n">Episode</span><span class="o">.</span><span class="n">is_deleted</span> <span class="o">==</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># noqa: E712 — SQLAlchemy boolean</span>
+        <span class="p">)</span>
+        <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Episode</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">desc</span><span class="p">())</span>
+        <span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">_RECENT_HISTORY_WINDOW</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">episode_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Episode</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">episode_id</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="n">recent_eps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+    <span class="n">recent_eps</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>  <span class="c1"># chronological order</span>
+    <span class="n">recent_history</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="n">ep</span><span class="o">.</span><span class="n">role</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">ep</span><span class="o">.</span><span class="n">content</span><span class="p">}</span> <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="n">recent_eps</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;recent_history&quot;</span><span class="p">:</span> <span class="n">recent_history</span><span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_episode_metadata</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="n">episode_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch the metadata JSONB of the current episode being enriched.</span>
+
+<span class="sd">    Returns ``{&quot;message_metadata&quot;: {...}}`` or ``{&quot;message_metadata&quot;: {}}``</span>
+<span class="sd">    if no ``episode_id`` is provided or the episode is not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">episode_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message_metadata&quot;</span><span class="p">:</span> <span class="p">{}}</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">models.episode</span><span class="w"> </span><span class="kn">import</span> <span class="n">Episode</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="n">select</span><span class="p">(</span><span class="n">Episode</span><span class="o">.</span><span class="n">metadata_</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">Episode</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">episode_id</span><span class="p">,</span>
+            <span class="n">Episode</span><span class="o">.</span><span class="n">organization_id</span> <span class="o">==</span> <span class="n">org_id</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;message_metadata&quot;</span><span class="p">:</span> <span class="n">row</span> <span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}}</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_similar_episodes</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="n">episode_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch semantically similar episodes via BM25 full-text search.</span>
+
+<span class="sd">    Uses the current episode&#39;s content as the search query and returns</span>
+<span class="sd">    the top 5 matches scoped to the same user.  BM25 is used instead of</span>
+<span class="sd">    vector search because the episode may not have an embedding yet when</span>
+<span class="sd">    enrichment runs.</span>
+
+<span class="sd">    Returns ``{&quot;similar_episodes&quot;: [...]}`` or empty list.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">episode_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">user_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;similar_episodes&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">models.episode</span><span class="w"> </span><span class="kn">import</span> <span class="n">Episode</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="c1"># Fetch current episode content + project_id to use as search query</span>
+    <span class="n">ep_result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="n">select</span><span class="p">(</span><span class="n">Episode</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">Episode</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">Episode</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">episode_id</span><span class="p">,</span>
+            <span class="n">Episode</span><span class="o">.</span><span class="n">organization_id</span> <span class="o">==</span> <span class="n">org_id</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">ep_result</span><span class="o">.</span><span class="n">one_or_none</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">row</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;similar_episodes&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="n">query</span><span class="p">,</span> <span class="n">project_id</span> <span class="o">=</span> <span class="n">row</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">repositories.episode_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">EpisodeRepository</span>  <span class="c1"># noqa: PLC0415</span>
+
+    <span class="n">repo</span> <span class="o">=</span> <span class="n">EpisodeRepository</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">search_by_bm25</span><span class="p">(</span>
+        <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+        <span class="n">org_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span>
+        <span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># Filter out current episode from results</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="n">episode_id</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;similar_episodes&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_similar_facts</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="n">episode_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch semantically similar facts via BM25 full-text search.</span>
+
+<span class="sd">    Uses the current episode&#39;s content as the search query and returns</span>
+<span class="sd">    the top 5 matching facts scoped to the same user.</span>
+
+<span class="sd">    Returns ``{&quot;related_facts&quot;: [...]}`` or empty list.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">episode_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">user_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;related_facts&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">models.episode</span><span class="w"> </span><span class="kn">import</span> <span class="n">Episode</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="c1"># Fetch current episode content + project_id to use as search query</span>
+    <span class="n">ep_result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="n">select</span><span class="p">(</span><span class="n">Episode</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">Episode</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">Episode</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">episode_id</span><span class="p">,</span>
+            <span class="n">Episode</span><span class="o">.</span><span class="n">organization_id</span> <span class="o">==</span> <span class="n">org_id</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">row</span> <span class="o">=</span> <span class="n">ep_result</span><span class="o">.</span><span class="n">one_or_none</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">row</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;related_facts&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="n">query</span><span class="p">,</span> <span class="n">project_id</span> <span class="o">=</span> <span class="n">row</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">repositories.fact_repository</span><span class="w"> </span><span class="kn">import</span> <span class="n">FactRepository</span>  <span class="c1"># noqa: PLC0415</span>
+
+    <span class="n">repo</span> <span class="o">=</span> <span class="n">FactRepository</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">search_by_bm25</span><span class="p">(</span>
+        <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+        <span class="n">org_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span>
+        <span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;related_facts&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_org_entity_types</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch entity type ontology from the org&#39;s extraction schemas.</span>
+
+<span class="sd">    Falls back to the default set if no schemas are configured.</span>
+<span class="sd">    Returns ``{&quot;entity_types&quot;: [...]}``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">text</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="n">text</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT json_schema FROM extraction_schemas</span>
+<span class="s2">            WHERE organization_id = :org_id</span>
+<span class="s2">              AND type = &#39;entity_type&#39;</span>
+<span class="s2">              AND is_active = true</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">),</span>
+        <span class="p">{</span><span class="s2">&quot;org_id&quot;</span><span class="p">:</span> <span class="n">org_id</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">schemas</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">schemas</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;entity_types&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">&quot;Person&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Organization&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Product&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Location&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Date&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Custom&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">}</span>
+
+    <span class="n">types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">schemas</span><span class="p">:</span>
+        <span class="n">schema</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="s2">&quot;types&quot;</span> <span class="ow">in</span> <span class="n">schema</span>
+            <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">[</span><span class="s2">&quot;types&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">types</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">schema</span><span class="p">[</span><span class="s2">&quot;types&quot;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;entity_types&quot;</span><span class="p">:</span> <span class="n">types</span>
+        <span class="ow">or</span> <span class="p">[</span>
+            <span class="s2">&quot;Person&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Organization&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Product&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Location&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Date&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Custom&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_classification_labels</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch classification labels from the org&#39;s extraction schemas.</span>
+
+<span class="sd">    Merges label sets if multiple schemas exist.</span>
+<span class="sd">    Falls back to default label sets.</span>
+
+<span class="sd">    Returns a dict with keys ``intent_labels``, ``emotion_labels``,</span>
+<span class="sd">    ``valence_options``, ``arousal_options`` (comma-separated strings).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">text</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="n">text</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT json_schema FROM extraction_schemas</span>
+<span class="s2">            WHERE organization_id = :org_id</span>
+<span class="s2">              AND type = &#39;classification&#39;</span>
+<span class="s2">              AND is_active = true</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">),</span>
+        <span class="p">{</span><span class="s2">&quot;org_id&quot;</span><span class="p">:</span> <span class="n">org_id</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">schemas</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">schemas</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;intent_labels&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;greeting, question, command, complaint, chit-chat, &quot;</span>
+                <span class="s2">&quot;farewell, request, confirmation&quot;</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;emotion_labels&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;joy, frustration, sadness, anger, neutral, surprise, fear, disgust&quot;</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;valence_options&quot;</span><span class="p">:</span> <span class="s2">&quot;positive, negative, neutral&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;arousal_options&quot;</span><span class="p">:</span> <span class="s2">&quot;low, medium, high&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="n">all_intents</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">all_emotions</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">valences</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">arousals</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">schemas</span><span class="p">:</span>
+        <span class="n">schema</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;intent&quot;</span> <span class="ow">in</span> <span class="n">schema</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">[</span><span class="s2">&quot;intent&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">all_intents</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">schema</span><span class="p">[</span><span class="s2">&quot;intent&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">&quot;emotion&quot;</span> <span class="ow">in</span> <span class="n">schema</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">[</span><span class="s2">&quot;emotion&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">all_emotions</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">schema</span><span class="p">[</span><span class="s2">&quot;emotion&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">&quot;valence&quot;</span> <span class="ow">in</span> <span class="n">schema</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">[</span><span class="s2">&quot;valence&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">valences</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">schema</span><span class="p">[</span><span class="s2">&quot;valence&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">&quot;arousal&quot;</span> <span class="ow">in</span> <span class="n">schema</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">[</span><span class="s2">&quot;arousal&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">arousals</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">schema</span><span class="p">[</span><span class="s2">&quot;arousal&quot;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;intent_labels&quot;</span><span class="p">:</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">all_intents</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">all_intents</span>
+        <span class="k">else</span> <span class="p">(</span>
+            <span class="s2">&quot;greeting, question, command, complaint, chit-chat, &quot;</span>
+            <span class="s2">&quot;farewell, request, confirmation&quot;</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;emotion_labels&quot;</span><span class="p">:</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">all_emotions</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">all_emotions</span>
+        <span class="k">else</span> <span class="s2">&quot;joy, frustration, sadness, anger, neutral, surprise, fear, disgust&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;valence_options&quot;</span><span class="p">:</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">valences</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">valences</span>
+        <span class="k">else</span> <span class="s2">&quot;positive, negative, neutral&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;arousal_options&quot;</span><span class="p">:</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">arousals</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">arousals</span>
+        <span class="k">else</span> <span class="s2">&quot;low, medium, high&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_structured_schemas</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch active structured extraction schemas.</span>
+
+<span class="sd">    Returns ``{&quot;schemas&quot;: [...]}`` — list of dicts with ``id``, ``name``,</span>
+<span class="sd">    ``json_schema``, ``prompt_template``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">text</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="n">text</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT id, name, json_schema, prompt_template FROM extraction_schemas</span>
+<span class="s2">            WHERE organization_id = :org_id</span>
+<span class="s2">              AND type = &#39;structured&#39;</span>
+<span class="s2">              AND is_active = true</span>
+<span class="s2">            ORDER BY name</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">),</span>
+        <span class="p">{</span><span class="s2">&quot;org_id&quot;</span><span class="p">:</span> <span class="n">org_id</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">schemas</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;json_schema&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="s2">&quot;prompt_template&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;schemas&quot;</span><span class="p">:</span> <span class="n">schemas</span><span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_user_episodes</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch last 100 episodes for a user (chronological).</span>
+
+<span class="sd">    Returns ``{&quot;episodes&quot;: [...]}`` or empty list if no user_id.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">user_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;episodes&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">text</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="n">text</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT role, content FROM episodes</span>
+<span class="s2">            WHERE session_id IN (</span>
+<span class="s2">                SELECT id FROM sessions</span>
+<span class="s2">                WHERE user_id = :user_id AND organization_id = :org_id</span>
+<span class="s2">            )</span>
+<span class="s2">            AND is_deleted = false</span>
+<span class="s2">            ORDER BY created_at DESC</span>
+<span class="s2">            LIMIT 100</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">),</span>
+        <span class="p">{</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">,</span> <span class="s2">&quot;org_id&quot;</span><span class="p">:</span> <span class="n">org_id</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">episodes_raw</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
+    <span class="n">episodes_raw</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>  <span class="c1"># chronological</span>
+    <span class="n">episodes</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]}</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">episodes_raw</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;episodes&quot;</span><span class="p">:</span> <span class="n">episodes</span><span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_user_facts</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch last 100 extracted facts for a user.</span>
+
+<span class="sd">    Returns ``{&quot;facts&quot;: [...]}`` or empty list if no user_id.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">user_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;facts&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">text</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="n">text</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT f.subject, f.predicate, f.object FROM facts f</span>
+<span class="s2">            JOIN episodes e ON f.source_episode_id = e.id</span>
+<span class="s2">            JOIN sessions s ON e.session_id = s.id</span>
+<span class="s2">            WHERE s.user_id = :user_id AND s.organization_id = :org_id</span>
+<span class="s2">            ORDER BY f.created_at DESC</span>
+<span class="s2">            LIMIT 100</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">),</span>
+        <span class="p">{</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">,</span> <span class="s2">&quot;org_id&quot;</span><span class="p">:</span> <span class="n">org_id</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">facts</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;predicate&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">]}</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;facts&quot;</span><span class="p">:</span> <span class="n">facts</span><span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_user_entities</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch distinct graph entities linked to a user&#39;s sessions.</span>
+
+<span class="sd">    Returns ``{&quot;entities&quot;: [...]}`` or empty list if no user_id.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">user_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;entities&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">text</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="n">text</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT DISTINCT ge.name, ge.entity_type</span>
+<span class="s2">            FROM graph_entities ge</span>
+<span class="s2">            JOIN graph_episode_entities gee ON ge.id = gee.entity_id</span>
+<span class="s2">            JOIN episodes e ON gee.episode_id = e.id</span>
+<span class="s2">            JOIN sessions s ON e.session_id = s.id</span>
+<span class="s2">            WHERE s.user_id = :user_id AND s.organization_id = :org_id</span>
+<span class="s2">            LIMIT 50</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">),</span>
+        <span class="p">{</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">,</span> <span class="s2">&quot;org_id&quot;</span><span class="p">:</span> <span class="n">org_id</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">entities</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;entity_type&quot;</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]}</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;entities&quot;</span><span class="p">:</span> <span class="n">entities</span><span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_user_classifications</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch aggregate classification labels for a user.</span>
+
+<span class="sd">    Returns ``{&quot;classifications&quot;: {&quot;top_intents&quot;: [...], &quot;top_emotions&quot;: [...]}}``</span>
+<span class="sd">    or empty dict if no user_id.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">user_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;classifications&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;top_intents&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;top_emotions&quot;</span><span class="p">:</span> <span class="p">[]}}</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">text</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+        <span class="n">text</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            SELECT intent, emotion, COUNT(*) as cnt</span>
+<span class="s2">            FROM dialog_classifications dc</span>
+<span class="s2">            JOIN episodes e ON dc.episode_id = e.id</span>
+<span class="s2">            JOIN sessions s ON e.session_id = s.id</span>
+<span class="s2">            WHERE s.user_id = :user_id AND s.organization_id = :org_id</span>
+<span class="s2">            GROUP BY intent, emotion</span>
+<span class="s2">            ORDER BY cnt DESC</span>
+<span class="s2">            LIMIT 5</span>
+<span class="s2">        &quot;&quot;&quot;</span><span class="p">),</span>
+        <span class="p">{</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">,</span> <span class="s2">&quot;org_id&quot;</span><span class="p">:</span> <span class="n">org_id</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">top_intents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">top_emotions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">top_intents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">top_emotions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;classifications&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;top_intents&quot;</span><span class="p">:</span> <span class="n">top_intents</span><span class="p">,</span>
+            <span class="s2">&quot;top_emotions&quot;</span><span class="p">:</span> <span class="n">top_emotions</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fetch_custom_instructions</span><span class="p">(</span>
+    <span class="n">db</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">_</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch custom instructions for the org.</span>
+
+<span class="sd">    For ``user_summary`` scope, also accepts a ``user_id`` for per-user</span>
+<span class="sd">    custom instructions.  Returns ``{&quot;custom_instructions&quot;: &quot;&lt;text&gt;&quot;}``</span>
+<span class="sd">    or empty string if none found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">repositories.custom_instruction_repository</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+        <span class="n">CustomInstructionRepository</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">repo</span> <span class="o">=</span> <span class="n">CustomInstructionRepository</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">get_by_scope</span><span class="p">(</span>
+        <span class="n">org_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span>
+        <span class="c1"># user_summary uses scope=&quot;user_summary&quot; with user_id;</span>
+        <span class="c1"># other scopes use &quot;extraction&quot; without user_id.</span>
+        <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;user_summary&quot;</span> <span class="k">if</span> <span class="n">user_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;extraction&quot;</span><span class="p">,</span>
+        <span class="n">target_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">raw</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">services.custom_instruction_service</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+            <span class="n">format_custom_instructions</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">text</span> <span class="o">=</span> <span class="n">format_custom_instructions</span><span class="p">(</span>
+            <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">text</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;custom_instructions&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;custom_instructions&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>
+
+
+<span class="c1"># ── 4. Provider dispatch ──────────────────────────────────────────────────────</span>
+
+<span class="n">_PROVIDER_DISPATCH</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">DataSource</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">EPISODE_CONTENT</span><span class="p">:</span> <span class="n">_fetch_episode_content</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">SESSION_ENTITIES</span><span class="p">:</span> <span class="n">_fetch_session_entities</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">SESSION_FACTS</span><span class="p">:</span> <span class="n">_fetch_session_facts</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">SESSION_RECENT_HISTORY</span><span class="p">:</span> <span class="n">_fetch_session_recent_history</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">ORG_ENTITY_TYPES</span><span class="p">:</span> <span class="n">_fetch_org_entity_types</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">ORG_CLASSIFICATION_LABELS</span><span class="p">:</span> <span class="n">_fetch_classification_labels</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">ORG_STRUCTURED_SCHEMAS</span><span class="p">:</span> <span class="n">_fetch_structured_schemas</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">USER_EPISODES</span><span class="p">:</span> <span class="n">_fetch_user_episodes</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">USER_FACTS</span><span class="p">:</span> <span class="n">_fetch_user_facts</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">USER_ENTITIES</span><span class="p">:</span> <span class="n">_fetch_user_entities</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">USER_CLASSIFICATIONS</span><span class="p">:</span> <span class="n">_fetch_user_classifications</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">CUSTOM_INSTRUCTIONS</span><span class="p">:</span> <span class="n">_fetch_custom_instructions</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">EPISODE_METADATA</span><span class="p">:</span> <span class="n">_fetch_episode_metadata</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">SIMILAR_EPISODES</span><span class="p">:</span> <span class="n">_fetch_similar_episodes</span><span class="p">,</span>
+    <span class="n">DataSource</span><span class="o">.</span><span class="n">SIMILAR_FACTS</span><span class="p">:</span> <span class="n">_fetch_similar_facts</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="c1"># ── 5. render_prompt — async with auto-injection ─────────────────────────────</span>
+
+
+<div class="viewcode-block" id="render_prompt">
+<a class="viewcode-back" href="../../../api/services.worker.html#services.worker.prompt_renderer.render_prompt">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">render_prompt</span><span class="p">(</span>
+    <span class="n">prompt_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">template_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">episode_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">project_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">graph_backend</span><span class="p">:</span> <span class="n">GraphBackend</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">db_session_factory</span><span class="p">:</span> <span class="n">async_sessionmaker</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">return_context</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">extra_context</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch and return a system prompt with auto-injected context.</span>
+
+<span class="sd">    When ``org_id`` and ``db_session_factory`` are provided, context</span>
+<span class="sd">    variables are auto-fetched from the DB according to the registered</span>
+<span class="sd">    ``TYPE_DATA_SOURCES`` for the given ``prompt_type``.  Explicit</span>
+<span class="sd">    ``extra_context`` kwargs take precedence over auto-injected values.</span>
+
+<span class="sd">    When ``org_id`` is ``None`` (or ``db_session_factory`` is ``None``),</span>
+<span class="sd">    no auto-injection occurs — only ``extra_context`` and the optional</span>
+<span class="sd">    ``template_text`` are used.  This is the direct-invocation mode</span>
+<span class="sd">    suitable for eval tests and one-off prompts.</span>
+
+<span class="sd">    The returned ``template_text`` is plain text (no Jinja2).  Call</span>
+<span class="sd">    ``build_enrichment_prompt()`` to assemble the full prompt.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        prompt_type: The template type (e.g. ``&quot;fact_extraction&quot;``).</span>
+<span class="sd">            Used to look up the registry of data sources to auto-inject.</span>
+<span class="sd">        template_text: Raw template string.  If ``None`` and ``org_id``</span>
+<span class="sd">            is provided, resolved from DB via ``resolve_prompt_template_by_type``.</span>
+<span class="sd">        org_id: Organisation UUID.  Required for auto-injection.</span>
+<span class="sd">        episode_id: Episode UUID.  Used to fetch conversation content</span>
+<span class="sd">            and recent history.</span>
+<span class="sd">        session_id: Session UUID.  Used to fetch known entities and</span>
+<span class="sd">            existing facts for delta extraction.</span>
+<span class="sd">        user_id: User UUID.  Used to fetch user-specific data</span>
+<span class="sd">            (episodes, facts, entities, classifications).</span>
+<span class="sd">        db_session_factory: Session factory for DB access.  Required</span>
+<span class="sd">            for auto-injection (and template resolution from DB).</span>
+<span class="sd">        return_context: If ``True``, returns ``(prompt, context_dict)``</span>
+<span class="sd">            instead of just the prompt string.  Useful for callers that</span>
+<span class="sd">            need the injected context for post-processing (e.g. entity</span>
+<span class="sd">            resolution after fact extraction).</span>
+<span class="sd">        **extra_context: Explicit template variables.  These override</span>
+<span class="sd">            any auto-injected values with the same key.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The system prompt text (plain text, no Jinja2).  When</span>
+<span class="sd">        ``return_context=True``, returns ``(prompt, context_dict)``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If ``template_text`` is ``None`` and cannot be</span>
+<span class="sd">            resolved from the DB.</span>
+<span class="sd">        KeyError: If ``prompt_type`` is not in ``TYPE_DATA_SOURCES``</span>
+<span class="sd">            (only when auto-injection is active).</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            prompt = await render_prompt(</span>
+<span class="sd">                &quot;fact_extraction&quot;,</span>
+<span class="sd">                org_id=&quot;...&quot;,</span>
+<span class="sd">                episode_id=&quot;...&quot;,</span>
+<span class="sd">                session_id=&quot;...&quot;,</span>
+<span class="sd">                db_session_factory=session_factory,</span>
+<span class="sd">            )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># ── Resolve template text ──────────────────────────────────────────</span>
+    <span class="k">if</span> <span class="n">template_text</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">org_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">db_session_factory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">template_text</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resolve_prompt_template_by_type</span><span class="p">(</span>
+            <span class="n">prompt_type</span><span class="p">,</span>
+            <span class="n">org_id</span><span class="p">,</span>
+            <span class="n">db_session_factory</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">template_text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;No template_text available for &#39;</span><span class="si">{</span><span class="n">prompt_type</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Provide it explicitly or pass org_id + db_session_factory &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;to resolve from the database.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># ── Auto-inject context from DB ────────────────────────────────────</span>
+    <span class="n">context</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">extra_context</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">org_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">db_session_factory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="n">TYPE_DATA_SOURCES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">prompt_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sources</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unknown prompt type &#39;</span><span class="si">{</span><span class="n">prompt_type</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Known types: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">TYPE_DATA_SOURCES</span><span class="p">))</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">resolved_org_id</span> <span class="o">=</span> <span class="n">UUID</span><span class="p">(</span><span class="n">org_id</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">org_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">org_id</span>
+        <span class="n">resolved_episode_id</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">UUID</span><span class="p">(</span><span class="n">episode_id</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">episode_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">episode_id</span>
+        <span class="p">)</span>
+        <span class="n">resolved_session_id</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">UUID</span><span class="p">(</span><span class="n">session_id</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">session_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">session_id</span>
+        <span class="p">)</span>
+        <span class="n">resolved_user_id</span> <span class="o">=</span> <span class="n">UUID</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">user_id</span>
+        <span class="n">resolved_project_id</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">UUID</span><span class="p">(</span><span class="n">project_id</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">project_id</span>
+        <span class="p">)</span>
+
+        <span class="k">async</span> <span class="k">with</span> <span class="n">db_session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
+                <span class="n">provider</span> <span class="o">=</span> <span class="n">_PROVIDER_DISPATCH</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">provider</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">provider</span><span class="p">(</span>
+                    <span class="n">db</span><span class="o">=</span><span class="n">db</span><span class="p">,</span>
+                    <span class="n">org_id</span><span class="o">=</span><span class="n">resolved_org_id</span><span class="p">,</span>
+                    <span class="n">episode_id</span><span class="o">=</span><span class="n">resolved_episode_id</span><span class="p">,</span>
+                    <span class="n">session_id</span><span class="o">=</span><span class="n">resolved_session_id</span><span class="p">,</span>
+                    <span class="n">user_id</span><span class="o">=</span><span class="n">resolved_user_id</span><span class="p">,</span>
+                    <span class="n">project_id</span><span class="o">=</span><span class="n">resolved_project_id</span><span class="p">,</span>
+                    <span class="n">graph_backend</span><span class="o">=</span><span class="n">graph_backend</span><span class="p">,</span>
+                    <span class="n">db_session_factory</span><span class="o">=</span><span class="n">db_session_factory</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Provider returns dict[str, Any] — merge into context,</span>
+                <span class="c1"># but do NOT overwrite caller-provided extra_context.</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">extra_context</span><span class="p">:</span>
+                        <span class="n">context</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+        <span class="c1"># ── Computed variables (derived from injected data) ────────────</span>
+        <span class="k">if</span> <span class="n">prompt_type</span> <span class="o">==</span> <span class="s2">&quot;user_summary&quot;</span> <span class="ow">and</span> <span class="s2">&quot;episodes&quot;</span> <span class="ow">in</span> <span class="n">context</span><span class="p">:</span>
+            <span class="n">context</span><span class="p">[</span><span class="s2">&quot;episode_count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">context</span><span class="p">[</span><span class="s2">&quot;episodes&quot;</span><span class="p">])</span>
+
+    <span class="c1"># ── Render ─────────────────────────────────────────────────────────</span>
+    <span class="c1"># The template text is plain text (no Jinja2 variables). Context is</span>
+    <span class="c1"># injected by the caller via build_enrichment_prompt().</span>
+    <span class="k">if</span> <span class="n">return_context</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">template_text</span><span class="p">,</span> <span class="n">context</span>
+    <span class="k">return</span> <span class="n">template_text</span></div>
+
+
+
+<span class="c1"># ── 6. resolve_prompt_template_by_type — kept for direct use ────────────────</span>
+
+
+<div class="viewcode-block" id="resolve_prompt_template_by_type">
+<a class="viewcode-back" href="../../../api/services.worker.html#services.worker.prompt_renderer.resolve_prompt_template_by_type">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">resolve_prompt_template_by_type</span><span class="p">(</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">db_session_factory</span><span class="p">:</span> <span class="n">async_sessionmaker</span><span class="p">[</span><span class="n">AsyncSession</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve the active default prompt template for a given type.</span>
+
+<span class="sd">    Looks up the org-specific default for this type (``is_default_for_type</span>
+<span class="sd">    = True``).  Returns ``None`` if no default exists (no system-level</span>
+<span class="sd">    fallback — defaults come from disk manifest).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        type: The template type (e.g. ``&quot;fact_extraction&quot;``).</span>
+<span class="sd">        org_id: Organisation UUID (string or ``UUID`` instance).</span>
+<span class="sd">        db_session_factory: An ``async_sessionmaker`` bound to the write</span>
+<span class="sd">            database engine.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The active template body, or ``None`` if no default exists.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">org_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">org_id</span> <span class="o">=</span> <span class="n">UUID</span><span class="p">(</span><span class="n">org_id</span><span class="p">)</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">repositories.prompt_template_repository</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: PLC0415 — lazy import</span>
+        <span class="n">PromptTemplateRepository</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">db_session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+        <span class="n">repo</span> <span class="o">=</span> <span class="n">PromptTemplateRepository</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">get_active_by_type</span><span class="p">(</span><span class="n">org_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">template_text</span> <span class="k">if</span> <span class="n">template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+
+<span class="c1"># ── 7. Prompt assembly helper ─────────────────────────────────────────────────</span>
+
+
+<div class="viewcode-block" id="build_enrichment_prompt">
+<a class="viewcode-back" href="../../../api/services.worker.html#services.worker.prompt_renderer.build_enrichment_prompt">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_enrichment_prompt</span><span class="p">(</span><span class="n">system_prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a full enrichment prompt by appending context sections.</span>
+
+<span class="sd">    Takes the raw system instructions from the DB and automatically injects</span>
+<span class="sd">    all available context (metadata, entities, facts, history, semantic</span>
+<span class="sd">    search results) as structured sections after the instructions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        system_prompt: Raw system instructions from the DB template.</span>
+<span class="sd">        ctx: Context dict from ``render_prompt(return_context=True)``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A fully assembled prompt string ready for the LLM.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">system_prompt</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+
+    <span class="c1"># ── Metadata ─────────────────────────────────────────────────────────</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;message_metadata&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">metadata</span><span class="p">:</span>
+        <span class="n">metadata_json</span> <span class="o">=</span> <span class="n">orjson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="n">orjson</span><span class="o">.</span><span class="n">OPT_INDENT_2</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">## MESSAGE METADATA</span><span class="se">\n\n</span><span class="si">{</span><span class="n">metadata_json</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ── Known entities ──────────────────────────────────────────────────</span>
+    <span class="n">known_entities</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;known_entities&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">if</span> <span class="n">known_entities</span><span class="p">:</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">## KNOWN ENTITIES</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;| Name | Type |</span><span class="se">\n</span><span class="s2">|------|------|</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ent</span> <span class="ow">in</span> <span class="n">known_entities</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">ent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">ent</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;entity_type&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ── Existing facts ──────────────────────────────────────────────────</span>
+    <span class="n">existing_facts</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;existing_facts&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">if</span> <span class="n">existing_facts</span><span class="p">:</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">## EXISTING FACTS</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;| Subject | Predicate | Object |</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;|---------|-----------|--------|</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">existing_facts</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;predicate&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;object&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># ── Recent history ──────────────────────────────────────────────────</span>
+    <span class="n">recent_history</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;recent_history&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">if</span> <span class="n">recent_history</span><span class="p">:</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">## RECENT CONVERSATION</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">turn</span> <span class="ow">in</span> <span class="n">recent_history</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">turn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;role&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;?&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">]</span><span class="se">\n</span><span class="si">{</span><span class="n">turn</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ── Similar episodes (semantic search) ──────────────────────────────</span>
+    <span class="n">similar_episodes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;similar_episodes&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">if</span> <span class="n">similar_episodes</span><span class="p">:</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">## SIMILAR EPISODES FROM HISTORY</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="n">similar_episodes</span><span class="p">:</span>
+            <span class="n">role</span> <span class="o">=</span> <span class="n">ep</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;role&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">)</span>
+            <span class="n">content_preview</span> <span class="o">=</span> <span class="n">ep</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)[:</span><span class="mi">300</span><span class="p">]</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="n">ep</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;score&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">role</span><span class="si">}</span><span class="s2">] (score: </span><span class="si">{</span><span class="n">score</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="si">{</span><span class="n">content_preview</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ── Related facts (semantic search) ─────────────────────────────────</span>
+    <span class="n">related_facts</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;related_facts&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">if</span> <span class="n">related_facts</span><span class="p">:</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">## RELATED FACTS FROM HISTORY</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;| Subject | Predicate | Object | Score |</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;|---------|-----------|--------|-------|</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">related_facts</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;predicate&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;| </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;object&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;score&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> |</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+    <span class="c1"># ── Conversation to extract from ───────────────────────────────────</span>
+    <span class="n">conversation</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;conversation&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">conversation</span><span class="p">:</span>
+        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">## NOW EXTRACT FROM THIS CONVERSATION</span><span class="se">\n\n</span><span class="si">{</span><span class="n">conversation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Rohan Shaw
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

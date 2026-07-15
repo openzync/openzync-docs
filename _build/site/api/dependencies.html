@@ -311,25 +311,537 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="dependencies-package">
-<h1>dependencies package<a class="headerlink" href="#dependencies-package" title="Link to this heading">¶</a></h1>
+          <section id="module-dependencies">
+<span id="dependencies-package"></span><h1>dependencies package<a class="headerlink" href="#module-dependencies" title="Link to this heading">¶</a></h1>
+<p>FastAPI dependency injection — auth, database, and service wiring.</p>
+<p>Dependencies in this package are designed to be used with FastAPI’s
+<code class="docutils literal notranslate"><span class="pre">Depends()</span></code> mechanism.  They read from <code class="docutils literal notranslate"><span class="pre">request.app.state</span></code> which is
+populated during the application lifespan.</p>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="dependencies-auth-module">
-<h2>dependencies.auth module<a class="headerlink" href="#dependencies-auth-module" title="Link to this heading">¶</a></h2>
+<section id="module-dependencies.auth">
+<span id="dependencies-auth-module"></span><h2>dependencies.auth module<a class="headerlink" href="#module-dependencies.auth" title="Link to this heading">¶</a></h2>
+<p>FastAPI dependencies for authentication and authorization.</p>
+<p>Provides five levels of auth dependency:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_org_id</span></code> — Optional auth.  Returns the org ID if authenticated,
+<code class="docutils literal notranslate"><span class="pre">None</span></code> otherwise.  Works with both API keys and JWT tokens.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">require_org_id</span></code> — Mandatory auth.  Raises 401 if not authenticated.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">require_scope(scope_name)</span></code> — Dependency factory.  Checks that the
+authenticated API key has a specific scope.  Raises 403 if missing.
+For JWT-authenticated users, scopes are implicitly granted.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_dashboard_user</span></code> — Returns <code class="docutils literal notranslate"><span class="pre">request.state.user_id</span></code> if the
+request is authenticated via JWT (dashboard session), <code class="docutils literal notranslate"><span class="pre">None</span></code> otherwise.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_current_user_id</span></code> — Returns the authenticated user’s UUID.
+Works with both JWT and API-key auth.  Raises 401 if not authenticated.</p></li>
+</ol>
+<p>All dependencies rely on <code class="docutils literal notranslate"><span class="pre">request.state</span></code> attributes set by
+<code class="xref py py-class docutils literal notranslate"><span class="pre">AuthMiddleware</span></code>.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="dependencies.auth.bearer_scheme">
+<span class="sig-prename descclassname"><span class="pre">dependencies.auth.</span></span><span class="sig-name descname"><span class="pre">bearer_scheme</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;fastapi.security.http.HTTPBearer</span> <span class="pre">object&gt;</span></span><a class="headerlink" href="#dependencies.auth.bearer_scheme" title="Link to this definition">¶</a></dt>
+<dd><p>FastAPI <code class="docutils literal notranslate"><span class="pre">HTTPBearer</span></code> scheme with <code class="docutils literal notranslate"><span class="pre">auto_error=False</span></code>.</p>
+<p>When used as a dependency, this extracts the <code class="docutils literal notranslate"><span class="pre">Authorization:</span> <span class="pre">Bearer</span> <span class="pre">&lt;token&gt;</span></code>
+header and populates the OpenAPI docs with a security scheme.  Setting
+<code class="docutils literal notranslate"><span class="pre">auto_error=False</span></code> means it does not raise on missing headers — our
+middleware handles that.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<a class="reference external" href="https://fastapi.tiangolo.com/reference/request/#fastapi.Request" title="(in FastAPI None)"><em>Request</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://fastapi.tiangolo.com/reference/security/#fastapi.security.HTTPAuthorizationCredentials" title="(in FastAPI None)"><em>HTTPAuthorizationCredentials</em></a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.auth.get_current_user_id">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.auth.</span></span><span class="sig-name descname"><span class="pre">get_current_user_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">require_org_id&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/auth.html#get_current_user_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.auth.get_current_user_id" title="Link to this definition">¶</a></dt>
+<dd><p>Require an authenticated user and return their UUID.</p>
+<p>Works with both JWT tokens and API keys.  The user ID is extracted
+from <code class="docutils literal notranslate"><span class="pre">request.state.user_id</span></code> (set by <a class="reference internal" href="../domains/auth.html#AuthMiddleware" title="AuthMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthMiddleware</span></code></a>).</p>
+<p>Use this dependency in project-scoped endpoints to obtain the
+<code class="docutils literal notranslate"><span class="pre">created_by</span></code> value for attribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<a class="reference external" href="https://fastapi.tiangolo.com/reference/request/#fastapi.Request" title="(in FastAPI None)"><em>Request</em></a>) – The incoming HTTP request.</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The authenticated organization ID (from <code class="docutils literal notranslate"><span class="pre">require_org_id</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The authenticated user’s UUID.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>HTTPException</strong> – 401 if the user is not authenticated.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><em>UUID</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.auth.get_dashboard_user">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.auth.</span></span><span class="sig-name descname"><span class="pre">get_dashboard_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">require_org_id&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/auth.html#get_dashboard_user"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.auth.get_dashboard_user" title="Link to this definition">¶</a></dt>
+<dd><p>Require a JWT-authenticated dashboard user.</p>
+<p>Returns the <code class="docutils literal notranslate"><span class="pre">user_id</span></code> from the JWT claims.  Raises 401 if the
+request is authenticated via API key instead of JWT.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<a class="reference external" href="https://fastapi.tiangolo.com/reference/request/#fastapi.Request" title="(in FastAPI None)"><em>Request</em></a>) – The incoming HTTP request.</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The authenticated organization ID (from <code class="docutils literal notranslate"><span class="pre">require_org_id</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The dashboard user’s UUID string.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>HTTPException</strong> – 401 if not a JWT-authenticated session.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.auth.get_org_id">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.auth.</span></span><span class="sig-name descname"><span class="pre">get_org_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">credentials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;fastapi.security.http.HTTPBearer</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/auth.html#get_org_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.auth.get_org_id" title="Link to this definition">¶</a></dt>
+<dd><p>Extract the authenticated organization ID from the request state.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">org_id</span></code> is set by <a class="reference internal" href="../domains/auth.html#AuthMiddleware" title="AuthMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthMiddleware</span></code></a> after verifying the
+API key or JWT token.  If no authentication was provided (public
+endpoint), this returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">credentials</span></code> parameter is included to ensure FastAPI parses the
+<code class="docutils literal notranslate"><span class="pre">Authorization</span></code> header and adds it to the OpenAPI schema.  Actual
+authentication is handled by the middleware.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<a class="reference external" href="https://fastapi.tiangolo.com/reference/request/#fastapi.Request" title="(in FastAPI None)"><em>Request</em></a>) – The incoming HTTP request.</p></li>
+<li><p><strong>credentials</strong> (<a class="reference external" href="https://fastapi.tiangolo.com/reference/security/#fastapi.security.HTTPAuthorizationCredentials" title="(in FastAPI None)"><em>HTTPAuthorizationCredentials</em></a><em> | </em><em>None</em>) – Parsed Bearer credentials (used for OpenAPI schema only).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The organization UUID string, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if not authenticated.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.auth.require_org_id">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.auth.</span></span><span class="sig-name descname"><span class="pre">require_org_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">org_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_org_id&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/auth.html#require_org_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.auth.require_org_id" title="Link to this definition">¶</a></dt>
+<dd><p>Require a valid authenticated organization ID.</p>
+<p>Works with both API keys and JWT tokens.  Raises a 401 error if the
+request has no valid authentication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – The organization ID from <a class="reference internal" href="../domains/auth.html#get_org_id" title="get_org_id"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_org_id()</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The authenticated organization UUID string.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>HTTPException</strong> – 401 if no valid authentication is present.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.auth.require_scope">
+<span class="sig-prename descclassname"><span class="pre">dependencies.auth.</span></span><span class="sig-name descname"><span class="pre">require_scope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">required_scope</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/auth.html#require_scope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.auth.require_scope" title="Link to this definition">¶</a></dt>
+<dd><p>Dependency factory that checks for a specific API key scope.</p>
+<p>For JWT-authenticated dashboard users, all scopes are implicitly
+granted (they have full access to their organization).  For API-key
+authenticated requests, the key’s scopes are checked.</p>
+<p>Use this to protect endpoints that require elevated permissions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@router</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/admin/orgs&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">admin_action</span><span class="p">(</span>
+    <span class="n">org_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">require_scope</span><span class="p">(</span><span class="s2">&quot;admin:write&quot;</span><span class="p">)),</span>
+<span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>required_scope</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The scope string the API key must possess (e.g.
+<code class="docutils literal notranslate"><span class="pre">&quot;admin:write&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;sessions:read&quot;</span></code>).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dependency callable that returns the <code class="docutils literal notranslate"><span class="pre">org_id</span></code> if the scope is
+present, or raises 403.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="dependencies-db-module">
-<h2>dependencies.db module<a class="headerlink" href="#dependencies-db-module" title="Link to this heading">¶</a></h2>
+<section id="module-dependencies.db">
+<span id="dependencies-db-module"></span><h2>dependencies.db module<a class="headerlink" href="#module-dependencies.db" title="Link to this heading">¶</a></h2>
+<p>FastAPI dependency for async database session injection.</p>
+<p>Provides <a class="reference internal" href="../domains/core.html#get_db" title="get_db"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_db()</span></code></a> — a FastAPI dependency that yields an
+<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncSession" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncSession</span></code></a> from the
+application’s session factory, retrieved via <code class="docutils literal notranslate"><span class="pre">request.app.state</span></code>.</p>
+<p>Usage in a router:</p>
+<blockquote>
+<div><p>from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from dependencies.db import get_db</p>
+<p>router = APIRouter()</p>
+<p>&#64;router.get(“/items”)
+async def list_items(db: AsyncSession = Depends(get_db)):</p>
+<blockquote>
+<div><p>…</p>
+</div></blockquote>
+</div></blockquote>
+<p>The session factory must be set on <code class="docutils literal notranslate"><span class="pre">app.state.db_session_factory</span></code> during
+the application lifespan.  See <code class="docutils literal notranslate"><span class="pre">openzync.core.db</span></code> for the canonical
+lifespan pattern.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.db.get_db">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.db.</span></span><span class="sig-name descname"><span class="pre">get_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/db.html#get_db"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.db.get_db" title="Link to this definition">¶</a></dt>
+<dd><p>FastAPI dependency that provides an async DB session.</p>
+<p>Retrieves the session factory from <code class="docutils literal notranslate"><span class="pre">request.app.state.db_session_factory</span></code>,
+opens a session, and yields it.  On exit, the session is closed.  Commit
+and rollback are <strong>not</strong> handled here — use <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span> <span class="pre">session.begin()</span></code>
+in the service layer, or call <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">session.commit()</span></code> explicitly.</p>
+<p>The session factory is expected to be an
+<code class="docutils literal notranslate"><span class="pre">async_sessionmaker[AsyncSession]</span></code> instance created during the app’s
+lifespan using <code class="xref py py-func docutils literal notranslate"><span class="pre">openzync.core.db.get_async_session()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Yields<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An <code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncSession</span></code> bound to the application’s engine.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">db_session_factory</span></code> has not been set on
+    <code class="docutils literal notranslate"><span class="pre">app.state</span></code> (e.g., the lifespan has not run).</p>
+</dd>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<a class="reference external" href="https://fastapi.tiangolo.com/reference/request/#fastapi.Request" title="(in FastAPI None)"><em>Request</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.AsyncGenerator" title="(in Python v3.14)"><em>AsyncGenerator</em></a>[<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncSession" title="(in SQLAlchemy v2.0)"><em>AsyncSession</em></a>, None]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="dependencies-org-config-module">
-<h2>dependencies.org_config module<a class="headerlink" href="#dependencies-org-config-module" title="Link to this heading">¶</a></h2>
+<section id="module-dependencies.org_config">
+<span id="dependencies-org-config-module"></span><h2>dependencies.org_config module<a class="headerlink" href="#module-dependencies.org_config" title="Link to this heading">¶</a></h2>
+<p>FastAPI dependency for per-organization configuration.</p>
+<p>Usage in a router:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dependencies.org_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_org_config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">schemas.organization_config</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrgConfigBase</span>
+
+<span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/example&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">example</span><span class="p">(</span>
+    <span class="n">org_config</span><span class="p">:</span> <span class="n">OrgConfigBase</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_org_config</span><span class="p">),</span>
+<span class="p">):</span>
+    <span class="o">...</span>  <span class="c1"># use org_config.llm_model, org_config.graph_backend, etc.</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.org_config.get_org_config">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.org_config.</span></span><span class="sig-name descname"><span class="pre">get_org_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">require_org_id&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/org_config.html#get_org_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.org_config.get_org_config" title="Link to this definition">¶</a></dt>
+<dd><p>FastAPI dependency that yields the stored org config for the current org.</p>
+<p>The config is fetched from Redis cache (fast path) or OpenBao KV
+(authoritative slow path).  Every field may be <code class="docutils literal notranslate"><span class="pre">None</span></code> — there is no
+env-var fallback.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/my-endpoint&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handler</span><span class="p">(</span>
+    <span class="n">org_config</span><span class="p">:</span> <span class="n">OrgConfigBase</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_org_config</span><span class="p">),</span>
+<span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">org_config</span><span class="o">.</span><span class="n">llm_model</span>  <span class="c1"># str | None</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>Request</em>)</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="schemas.html#schemas.organization_config.OrgConfigBase" title="schemas.organization_config.OrgConfigBase">OrgConfigBase</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="dependencies-project-auth-module">
-<h2>dependencies.project_auth module<a class="headerlink" href="#dependencies-project-auth-module" title="Link to this heading">¶</a></h2>
+<section id="module-dependencies.project_auth">
+<span id="dependencies-project-auth-module"></span><h2>dependencies.project_auth module<a class="headerlink" href="#module-dependencies.project_auth" title="Link to this heading">¶</a></h2>
+<p>Project auth dependency — verifies the authenticated user is a project member.</p>
+<p>Provides <code class="docutils literal notranslate"><span class="pre">require_project_membership</span></code> which can be used as a FastAPI
+<code class="docutils literal notranslate"><span class="pre">Depends</span></code> to guard any project-scoped endpoint.  Supports two modes:</p>
+<ul class="simple">
+<li><p><strong>Default</strong>: requires the user to have <em>any</em> role in the project.</p></li>
+<li><p><strong>``require_owner``</strong>: additionally checks that the user’s role is <code class="docutils literal notranslate"><span class="pre">&quot;owner&quot;</span></code>.</p></li>
+</ul>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dependencies.project_auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">require_project_membership</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">Depends</span>
+
+<span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/projects/</span><span class="si">{project_id}</span><span class="s2">/sessions&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_sessions</span><span class="p">(</span>
+    <span class="n">project_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+    <span class="n">_</span><span class="p">:</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">require_project_membership</span><span class="p">),</span>
+<span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.project_auth.require_project_membership">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.project_auth.</span></span><span class="sig-name descname"><span class="pre">require_project_membership</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Path(PydanticUndefined)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_db&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/project_auth.html#require_project_membership"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.project_auth.require_project_membership" title="Link to this definition">¶</a></dt>
+<dd><p>Unified authentication + authorization for project-scoped endpoints.</p>
+<p>Supports two authentication modes:</p>
+<p><strong>JWT (dashboard user)</strong>: Verifies:
+1. The request has a valid authenticated user (401 if missing).
+2. The organization ID is present (401 if missing).
+3. The project exists within the organization (404 if missing).
+4. The authenticated user is a member of the project (403 if not).</p>
+<p><strong>API key</strong>: Skips user-level checks; instead verifies:
+1. The organization ID is present (401 if missing).
+2. The API key is scoped to the requested project (403 if mismatch).</p>
+<p>Use this as the sole auth dependency for all <code class="docutils literal notranslate"><span class="pre">/v1/projects/...</span></code>
+endpoints — it replaces both <code class="docutils literal notranslate"><span class="pre">require_org_id</span></code> and a separate
+membership check.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>HTTPException 401</strong> – If neither JWT nor API key auth is present.</p></li>
+<li><p><strong>HTTPException 403</strong> – If the credential lacks project access.</p></li>
+<li><p><strong>HTTPException 404</strong> – If the project does not exist.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>request</strong> (<a class="reference external" href="https://fastapi.tiangolo.com/reference/request/#fastapi.Request" title="(in FastAPI None)"><em>Request</em></a>)</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><em>UUID</em></a>)</p></li>
+<li><p><strong>db</strong> (<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncSession" title="(in SQLAlchemy v2.0)"><em>AsyncSession</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.project_auth.require_project_owner">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.project_auth.</span></span><span class="sig-name descname"><span class="pre">require_project_owner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Path(PydanticUndefined)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_db&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/project_auth.html#require_project_owner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.project_auth.require_project_owner" title="Link to this definition">¶</a></dt>
+<dd><p>Verify the authenticated user is an owner of the given project.</p>
+<p>Like <code class="docutils literal notranslate"><span class="pre">require_project_membership</span></code> but additionally checks the
+<code class="docutils literal notranslate"><span class="pre">owner</span></code> role.</p>
+<p><strong>Note</strong>: API key auth is NOT supported for owner-level operations.
+Only JWT-authenticated dashboard users can perform owner-gated actions
+(creating/revoking API keys, managing members).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>HTTPException 401</strong> – If the user is not authenticated.</p></li>
+<li><p><strong>HTTPException 403</strong> – If the user is not a project owner.</p></li>
+<li><p><strong>HTTPException 404</strong> – If the project does not exist.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>request</strong> (<a class="reference external" href="https://fastapi.tiangolo.com/reference/request/#fastapi.Request" title="(in FastAPI None)"><em>Request</em></a>)</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><em>UUID</em></a>)</p></li>
+<li><p><strong>db</strong> (<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncSession" title="(in SQLAlchemy v2.0)"><em>AsyncSession</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="dependencies-services-module">
-<h2>dependencies.services module<a class="headerlink" href="#dependencies-services-module" title="Link to this heading">¶</a></h2>
+<section id="module-dependencies.services">
+<span id="dependencies-services-module"></span><h2>dependencies.services module<a class="headerlink" href="#module-dependencies.services" title="Link to this heading">¶</a></h2>
+<p>Service dependency factories for FastAPI route injection.</p>
+<p>Provides <code class="docutils literal notranslate"><span class="pre">Depends</span></code>-compatible factory functions that construct domain
+service instances with their required dependencies (DB session, Redis, etc.).</p>
+<p>Each factory retrieves an <code class="docutils literal notranslate"><span class="pre">AsyncSession</span></code> from the DB dependency, creates
+the repository, and returns an initialised service.</p>
+<p>Usage in a router:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">Depends</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dependencies.services</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_session_service</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">services.session_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">SessionService</span>
+
+<span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">()</span>
+
+<span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/sessions&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_sessions</span><span class="p">(</span>
+    <span class="n">service</span><span class="p">:</span> <span class="n">SessionService</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_session_service</span><span class="p">),</span>
+<span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.services.get_auth_service">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.services.</span></span><span class="sig-name descname"><span class="pre">get_auth_service</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_db&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/services.html#get_auth_service"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.services.get_auth_service" title="Link to this definition">¶</a></dt>
+<dd><p>Dependency that yields an initialised AuthService.</p>
+<p>Wires in the <code class="docutils literal notranslate"><span class="pre">AuthRepository</span></code>, <code class="docutils literal notranslate"><span class="pre">EmailService</span></code>, and <code class="docutils literal notranslate"><span class="pre">OtpService</span></code>
+so that the auth service can send email verification codes during signup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<a class="reference external" href="https://fastapi.tiangolo.com/reference/request/#fastapi.Request" title="(in FastAPI None)"><em>Request</em></a>) – Incoming HTTP request (for <code class="docutils literal notranslate"><span class="pre">app.state.redis</span></code>).</p></li>
+<li><p><strong>db</strong> (<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncSession" title="(in SQLAlchemy v2.0)"><em>AsyncSession</em></a>) – Async DB session from dependency injection.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An initialised <code class="docutils literal notranslate"><span class="pre">AuthService</span></code> with email verification support.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="services.html#services.auth_service.AuthService" title="services.auth_service.AuthService"><em>AuthService</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.services.get_auth_throttle">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.services.</span></span><span class="sig-name descname"><span class="pre">get_auth_throttle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/services.html#get_auth_throttle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.services.get_auth_throttle" title="Link to this definition">¶</a></dt>
+<dd><p>Dependency that yields an initialised AuthThrottle.</p>
+<p>Reads the Redis client from <code class="docutils literal notranslate"><span class="pre">request.app.state.redis</span></code> and applies
+the system-level rate-limit settings for IP-based throttling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<a class="reference external" href="https://fastapi.tiangolo.com/reference/request/#fastapi.Request" title="(in FastAPI None)"><em>Request</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="middleware.html#middleware.auth_throttle.AuthThrottle" title="middleware.auth_throttle.AuthThrottle"><em>AuthThrottle</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.services.get_fact_service">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.services.</span></span><span class="sig-name descname"><span class="pre">get_fact_service</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_db&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">webhook</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_webhook_service&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/services.html#get_fact_service"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.services.get_fact_service" title="Link to this definition">¶</a></dt>
+<dd><p>Dependency that yields an initialised FactService.</p>
+<p>Reads the Redis client from <code class="docutils literal notranslate"><span class="pre">request.app.state.redis</span></code> (initialised
+during the application lifespan).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<a class="reference external" href="https://fastapi.tiangolo.com/reference/request/#fastapi.Request" title="(in FastAPI None)"><em>Request</em></a>)</p></li>
+<li><p><strong>db</strong> (<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncSession" title="(in SQLAlchemy v2.0)"><em>AsyncSession</em></a>)</p></li>
+<li><p><strong>webhook</strong> (<a class="reference internal" href="services.html#services.webhook_service.WebhookService" title="services.webhook_service.WebhookService"><em>WebhookService</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="services.html#services.fact_service.FactService" title="services.fact_service.FactService"><em>FactService</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.services.get_graph_service">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.services.</span></span><span class="sig-name descname"><span class="pre">get_graph_service</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_org_config&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_db&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">webhook</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_webhook_service&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/services.html#get_graph_service"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.services.get_graph_service" title="Link to this definition">¶</a></dt>
+<dd><p>Dependency that yields an initialised GraphService.</p>
+<p>Uses the <code class="docutils literal notranslate"><span class="pre">GraphBackendDispatcher</span></code> (registered in the app lifespan)
+to resolve the per-org backend and create a request-scoped instance.
+Wires in the <code class="docutils literal notranslate"><span class="pre">UserRepository</span></code> for user-existence checks and
+<code class="docutils literal notranslate"><span class="pre">FactRepository</span></code> for session-scoped entity queries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<em>Request</em>)</p></li>
+<li><p><strong>org_config</strong> (<a class="reference internal" href="schemas.html#schemas.organization_config.OrgConfigBase" title="schemas.organization_config.OrgConfigBase"><em>OrgConfigBase</em></a>)</p></li>
+<li><p><strong>db</strong> (<em>AsyncSession</em>)</p></li>
+<li><p><strong>webhook</strong> (<a class="reference internal" href="services.html#services.webhook_service.WebhookService" title="services.webhook_service.WebhookService"><em>WebhookService</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="services.html#services.graph_service.GraphService" title="services.graph_service.GraphService">GraphService</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.services.get_memory_service">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.services.</span></span><span class="sig-name descname"><span class="pre">get_memory_service</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_db&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">webhook</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_webhook_service&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/services.html#get_memory_service"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.services.get_memory_service" title="Link to this definition">¶</a></dt>
+<dd><p>Dependency that yields an initialised MemoryService.</p>
+<p>Wires up all repositories and Redis with the request-scoped DB session.
+The Redis client is read from <code class="docutils literal notranslate"><span class="pre">request.app.state.redis</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<a class="reference external" href="https://fastapi.tiangolo.com/reference/request/#fastapi.Request" title="(in FastAPI None)"><em>Request</em></a>)</p></li>
+<li><p><strong>db</strong> (<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncSession" title="(in SQLAlchemy v2.0)"><em>AsyncSession</em></a>)</p></li>
+<li><p><strong>webhook</strong> (<a class="reference internal" href="services.html#services.webhook_service.WebhookService" title="services.webhook_service.WebhookService"><em>WebhookService</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="services.html#services.memory_service.MemoryService" title="services.memory_service.MemoryService"><em>MemoryService</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.services.get_session_service">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.services.</span></span><span class="sig-name descname"><span class="pre">get_session_service</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_db&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">webhook</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_webhook_service&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/services.html#get_session_service"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.services.get_session_service" title="Link to this definition">¶</a></dt>
+<dd><p>Dependency that yields an initialised SessionService.</p>
+<p>The service is constructed once per request using a DB session from
+the application’s async engine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncSession" title="(in SQLAlchemy v2.0)"><em>AsyncSession</em></a>)</p></li>
+<li><p><strong>webhook</strong> (<a class="reference internal" href="services.html#services.webhook_service.WebhookService" title="services.webhook_service.WebhookService"><em>WebhookService</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="services.html#services.session_service.SessionService" title="services.session_service.SessionService"><em>SessionService</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.services.get_user_service">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.services.</span></span><span class="sig-name descname"><span class="pre">get_user_service</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_db&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">webhook</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_webhook_service&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/services.html#get_user_service"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.services.get_user_service" title="Link to this definition">¶</a></dt>
+<dd><p>Dependency that yields an initialised UserService.</p>
+<p>The service is constructed once per request using a DB session from
+the application’s async engine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncSession" title="(in SQLAlchemy v2.0)"><em>AsyncSession</em></a>)</p></li>
+<li><p><strong>webhook</strong> (<a class="reference internal" href="services.html#services.webhook_service.WebhookService" title="services.webhook_service.WebhookService"><em>WebhookService</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="services.html#services.user_service.UserService" title="services.user_service.UserService"><em>UserService</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dependencies.services.get_webhook_service">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dependencies.services.</span></span><span class="sig-name descname"><span class="pre">get_webhook_service</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Depends(dependency=&lt;function</span> <span class="pre">get_db&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dependencies/services.html#get_webhook_service"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dependencies.services.get_webhook_service" title="Link to this definition">¶</a></dt>
+<dd><p>Dependency that yields an initialised WebhookService.</p>
+<p>Wires in the webhook repository for endpoint CRUD.
+Event emission uses ARQ job delivery (not Svix).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db</strong> (<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncSession" title="(in SQLAlchemy v2.0)"><em>AsyncSession</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="services.html#services.webhook_service.WebhookService" title="services.webhook_service.WebhookService"><em>WebhookService</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -390,11 +902,39 @@
             <ul>
 <li><a class="reference internal" href="#">dependencies package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#dependencies-auth-module">dependencies.auth module</a></li>
-<li><a class="reference internal" href="#dependencies-db-module">dependencies.db module</a></li>
-<li><a class="reference internal" href="#dependencies-org-config-module">dependencies.org_config module</a></li>
-<li><a class="reference internal" href="#dependencies-project-auth-module">dependencies.project_auth module</a></li>
-<li><a class="reference internal" href="#dependencies-services-module">dependencies.services module</a></li>
+<li><a class="reference internal" href="#module-dependencies.auth">dependencies.auth module</a><ul>
+<li><a class="reference internal" href="#dependencies.auth.bearer_scheme"><code class="docutils literal notranslate"><span class="pre">bearer_scheme</span></code></a></li>
+<li><a class="reference internal" href="#dependencies.auth.get_current_user_id"><code class="docutils literal notranslate"><span class="pre">get_current_user_id()</span></code></a></li>
+<li><a class="reference internal" href="#dependencies.auth.get_dashboard_user"><code class="docutils literal notranslate"><span class="pre">get_dashboard_user()</span></code></a></li>
+<li><a class="reference internal" href="#dependencies.auth.get_org_id"><code class="docutils literal notranslate"><span class="pre">get_org_id()</span></code></a></li>
+<li><a class="reference internal" href="#dependencies.auth.require_org_id"><code class="docutils literal notranslate"><span class="pre">require_org_id()</span></code></a></li>
+<li><a class="reference internal" href="#dependencies.auth.require_scope"><code class="docutils literal notranslate"><span class="pre">require_scope()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dependencies.db">dependencies.db module</a><ul>
+<li><a class="reference internal" href="#dependencies.db.get_db"><code class="docutils literal notranslate"><span class="pre">get_db()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dependencies.org_config">dependencies.org_config module</a><ul>
+<li><a class="reference internal" href="#dependencies.org_config.get_org_config"><code class="docutils literal notranslate"><span class="pre">get_org_config()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dependencies.project_auth">dependencies.project_auth module</a><ul>
+<li><a class="reference internal" href="#dependencies.project_auth.require_project_membership"><code class="docutils literal notranslate"><span class="pre">require_project_membership()</span></code></a></li>
+<li><a class="reference internal" href="#dependencies.project_auth.require_project_owner"><code class="docutils literal notranslate"><span class="pre">require_project_owner()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-dependencies.services">dependencies.services module</a><ul>
+<li><a class="reference internal" href="#dependencies.services.get_auth_service"><code class="docutils literal notranslate"><span class="pre">get_auth_service()</span></code></a></li>
+<li><a class="reference internal" href="#dependencies.services.get_auth_throttle"><code class="docutils literal notranslate"><span class="pre">get_auth_throttle()</span></code></a></li>
+<li><a class="reference internal" href="#dependencies.services.get_fact_service"><code class="docutils literal notranslate"><span class="pre">get_fact_service()</span></code></a></li>
+<li><a class="reference internal" href="#dependencies.services.get_graph_service"><code class="docutils literal notranslate"><span class="pre">get_graph_service()</span></code></a></li>
+<li><a class="reference internal" href="#dependencies.services.get_memory_service"><code class="docutils literal notranslate"><span class="pre">get_memory_service()</span></code></a></li>
+<li><a class="reference internal" href="#dependencies.services.get_session_service"><code class="docutils literal notranslate"><span class="pre">get_session_service()</span></code></a></li>
+<li><a class="reference internal" href="#dependencies.services.get_user_service"><code class="docutils literal notranslate"><span class="pre">get_user_service()</span></code></a></li>
+<li><a class="reference internal" href="#dependencies.services.get_webhook_service"><code class="docutils literal notranslate"><span class="pre">get_webhook_service()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

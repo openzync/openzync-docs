@@ -335,24 +335,24 @@ view</em> (stored as community entity nodes in the graph backend).</p>
 <nav class="contents this-will-duplicate-information-and-it-is-still-useful-here local" id="sections">
 <p class="topic-title">Sections</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#reranker-abstraction" id="id3">Reranker Abstraction</a></p>
+<li><p><a class="reference internal" href="#reranker-abstraction" id="id38">Reranker Abstraction</a></p>
 <ul>
-<li><p><a class="reference internal" href="#optional-dependencies" id="id4">Optional Dependencies</a></p></li>
-<li><p><a class="reference internal" href="#module-level-constants" id="id5">Module-Level Constants</a></p></li>
+<li><p><a class="reference internal" href="#optional-dependencies" id="id39">Optional Dependencies</a></p></li>
+<li><p><a class="reference internal" href="#module-level-constants" id="id40">Module-Level Constants</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#abstract-interface-packages-reranker-interface" id="id6">Abstract Interface — <code class="docutils literal notranslate"><span class="pre">packages.reranker.interface</span></code></a></p>
+<li><p><a class="reference internal" href="#module-packages.reranker.interface" id="id41">Abstract Interface — <code class="docutils literal notranslate"><span class="pre">packages.reranker.interface</span></code></a></p>
 <ul>
-<li><p><a class="reference internal" href="#input-output-contract" id="id7">Input/output contract</a></p></li>
+<li><p><a class="reference internal" href="#input-output-contract" id="id42">Input/output contract</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#implementation-sentencetransformersreranker" id="id8">Implementation — SentenceTransformersReranker</a></p></li>
-<li><p><a class="reference internal" href="#implementation-coherereranker" id="id9">Implementation — CohereReranker</a></p></li>
-<li><p><a class="reference internal" href="#config-driven-factory-packages-reranker-factory" id="id10">Config-Driven Factory — <code class="docutils literal notranslate"><span class="pre">packages.reranker.factory</span></code></a></p></li>
+<li><p><a class="reference internal" href="#implementation-sentencetransformersreranker" id="id43">Implementation — SentenceTransformersReranker</a></p></li>
+<li><p><a class="reference internal" href="#implementation-coherereranker" id="id44">Implementation — CohereReranker</a></p></li>
+<li><p><a class="reference internal" href="#module-packages.reranker.factory" id="id45">Config-Driven Factory — <code class="docutils literal notranslate"><span class="pre">packages.reranker.factory</span></code></a></p></li>
 </ul>
 </nav>
 <section id="reranker-abstraction">
-<h2><a class="toc-backref" href="#id3" role="doc-backlink">Reranker Abstraction</a><a class="headerlink" href="#reranker-abstraction" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id38" role="doc-backlink">Reranker Abstraction</a><a class="headerlink" href="#reranker-abstraction" title="Link to this heading">¶</a></h2>
 <p>Module: <code class="docutils literal notranslate"><span class="pre">packages.reranker</span></code></p>
 <p>The reranker package provides an abstract interface for cross-encoder
 re-ranking together with two concrete backends and a config-driven factory.</p>
@@ -381,7 +381,7 @@ pool it passes to RRF from <code class="docutils literal notranslate"><span clas
 then sends the top RRF-scored candidates to the reranker, which returns the
 final <code class="docutils literal notranslate"><span class="pre">top_n</span></code> (default 10) results.</p>
 <section id="optional-dependencies">
-<h3><a class="toc-backref" href="#id4" role="doc-backlink">Optional Dependencies</a><a class="headerlink" href="#optional-dependencies" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id39" role="doc-backlink">Optional Dependencies</a><a class="headerlink" href="#optional-dependencies" title="Link to this heading">¶</a></h3>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span># Local cross-encoder model (sentence-transformers)
 pip install openzync[reranker]
 
@@ -399,7 +399,7 @@ pip install openzync[cohere]
 installed, allowing graceful fallback to RRF-only scoring.</p>
 </section>
 <section id="module-level-constants">
-<h3><a class="toc-backref" href="#id5" role="doc-backlink">Module-Level Constants</a><a class="headerlink" href="#module-level-constants" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id40" role="doc-backlink">Module-Level Constants</a><a class="headerlink" href="#module-level-constants" title="Link to this heading">¶</a></h3>
 <dl class="py data">
 <dt class="sig sig-object py" id="RRF_K">
 <span class="sig-name descname"><span class="pre">RRF_K</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></span><a class="headerlink" href="#RRF_K" title="Link to this definition">¶</a></dt>
@@ -426,24 +426,101 @@ Overridable per-organisation via <code class="docutils literal notranslate"><spa
 
 </section>
 </section>
-<section id="abstract-interface-packages-reranker-interface">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">Abstract Interface — <code class="docutils literal notranslate"><span class="pre">packages.reranker.interface</span></code></a><a class="headerlink" href="#abstract-interface-packages-reranker-interface" title="Link to this heading">¶</a></h2>
-<p>All reranker backends inherit from <code class="xref py py-class docutils literal notranslate"><span class="pre">CrossEncoderReranker</span></code>
+<section id="module-packages.reranker.interface">
+<span id="abstract-interface-packages-reranker-interface"></span><h2><a class="toc-backref" href="#id41" role="doc-backlink">Abstract Interface — <code class="docutils literal notranslate"><span class="pre">packages.reranker.interface</span></code></a><a class="headerlink" href="#module-packages.reranker.interface" title="Link to this heading">¶</a></h2>
+<p>Abstract interface for cross-encoder re-rankers.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">CrossEncoderReranker</span></code> ABC defines the contract every re-ranker
+backend must satisfy.  Concrete implementations:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SentenceTransformersReranker</span></code> — local <code class="docutils literal notranslate"><span class="pre">sentence-transformers</span></code>
+cross-encoder model.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">CohereReranker</span></code> — Cohere Rerank API.</p></li>
+</ul>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">reranker</span><span class="p">:</span> <span class="n">CrossEncoderReranker</span> <span class="o">=</span> <span class="n">SentenceTransformersReranker</span><span class="p">()</span>
+<span class="n">reranked</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reranker</span><span class="o">.</span><span class="n">rerank</span><span class="p">(</span><span class="s2">&quot;query text&quot;</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">top_n</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="packages.reranker.interface.CrossEncoderReranker">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">packages.reranker.interface.</span></span><span class="sig-name descname"><span class="pre">CrossEncoderReranker</span></span><a class="reference internal" href="../_modules/packages/reranker/interface.html#CrossEncoderReranker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packages.reranker.interface.CrossEncoderReranker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Abstract re-ranker that scores and re-orders candidate documents.</p>
+<p>Subclasses implement <a class="reference internal" href="#id2" title="packages.reranker.interface.CrossEncoderReranker.rerank"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rerank()</span></code></a> for a specific model backend
+(local cross-encoder or remote API).</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="packages.reranker.interface.CrossEncoderReranker.backend_name">
+<span class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">backend_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#packages.reranker.interface.CrossEncoderReranker.backend_name" title="Link to this definition">¶</a></dt>
+<dd><p>Human-readable backend identifier for metrics and logging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string like <code class="docutils literal notranslate"><span class="pre">&quot;sentence_transformers&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;cohere&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="packages.reranker.interface.CrossEncoderReranker.rerank">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">rerank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packages/reranker/interface.html#CrossEncoderReranker.rerank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packages.reranker.interface.CrossEncoderReranker.rerank" title="Link to this definition">¶</a></dt>
+<dd><p>Re-rank candidate documents by relevance to the query.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The search query string.</p></li>
+<li><p><strong>candidates</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em>) – A list of candidate dicts.  Each must have at
+minimum an <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">content</span></code> key.  Items without
+<code class="docutils literal notranslate"><span class="pre">content</span></code> receive a <code class="docutils literal notranslate"><span class="pre">reranker_score</span></code> of <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.</p></li>
+<li><p><strong>top_n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Maximum number of results to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same dicts with a <code class="docutils literal notranslate"><span class="pre">reranker_score:</span> <span class="pre">float</span></code> key added,
+sorted by <code class="docutils literal notranslate"><span class="pre">reranker_score</span></code> descending, truncated to
+<code class="docutils literal notranslate"><span class="pre">top_n</span></code>.  The original <code class="docutils literal notranslate"><span class="pre">rrf_score</span></code> (if present) from
+the RRF merge is preserved.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="packages.reranker.interface.DEFAULT_RERANK_TOP_K">
+<span class="sig-prename descclassname"><span class="pre">packages.reranker.interface.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_RERANK_TOP_K</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">50</span></span><a class="headerlink" href="#packages.reranker.interface.DEFAULT_RERANK_TOP_K" title="Link to this definition">¶</a></dt>
+<dd><p>Default number of RRF candidates to pass to the re-ranker.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="packages.reranker.interface.DEFAULT_RERANK_TOP_N">
+<span class="sig-prename descclassname"><span class="pre">packages.reranker.interface.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_RERANK_TOP_N</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></span><a class="headerlink" href="#packages.reranker.interface.DEFAULT_RERANK_TOP_N" title="Link to this definition">¶</a></dt>
+<dd><p>Default number of results to return after re-ranking.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="packages.reranker.interface.RRF_K">
+<span class="sig-prename descclassname"><span class="pre">packages.reranker.interface.</span></span><span class="sig-name descname"><span class="pre">RRF_K</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></span><a class="headerlink" href="#packages.reranker.interface.RRF_K" title="Link to this definition">¶</a></dt>
+<dd><p>RRF constant — controls how quickly rank contribution decays.</p>
+</dd></dl>
+
+<p>All reranker backends inherit from <a class="reference internal" href="#id0" title="packages.reranker.interface.CrossEncoderReranker"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrossEncoderReranker</span></code></a>
 and must implement two abstract members:</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="CrossEncoderReranker">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">CrossEncoderReranker</span></span><a class="headerlink" href="#CrossEncoderReranker" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id0">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">packages.reranker.interface.</span></span><span class="sig-name descname"><span class="pre">CrossEncoderReranker</span></span><a class="reference internal" href="../_modules/packages/reranker/interface.html#CrossEncoderReranker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
 <dd><dl class="py property">
-<dt class="sig sig-object py" id="CrossEncoderReranker.backend_name">
-<span class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">backend_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#CrossEncoderReranker.backend_name" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id1">
+<span class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">backend_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
 <dd><p>Human-readable backend identifier for Prometheus metric labels and
 structured log events.  Concrete implementations return values like
 <code class="docutils literal notranslate"><span class="pre">&quot;sentence_transformers&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;cohere&quot;</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="CrossEncoderReranker.rerank">
-<span class="sig-name descname"><span class="pre">rerank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#CrossEncoderReranker.rerank" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">rerank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packages/reranker/interface.html#CrossEncoderReranker.rerank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -470,7 +547,7 @@ other code change.</p>
 </dd></dl>
 
 <section id="input-output-contract">
-<h3><a class="toc-backref" href="#id7" role="doc-backlink">Input/output contract</a><a class="headerlink" href="#input-output-contract" title="Link to this heading">¶</a></h3>
+<h3><a class="toc-backref" href="#id42" role="doc-backlink">Input/output contract</a><a class="headerlink" href="#input-output-contract" title="Link to this heading">¶</a></h3>
 <p><strong>Input</strong> — each candidate dict:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;uuid-str&quot;</span><span class="p">,</span>          <span class="c1"># required</span>
@@ -497,14 +574,95 @@ can combine scores.</p>
 </section>
 </section>
 <section id="implementation-sentencetransformersreranker">
-<h2><a class="toc-backref" href="#id8" role="doc-backlink">Implementation — SentenceTransformersReranker</a><a class="headerlink" href="#implementation-sentencetransformersreranker" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id43" role="doc-backlink">Implementation — SentenceTransformersReranker</a><a class="headerlink" href="#implementation-sentencetransformersreranker" title="Link to this heading">¶</a></h2>
 <p>Module: <code class="docutils literal notranslate"><span class="pre">packages.reranker.sentence_transformers</span></code></p>
+<p id="module-packages.reranker.sentence_transformers">SentenceTransformers cross-encoder re-ranker — local model backend.</p>
+<p>Implements <code class="docutils literal notranslate"><span class="pre">CrossEncoderReranker</span></code> using a local
+<code class="docutils literal notranslate"><span class="pre">sentence-transformers</span></code> cross-encoder model.  The model is loaded
+lazily on first use via a module-level cache with double-checked
+locking to prevent concurrent loading of the same model.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">reranker</span> <span class="o">=</span> <span class="n">SentenceTransformersReranker</span><span class="p">()</span>
+<span class="n">reranked</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reranker</span><span class="o">.</span><span class="n">rerank</span><span class="p">(</span><span class="s2">&quot;query&quot;</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">top_n</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Optional dependency: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">openzync[reranker]</span></code>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="packages.reranker.sentence_transformers.SentenceTransformersReranker">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">packages.reranker.sentence_transformers.</span></span><span class="sig-name descname"><span class="pre">SentenceTransformersReranker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packages/reranker/sentence_transformers.html#SentenceTransformersReranker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packages.reranker.sentence_transformers.SentenceTransformersReranker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#id0" title="packages.reranker.interface.CrossEncoderReranker"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrossEncoderReranker</span></code></a></p>
+<p>Re-ranker using a local <code class="docutils literal notranslate"><span class="pre">sentence-transformers</span></code> cross-encoder model.</p>
+<p>The model is loaded lazily on the first <a class="reference internal" href="#packages.reranker.sentence_transformers.SentenceTransformersReranker.rerank" title="packages.reranker.sentence_transformers.SentenceTransformersReranker.rerank"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rerank()</span></code></a> call (not in
+<code class="docutils literal notranslate"><span class="pre">__init__</span></code>) via a module-level cache with double-checked locking to
+prevent concurrent loading of the same model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="packages.reranker.sentence_transformers.SentenceTransformersReranker.DEFAULT_MODEL">
+<span class="sig-name descname"><span class="pre">DEFAULT_MODEL</span></span><a class="headerlink" href="#packages.reranker.sentence_transformers.SentenceTransformersReranker.DEFAULT_MODEL" title="Link to this definition">¶</a></dt>
+<dd><p>Default cross-encoder model name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">DEFAULT_MODEL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cross-encoder/ms-marco-MiniLM-L-6-v2'</span></span><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="packages.reranker.sentence_transformers.SentenceTransformersReranker.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packages/reranker/sentence_transformers.html#SentenceTransformersReranker.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packages.reranker.sentence_transformers.SentenceTransformersReranker.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the re-ranker.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – HuggingFace model name for the cross-encoder.
+Defaults to <code class="docutils literal notranslate"><span class="pre">cross-encoder/ms-marco-MiniLM-L-6-v2</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="packages.reranker.sentence_transformers.SentenceTransformersReranker.backend_name">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">backend_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#packages.reranker.sentence_transformers.SentenceTransformersReranker.backend_name" title="Link to this definition">¶</a></dt>
+<dd><p>Return the backend identifier for metrics labels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="packages.reranker.sentence_transformers.SentenceTransformersReranker.rerank">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">rerank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packages/reranker/sentence_transformers.html#SentenceTransformersReranker.rerank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packages.reranker.sentence_transformers.SentenceTransformersReranker.rerank" title="Link to this definition">¶</a></dt>
+<dd><p>Re-rank candidates using a local cross-encoder model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The search query string.</p></li>
+<li><p><strong>candidates</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em>) – A list of candidate dicts with at least <code class="docutils literal notranslate"><span class="pre">id</span></code>
+and <code class="docutils literal notranslate"><span class="pre">content</span></code>.</p></li>
+<li><p><strong>top_n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Maximum number of results to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Candidates sorted by <code class="docutils literal notranslate"><span class="pre">reranker_score</span></code> descending, truncated
+to <code class="docutils literal notranslate"><span class="pre">top_n</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <p>A local cross-encoder model powered by the <code class="docutils literal notranslate"><span class="pre">sentence-transformers</span></code>
 library.  Default model: <code class="docutils literal notranslate"><span class="pre">cross-encoder/ms-marco-MiniLM-L-6-v2</span></code>.</p>
 <p>Key behavioural details:</p>
 <ul class="simple">
 <li><p><strong>Lazy loading</strong>: the model is not loaded in <code class="docutils literal notranslate"><span class="pre">__init__</span></code>; it is loaded
-on the first <code class="xref py py-meth docutils literal notranslate"><span class="pre">rerank()</span></code>
+on the first <a class="reference internal" href="#id2" title="packages.reranker.interface.CrossEncoderReranker.rerank"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rerank()</span></code></a>
 call via <code class="xref py py-meth docutils literal notranslate"><span class="pre">SentenceTransformersReranker._ensure_model()</span></code>.</p></li>
 <li><p><strong>Module-level cache with double-checked locking</strong>: loaded models are
 stored in <code class="docutils literal notranslate"><span class="pre">_MODEL_CACHE</span></code> (a <code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">CrossEncoder]</span></code>) with
@@ -516,7 +674,7 @@ multiple requests arrive simultaneously for an uncached model.</p></li>
 <code class="docutils literal notranslate"><span class="pre">loop.run_in_executor()</span></code> to avoid blocking the asyncio event loop.</p></li>
 <li><p><strong>Graceful import failure</strong>: if <code class="docutils literal notranslate"><span class="pre">sentence-transformers</span></code> is not
 installed, both <code class="docutils literal notranslate"><span class="pre">_ensure_model</span></code> and the factory
-(<code class="xref py py-class docutils literal notranslate"><span class="pre">RerankerFactory</span></code>) raise
+(<a class="reference internal" href="#packages.reranker.factory.RerankerFactory" title="packages.reranker.factory.RerankerFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">RerankerFactory</span></code></a>) raise
 <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> with a hint to <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">openzync[reranker]</span></code>.</p></li>
 </ul>
 <p>Usage example:</p>
@@ -544,8 +702,92 @@ installed, both <code class="docutils literal notranslate"><span class="pre">_en
 </div>
 </section>
 <section id="implementation-coherereranker">
-<h2><a class="toc-backref" href="#id9" role="doc-backlink">Implementation — CohereReranker</a><a class="headerlink" href="#implementation-coherereranker" title="Link to this heading">¶</a></h2>
+<h2><a class="toc-backref" href="#id44" role="doc-backlink">Implementation — CohereReranker</a><a class="headerlink" href="#implementation-coherereranker" title="Link to this heading">¶</a></h2>
 <p>Module: <code class="docutils literal notranslate"><span class="pre">packages.reranker.cohere</span></code></p>
+<p id="module-packages.reranker.cohere">Cohere API re-ranker — remote API backend.</p>
+<p>Implements <code class="docutils literal notranslate"><span class="pre">CrossEncoderReranker</span></code> using the Cohere Rerank API.
+The Cohere client is created lazily on first use.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">reranker</span> <span class="o">=</span> <span class="n">CohereReranker</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+<span class="n">reranked</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reranker</span><span class="o">.</span><span class="n">rerank</span><span class="p">(</span><span class="s2">&quot;query&quot;</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">top_n</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Optional dependency: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">openzync[cohere]</span></code>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="packages.reranker.cohere.CohereReranker">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">packages.reranker.cohere.</span></span><span class="sig-name descname"><span class="pre">CohereReranker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packages/reranker/cohere.html#CohereReranker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packages.reranker.cohere.CohereReranker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#id0" title="packages.reranker.interface.CrossEncoderReranker"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrossEncoderReranker</span></code></a></p>
+<p>Re-ranker using the Cohere Rerank API.</p>
+<p>The Cohere client is created lazily on first use via
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">_ensure_client()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="packages.reranker.cohere.CohereReranker.DEFAULT_MODEL">
+<span class="sig-name descname"><span class="pre">DEFAULT_MODEL</span></span><a class="headerlink" href="#packages.reranker.cohere.CohereReranker.DEFAULT_MODEL" title="Link to this definition">¶</a></dt>
+<dd><p>Default Cohere rerank model name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">DEFAULT_MODEL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rerank-english-v3.0'</span></span><a class="headerlink" href="#id4" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="packages.reranker.cohere.CohereReranker.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packages/reranker/cohere.html#CohereReranker.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packages.reranker.cohere.CohereReranker.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the Cohere re-ranker.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Cohere API key for authentication.</p></li>
+<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Cohere rerank model name. Defaults to
+<code class="docutils literal notranslate"><span class="pre">rerank-english-v3.0</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="packages.reranker.cohere.CohereReranker.backend_name">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">backend_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#packages.reranker.cohere.CohereReranker.backend_name" title="Link to this definition">¶</a></dt>
+<dd><p>Return the backend identifier for metrics labels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="packages.reranker.cohere.CohereReranker.rerank">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">rerank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">candidates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packages/reranker/cohere.html#CohereReranker.rerank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packages.reranker.cohere.CohereReranker.rerank" title="Link to this definition">¶</a></dt>
+<dd><p>Re-rank candidates using the Cohere Rerank API.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The search query string.</p></li>
+<li><p><strong>candidates</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em>) – A list of candidate dicts with at least <code class="docutils literal notranslate"><span class="pre">id</span></code>
+and <code class="docutils literal notranslate"><span class="pre">content</span></code>.</p></li>
+<li><p><strong>top_n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Maximum number of results to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Candidates sorted by <code class="docutils literal notranslate"><span class="pre">reranker_score</span></code> descending, truncated
+to <code class="docutils literal notranslate"><span class="pre">top_n</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <p>A remote API reranker using the Cohere Rerank endpoint.
 Default model: <code class="docutils literal notranslate"><span class="pre">rerank-english-v3.0</span></code>.</p>
 <p>Key behavioural details:</p>
@@ -585,11 +827,45 @@ at <code class="docutils literal notranslate"><span class="pre">cohere.Client</s
 </pre></div>
 </div>
 </section>
-<section id="config-driven-factory-packages-reranker-factory">
-<h2><a class="toc-backref" href="#id10" role="doc-backlink">Config-Driven Factory — <code class="docutils literal notranslate"><span class="pre">packages.reranker.factory</span></code></a><a class="headerlink" href="#config-driven-factory-packages-reranker-factory" title="Link to this heading">¶</a></h2>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">create</span></code> is the single
+<section id="module-packages.reranker.factory">
+<span id="config-driven-factory-packages-reranker-factory"></span><h2><a class="toc-backref" href="#id45" role="doc-backlink">Config-Driven Factory — <code class="docutils literal notranslate"><span class="pre">packages.reranker.factory</span></code></a><a class="headerlink" href="#module-packages.reranker.factory" title="Link to this heading">¶</a></h2>
+<p>Factory for constructing a <code class="docutils literal notranslate"><span class="pre">CrossEncoderReranker</span></code> from org-level config.</p>
+<p>Inspects <code class="docutils literal notranslate"><span class="pre">OrgConfigBase.reranker_backend</span></code> to decide which backend
+to create.  Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> when re-ranking is not configured or
+the required dependencies are not installed.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="packages.reranker.factory.RerankerFactory">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">packages.reranker.factory.</span></span><span class="sig-name descname"><span class="pre">RerankerFactory</span></span><a class="reference internal" href="../_modules/packages/reranker/factory.html#RerankerFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packages.reranker.factory.RerankerFactory" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Factory for constructing a <code class="docutils literal notranslate"><span class="pre">CrossEncoderReranker</span></code> from config.</p>
+<p>Inspects <code class="docutils literal notranslate"><span class="pre">OrgConfigBase.reranker_backend</span></code> to decide which backend
+to create.  Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> when re-ranking is not configured or
+the required dependencies are not installed.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="packages.reranker.factory.RerankerFactory.create">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">org_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packages/reranker/factory.html#RerankerFactory.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packages.reranker.factory.RerankerFactory.create" title="Link to this definition">¶</a></dt>
+<dd><p>Build a re-ranker from an organization’s configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>org_config</strong> (<a class="reference internal" href="../api/schemas.html#schemas.organization_config.OrgConfigBase" title="schemas.organization_config.OrgConfigBase"><em>OrgConfigBase</em></a>) – Organization configuration with <code class="docutils literal notranslate"><span class="pre">reranker_backend</span></code>
+and optional <code class="docutils literal notranslate"><span class="pre">reranker_model</span></code>, <code class="docutils literal notranslate"><span class="pre">reranker_top_k</span></code>,
+<code class="docutils literal notranslate"><span class="pre">reranker_top_n</span></code>, and <code class="docutils literal notranslate"><span class="pre">cohere_api_key</span></code> fields.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A configured re-ranker instance, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the backend
+is not set, unknown, or its dependencies are missing.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#packages.reranker.sentence_transformers.SentenceTransformersReranker" title="packages.reranker.sentence_transformers.SentenceTransformersReranker">SentenceTransformersReranker</a> | <a class="reference internal" href="#packages.reranker.cohere.CohereReranker" title="packages.reranker.cohere.CohereReranker">CohereReranker</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p><a class="reference internal" href="#packages.reranker.factory.RerankerFactory.create" title="packages.reranker.factory.RerankerFactory.create"><code class="xref py py-class docutils literal notranslate"><span class="pre">create</span></code></a> is the single
 entry point for constructing a reranker from org-level configuration.
-It is called by <a class="reference internal" href="memory_context.html#services.context_service.ContextService" title="services.context_service.ContextService"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextService</span></code></a> every
+It is called by <a class="reference internal" href="../api/services.html#services.context_service.ContextService" title="services.context_service.ContextService"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextService</span></code></a> every
 time a context is assembled:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># services/context_service.py (simplified)</span>
 <span class="n">reranker</span> <span class="o">=</span> <span class="n">RerankerFactory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">org_config</span><span class="p">)</span> <span class="k">if</span> <span class="n">org_config</span> <span class="k">else</span> <span class="kc">None</span>
@@ -600,10 +876,10 @@ time a context is assembled:</p>
 </pre></div>
 </div>
 <p>The factory inspects these fields from
-<a class="reference internal" href="admin_webhooks.html#schemas.organization_config.OrgConfigBase" title="schemas.organization_config.OrgConfigBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrgConfigBase</span></code></a>:</p>
-<div class="table-wrapper docutils container" id="id1">
-<table class="docutils align-default" id="id1">
-<caption><span class="caption-text">Config fields consumed</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
+<a class="reference internal" href="../api/schemas.html#schemas.organization_config.OrgConfigBase" title="schemas.organization_config.OrgConfigBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrgConfigBase</span></code></a>:</p>
+<div class="table-wrapper docutils container" id="id36">
+<table class="docutils align-default" id="id36">
+<caption><span class="caption-text">Config fields consumed</span><a class="headerlink" href="#id36" title="Link to this table">¶</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Field</p></th>
 <th class="head"><p>Type</p></th>
@@ -641,11 +917,11 @@ missing, the factory returns <code class="docutils literal notranslate"><span cl
 RRF-only scoring.</p>
 <p class="rubric">Prometheus metrics</p>
 <p>When the reranker is active, the
-<a class="reference internal" href="memory_context.html#services.hybrid_retriever.HybridRetriever" title="services.hybrid_retriever.HybridRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">HybridRetriever</span></code></a> records latency via
+<a class="reference internal" href="../api/services.html#services.hybrid_retriever.HybridRetriever" title="services.hybrid_retriever.HybridRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">HybridRetriever</span></code></a> records latency via
 <code class="docutils literal notranslate"><span class="pre">reranker_latency_seconds</span></code> with a <code class="docutils literal notranslate"><span class="pre">backend</span></code> label set to the
 reranker’s <code class="docutils literal notranslate"><span class="pre">backend_name</span></code> (<code class="docutils literal notranslate"><span class="pre">&quot;sentence_transformers&quot;</span></code> or
 <code class="docutils literal notranslate"><span class="pre">&quot;cohere&quot;</span></code>).  Failures propagate as a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SearchLegFailedError</span></code> with <code class="docutils literal notranslate"><span class="pre">leg_name=&quot;reranker&quot;</span></code>.</p>
+<a class="reference internal" href="../api/core.html#core.exceptions.SearchLegFailedError" title="core.exceptions.SearchLegFailedError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SearchLegFailedError</span></code></a> with <code class="docutils literal notranslate"><span class="pre">leg_name=&quot;reranker&quot;</span></code>.</p>
 <p class="rubric">Score precedence in context assembly</p>
 <p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">ContextFormatter</span></code> uses the
 following precedence when rendering scored results (highest priority
@@ -697,15 +973,60 @@ in the graph backend.</p>
 └──────────────────────────────────────────────────┘
 </pre></div>
 </div>
-<section id="algorithms-packages-community-algorithms">
-<h2>Algorithms — <code class="docutils literal notranslate"><span class="pre">packages.community.algorithms</span></code><a class="headerlink" href="#algorithms-packages-community-algorithms" title="Link to this heading">¶</a></h2>
+<section id="module-packages.community.algorithms">
+<span id="algorithms-packages-community-algorithms"></span><h2>Algorithms — <code class="docutils literal notranslate"><span class="pre">packages.community.algorithms</span></code><a class="headerlink" href="#module-packages.community.algorithms" title="Link to this heading">¶</a></h2>
+<p>Community detection algorithms — Label Propagation on entity graphs.</p>
+<p>Entities are read from PostgreSQL <code class="docutils literal notranslate"><span class="pre">graph_entities</span></code> and relationships
+from <code class="docutils literal notranslate"><span class="pre">graph_relationships</span></code>.  A <code class="docutils literal notranslate"><span class="pre">networkx.Graph</span></code> is built and Label
+Propagation is run to detect clusters.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="packages.community.algorithms.build_entity_graph">
+<span class="sig-prename descclassname"><span class="pre">packages.community.algorithms.</span></span><span class="sig-name descname"><span class="pre">build_entity_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationships</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packages/community/algorithms.html#build_entity_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packages.community.algorithms.build_entity_graph" title="Link to this definition">¶</a></dt>
+<dd><p>Build a NetworkX graph from entities and relationships.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>entities</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em>) – List of entity dicts with at minimum <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">name</span></code> keys.</p></li>
+<li><p><strong>relationships</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em>) – List of relationship dicts with <code class="docutils literal notranslate"><span class="pre">source_id</span></code>,
+<code class="docutils literal notranslate"><span class="pre">target_id</span></code>, and <code class="docutils literal notranslate"><span class="pre">relationship_type</span></code> keys.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">networkx.Graph</span></code> with entity IDs as nodes and relationship types
+as edge attributes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Graph</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="packages.community.algorithms.detect_communities_label_propagation">
+<span class="sig-prename descclassname"><span class="pre">packages.community.algorithms.</span></span><span class="sig-name descname"><span class="pre">detect_communities_label_propagation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packages/community/algorithms.html#detect_communities_label_propagation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#packages.community.algorithms.detect_communities_label_propagation" title="Link to this definition">¶</a></dt>
+<dd><p>Run Label Propagation community detection on an entity graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>graph</strong> (<em>Graph</em>) – NetworkX graph where nodes are entity UUID strings and edges
+represent relationships between entities.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of node sets, each set representing a community.
+Communities with fewer than 2 members are filtered out.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)">set</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <p>The module exposes two pure functions.  There is no class, no state, and
 no dependency on any graph backend — all data is passed explicitly.</p>
 <section id="build-entity-graph">
 <h3><code class="docutils literal notranslate"><span class="pre">build_entity_graph</span></code><a class="headerlink" href="#build-entity-graph" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="build_entity_graph">
-<span class="sig-name descname"><span class="pre">build_entity_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationships</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#build_entity_graph" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id5">
+<span class="sig-prename descclassname"><span class="pre">packages.community.algorithms.</span></span><span class="sig-name descname"><span class="pre">build_entity_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relationships</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packages/community/algorithms.html#build_entity_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Link to this definition">¶</a></dt>
 <dd><p>Construct a <code class="xref py py-class docutils literal notranslate"><span class="pre">networkx.Graph</span></code> from entity and relationship dicts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -737,13 +1058,13 @@ check).</p>
 <section id="detect-communities-label-propagation">
 <h3><code class="docutils literal notranslate"><span class="pre">detect_communities_label_propagation</span></code><a class="headerlink" href="#detect-communities-label-propagation" title="Link to this heading">¶</a></h3>
 <dl class="py function">
-<dt class="sig sig-object py" id="detect_communities_label_propagation">
-<span class="sig-name descname"><span class="pre">detect_communities_label_propagation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#detect_communities_label_propagation" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id6">
+<span class="sig-prename descclassname"><span class="pre">packages.community.algorithms.</span></span><span class="sig-name descname"><span class="pre">detect_communities_label_propagation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/packages/community/algorithms.html#detect_communities_label_propagation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id6" title="Link to this definition">¶</a></dt>
 <dd><p>Run Label Propagation community detection on an entity graph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>graph</strong> (<em>networkx.Graph</em>) – A graph constructed by
-<a class="reference internal" href="#build_entity_graph" title="build_entity_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">build_entity_graph()</span></code></a>.</p>
+<a class="reference internal" href="#id5" title="packages.community.algorithms.build_entity_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">build_entity_graph()</span></code></a>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of node sets, where each set is a community of at least
@@ -814,9 +1135,61 @@ between runs.</p>
 dependency in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>).  No optional extras are needed.</p>
 </section>
 </section>
-<section id="arq-worker-workers-tasks-summarise-community">
-<h2>ARQ Worker — <code class="docutils literal notranslate"><span class="pre">workers.tasks.summarise_community</span></code><a class="headerlink" href="#arq-worker-workers-tasks-summarise-community" title="Link to this heading">¶</a></h2>
-<p>The <code class="xref py py-func docutils literal notranslate"><span class="pre">summarise_community()</span></code> task
+<section id="module-workers.tasks.summarise_community">
+<span id="arq-worker-workers-tasks-summarise-community"></span><h2>ARQ Worker — <code class="docutils literal notranslate"><span class="pre">workers.tasks.summarise_community</span></code><a class="headerlink" href="#module-workers.tasks.summarise_community" title="Link to this heading">¶</a></h2>
+<p>ARQ worker for community summarisation — scheduled nightly.</p>
+<p>Pipeline:
+1. Find orgs with graph data via the ORM
+2. Resolve per-org graph backend (surfaces SurrealDB or FalkorDB if configured)
+3. Per project within each org:</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>Fetch all entities + relationships via the graph backend</p></li>
+<li><p>Build a NetworkX graph</p></li>
+<li><p>Run Label Propagation community detection</p></li>
+<li><p>For each community with &gt;= 2 entities, generate an LLM summary</p></li>
+<li><p>Store community entities + MEMBER_OF edges via the graph backend</p></li>
+</ol>
+</div></blockquote>
+<p>All raw SQL has been removed — every graph operation goes through the
+<code class="docutils literal notranslate"><span class="pre">GraphBackend</span></code> ABC.  See Wave 3c of the migration.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="workers.tasks.summarise_community.COMMUNITY_MIN_ENTITY_COUNT">
+<span class="sig-prename descclassname"><span class="pre">workers.tasks.summarise_community.</span></span><span class="sig-name descname"><span class="pre">COMMUNITY_MIN_ENTITY_COUNT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></span><a class="headerlink" href="#workers.tasks.summarise_community.COMMUNITY_MIN_ENTITY_COUNT" title="Link to this definition">¶</a></dt>
+<dd><p>Minimum entities required for community detection to run for a project.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="workers.tasks.summarise_community.PROMPT_NAME">
+<span class="sig-prename descclassname"><span class="pre">workers.tasks.summarise_community.</span></span><span class="sig-name descname"><span class="pre">PROMPT_NAME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'summarise_community_v1'</span></span><a class="headerlink" href="#workers.tasks.summarise_community.PROMPT_NAME" title="Link to this definition">¶</a></dt>
+<dd><p>Name of the Jinja2 prompt template for community summarisation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.summarise_community.summarise_community">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.summarise_community.</span></span><span class="sig-name descname"><span class="pre">summarise_community</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/summarise_community.html#summarise_community"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.summarise_community.summarise_community" title="Link to this definition">¶</a></dt>
+<dd><p>ARQ worker: run community detection and summarisation.</p>
+<p>Can be called:
+- Without <code class="docutils literal notranslate"><span class="pre">org_id</span></code> (scheduled run): processes all eligible orgs.
+- With <code class="docutils literal notranslate"><span class="pre">org_id</span></code> (manual trigger): processes a single org.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – ARQ worker context (includes <code class="docutils literal notranslate"><span class="pre">redis</span></code>, <code class="docutils literal notranslate"><span class="pre">db</span></code>).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Optional org UUID to process (processes all if <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict with <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">orgs_processed</span></code>, <code class="docutils literal notranslate"><span class="pre">orgs_failed</span></code>,
+<code class="docutils literal notranslate"><span class="pre">communities_created</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>The <a class="reference internal" href="#workers.tasks.summarise_community.summarise_community" title="workers.tasks.summarise_community.summarise_community"><code class="xref py py-func docutils literal notranslate"><span class="pre">summarise_community()</span></code></a> task
 is the production consumer of the community detection algorithms.  It is
 an ARQ background job that:</p>
 <ol class="arabic simple">
@@ -827,8 +1200,8 @@ graph backend).</p></li>
 <ol class="loweralpha simple">
 <li><p>Fetches all entities via <code class="xref py py-meth docutils literal notranslate"><span class="pre">GraphBackend.get_all_entities()</span></code>.</p></li>
 <li><p>Fetches all relationships via <code class="xref py py-meth docutils literal notranslate"><span class="pre">GraphBackend.get_all_relationships()</span></code>.</p></li>
-<li><p>Runs <code class="xref py py-func docutils literal notranslate"><span class="pre">build_entity_graph()</span></code> and
-<code class="xref py py-func docutils literal notranslate"><span class="pre">detect_communities_label_propagation()</span></code>.</p></li>
+<li><p>Runs <a class="reference internal" href="#id5" title="packages.community.algorithms.build_entity_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">build_entity_graph()</span></code></a> and
+<a class="reference internal" href="#id6" title="packages.community.algorithms.detect_communities_label_propagation"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_communities_label_propagation()</span></code></a>.</p></li>
 <li><p>For each detected community with ≥ 2 members, calls
 <code class="xref py py-func docutils literal notranslate"><span class="pre">_create_community()</span></code> which:</p>
 <ul class="simple">
@@ -854,9 +1227,9 @@ the task raises <code class="docutils literal notranslate"><span class="pre">Run
 <h2>Trigger Mechanisms<a class="headerlink" href="#trigger-mechanisms" title="Link to this heading">¶</a></h2>
 <p>Community detection runs in one of two modes, controlled by the
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">OZ_AUTO_RUN_COMMUNITY_DETECTION</span></code> setting.</p>
-<div class="table-wrapper docutils container" id="id2">
-<table class="docutils align-default" id="id2">
-<caption><span class="caption-text">Trigger modes</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
+<div class="table-wrapper docutils container" id="id37">
+<table class="docutils align-default" id="id37">
+<caption><span class="caption-text">Trigger modes</span><a class="headerlink" href="#id37" title="Link to this table">¶</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Mode</p></th>
 <th class="head"><p>Config value</p></th>
@@ -874,7 +1247,7 @@ Job ID: <code class="docutils literal notranslate"><span class="pre">nightly_com
 <tr class="row-odd"><td><p>Event-driven</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">OZ_AUTO_RUN_COMMUNITY_DETECTION=true</span></code></p></td>
 <td><p>Enqueued after each
-<code class="xref py py-func docutils literal notranslate"><span class="pre">link_entities_to_episode()</span></code>
+<a class="reference internal" href="../api/workers.tasks.html#workers.tasks.link_entities_to_episode.link_entities_to_episode" title="workers.tasks.link_entities_to_episode.link_entities_to_episode"><code class="xref py py-func docutils literal notranslate"><span class="pre">link_entities_to_episode()</span></code></a>
 completion (graph sync step).  Runs on the <code class="docutils literal notranslate"><span class="pre">low_queue_full</span></code>
 worker queue.</p></td>
 <td><p>Per-organisation Redis key
@@ -918,7 +1291,7 @@ backend, using the same schema as regular entities.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Querying</strong> — via <a class="reference internal" href="memory_context.html#services.graph_service.GraphService" title="services.graph_service.GraphService"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphService</span></code></a>:</p>
+<p><strong>Querying</strong> — via <a class="reference internal" href="../api/services.html#services.graph_service.GraphService" title="services.graph_service.GraphService"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphService</span></code></a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># services/graph_service.py</span>
 <span class="n">communities</span> <span class="o">=</span> <span class="k">await</span> <span class="n">service</span><span class="o">.</span><span class="n">get_communities</span><span class="p">(</span>
     <span class="n">org_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span>
@@ -927,7 +1300,7 @@ backend, using the same schema as regular entities.</p>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">get_communities</span></code> delegates to
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">list_entities()</span></code>
+<a class="reference internal" href="../api/packages.graph_backend.html#packages.graph_backend.interface.GraphBackend.list_entities" title="packages.graph_backend.interface.GraphBackend.list_entities"><code class="xref py py-meth docutils literal notranslate"><span class="pre">list_entities()</span></code></a>
 with a filter for <code class="docutils literal notranslate"><span class="pre">entity_type='community'</span></code> (limit 200).  Each result
 dict is augmented with a <code class="docutils literal notranslate"><span class="pre">member_count</span></code> key extracted from the stored
 entity attributes.</p>
@@ -936,8 +1309,8 @@ entity attributes.</p>
 <span class="err">Authorization: Bearer &lt;token&gt;</span>
 </pre></div>
 </div>
-<p>Returns <code class="xref py py-class docutils literal notranslate"><span class="pre">GraphCommunitiesListResponse</span></code> — a list of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">GraphCommunity</span></code> objects:</p>
+<p>Returns <a class="reference internal" href="#schemas.graph.GraphCommunitiesListResponse" title="schemas.graph.GraphCommunitiesListResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphCommunitiesListResponse</span></code></a> — a list of
+<a class="reference internal" href="#schemas.graph.GraphCommunity" title="schemas.graph.GraphCommunity"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphCommunity</span></code></a> objects:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
@@ -953,8 +1326,685 @@ entity attributes.</p>
 </div>
 <p>The endpoint requires project membership (<code class="docutils literal notranslate"><span class="pre">Depends(require_project_membership)</span></code>).</p>
 </section>
-<section id="pydantic-schemas-schemas-graph">
-<h2>Pydantic Schemas — <code class="docutils literal notranslate"><span class="pre">schemas.graph</span></code><a class="headerlink" href="#pydantic-schemas-schemas-graph" title="Link to this heading">¶</a></h2>
+<section id="module-schemas.graph">
+<span id="pydantic-schemas-schemas-graph"></span><h2>Pydantic Schemas — <code class="docutils literal notranslate"><span class="pre">schemas.graph</span></code><a class="headerlink" href="#module-schemas.graph" title="Link to this heading">¶</a></h2>
+<p>Pydantic schemas for the graph (entity, edge, community) domain.</p>
+<p>Schemas must never import from <code class="docutils literal notranslate"><span class="pre">models/</span></code>, <code class="docutils literal notranslate"><span class="pre">services/</span></code>, or <code class="docutils literal notranslate"><span class="pre">routers/</span></code>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="schemas.graph.GraphCommunitiesListResponse">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">schemas.graph.</span></span><span class="sig-name descname"><span class="pre">GraphCommunitiesListResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schemas/graph.html#GraphCommunitiesListResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#schemas.graph.GraphCommunitiesListResponse" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Response wrapper for <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/projects/{project_id}/graph/communities</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference internal" href="#schemas.graph.GraphCommunity" title="schemas.graph.GraphCommunity"><em>GraphCommunity</em></a><em>]</em>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphCommunitiesListResponse.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#schemas.graph.GraphCommunitiesListResponse.data" title="Link to this definition">¶</a></dt>
+<dd><p>List of community summary nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference internal" href="#schemas.graph.GraphCommunity" title="schemas.graph.GraphCommunity">GraphCommunity</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">data</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#schemas.graph.GraphCommunity" title="schemas.graph.GraphCommunity"><span class="pre">GraphCommunity</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#id7" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphCommunitiesListResponse.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#schemas.graph.GraphCommunitiesListResponse.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="schemas.graph.GraphCommunity">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">schemas.graph.</span></span><span class="sig-name descname"><span class="pre">GraphCommunity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">summary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schemas/graph.html#GraphCommunity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#schemas.graph.GraphCommunity" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>A community summary node representing a cluster of related entities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>summary</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>member_count</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="(in Python v3.14)"><em>Annotated</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>Ge</em><em>(</em><em>ge=0</em><em>)</em><em>]</em>)</p></li>
+<li><p><strong>created_at</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphCommunity.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#schemas.graph.GraphCommunity.id" title="Link to this definition">¶</a></dt>
+<dd><p>UUID string identifying the community node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphCommunity.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#schemas.graph.GraphCommunity.name" title="Link to this definition">¶</a></dt>
+<dd><p>Human-readable name for the community cluster.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphCommunity.summary">
+<span class="sig-name descname"><span class="pre">summary</span></span><a class="headerlink" href="#schemas.graph.GraphCommunity.summary" title="Link to this definition">¶</a></dt>
+<dd><p>LLM-generated summary of the community.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphCommunity.member_count">
+<span class="sig-name descname"><span class="pre">member_count</span></span><a class="headerlink" href="#schemas.graph.GraphCommunity.member_count" title="Link to this definition">¶</a></dt>
+<dd><p>Number of entity nodes in this community.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphCommunity.created_at">
+<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#schemas.graph.GraphCommunity.created_at" title="Link to this definition">¶</a></dt>
+<dd><p>ISO-8601 timestamp of community creation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">created_at</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><a class="headerlink" href="#id8" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#id9" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">member_count</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#id10" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphCommunity.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#schemas.graph.GraphCommunity.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#id11" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">summary</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#id12" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="schemas.graph.GraphEdge">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">schemas.graph.</span></span><span class="sig-name descname"><span class="pre">GraphEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schemas/graph.html#GraphEdge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#schemas.graph.GraphEdge" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>A single relationship edge in the knowledge graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>source_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>target_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>properties</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>)</p></li>
+<li><p><strong>created_at</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphEdge.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#schemas.graph.GraphEdge.id" title="Link to this definition">¶</a></dt>
+<dd><p>UUID string identifying the edge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphEdge.source_id">
+<span class="sig-name descname"><span class="pre">source_id</span></span><a class="headerlink" href="#schemas.graph.GraphEdge.source_id" title="Link to this definition">¶</a></dt>
+<dd><p>UUID of the source entity node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphEdge.target_id">
+<span class="sig-name descname"><span class="pre">target_id</span></span><a class="headerlink" href="#schemas.graph.GraphEdge.target_id" title="Link to this definition">¶</a></dt>
+<dd><p>UUID of the target entity node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphEdge.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#schemas.graph.GraphEdge.type" title="Link to this definition">¶</a></dt>
+<dd><p>Relationship label (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;works_at&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;mentions&quot;</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphEdge.properties">
+<span class="sig-name descname"><span class="pre">properties</span></span><a class="headerlink" href="#schemas.graph.GraphEdge.properties" title="Link to this definition">¶</a></dt>
+<dd><p>Key-value metadata attached to the edge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphEdge.created_at">
+<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#schemas.graph.GraphEdge.created_at" title="Link to this definition">¶</a></dt>
+<dd><p>ISO-8601 timestamp of edge creation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">created_at</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><a class="headerlink" href="#id13" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#id14" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphEdge.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#schemas.graph.GraphEdge.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">properties</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#id15" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id16">
+<span class="sig-name descname"><span class="pre">source_id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#id16" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id17">
+<span class="sig-name descname"><span class="pre">target_id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#id17" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id18">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#id18" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="schemas.graph.GraphEdgesListResponse">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">schemas.graph.</span></span><span class="sig-name descname"><span class="pre">GraphEdgesListResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schemas/graph.html#GraphEdgesListResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#schemas.graph.GraphEdgesListResponse" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Response wrapper for <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/projects/{project_id}/graph/edges</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="#schemas.graph.PaginatedGraphEdges" title="schemas.graph.PaginatedGraphEdges"><em>PaginatedGraphEdges</em></a>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphEdgesListResponse.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#schemas.graph.GraphEdgesListResponse.data" title="Link to this definition">¶</a></dt>
+<dd><p>Paginated edge results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#schemas.graph.PaginatedGraphEdges" title="schemas.graph.PaginatedGraphEdges">PaginatedGraphEdges</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id19">
+<span class="sig-name descname"><span class="pre">data</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#schemas.graph.PaginatedGraphEdges" title="schemas.graph.PaginatedGraphEdges"><span class="pre">PaginatedGraphEdges</span></a></span><a class="headerlink" href="#id19" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphEdgesListResponse.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#schemas.graph.GraphEdgesListResponse.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="schemas.graph.GraphNode">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">schemas.graph.</span></span><span class="sig-name descname"><span class="pre">GraphNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">summary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schemas/graph.html#GraphNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#schemas.graph.GraphNode" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>A single entity node in the knowledge graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>summary</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>created_at</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphNode.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#schemas.graph.GraphNode.id" title="Link to this definition">¶</a></dt>
+<dd><p>UUID string identifying the entity node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphNode.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#schemas.graph.GraphNode.name" title="Link to this definition">¶</a></dt>
+<dd><p>Human-readable display name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphNode.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#schemas.graph.GraphNode.type" title="Link to this definition">¶</a></dt>
+<dd><p>Entity type label (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;Person&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Organization&quot;</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphNode.summary">
+<span class="sig-name descname"><span class="pre">summary</span></span><a class="headerlink" href="#schemas.graph.GraphNode.summary" title="Link to this definition">¶</a></dt>
+<dd><p>Optional text summary or description.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphNode.created_at">
+<span class="sig-name descname"><span class="pre">created_at</span></span><a class="headerlink" href="#schemas.graph.GraphNode.created_at" title="Link to this definition">¶</a></dt>
+<dd><p>ISO-8601 timestamp of node creation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphNode.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><a class="headerlink" href="#schemas.graph.GraphNode.metadata" title="Link to this definition">¶</a></dt>
+<dd><p>Additional engine-specific metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id20">
+<span class="sig-name descname"><span class="pre">created_at</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><a class="headerlink" href="#id20" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id21">
+<span class="sig-name descname"><span class="pre">id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#id21" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id22">
+<span class="sig-name descname"><span class="pre">metadata</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#id22" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphNode.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#schemas.graph.GraphNode.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id23">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#id23" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id24">
+<span class="sig-name descname"><span class="pre">summary</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#id24" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id25">
+<span class="sig-name descname"><span class="pre">type</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#id25" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="schemas.graph.GraphNodeDetail">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">schemas.graph.</span></span><span class="sig-name descname"><span class="pre">GraphNodeDetail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edges</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schemas/graph.html#GraphNodeDetail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#schemas.graph.GraphNodeDetail" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>A single entity node with all its incident edges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> (<a class="reference internal" href="#schemas.graph.GraphNode" title="schemas.graph.GraphNode"><em>GraphNode</em></a>)</p></li>
+<li><p><strong>edges</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference internal" href="#schemas.graph.GraphEdge" title="schemas.graph.GraphEdge"><em>GraphEdge</em></a><em>]</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphNodeDetail.node">
+<span class="sig-name descname"><span class="pre">node</span></span><a class="headerlink" href="#schemas.graph.GraphNodeDetail.node" title="Link to this definition">¶</a></dt>
+<dd><p>The entity node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#schemas.graph.GraphNode" title="schemas.graph.GraphNode">GraphNode</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphNodeDetail.edges">
+<span class="sig-name descname"><span class="pre">edges</span></span><a class="headerlink" href="#schemas.graph.GraphNodeDetail.edges" title="Link to this definition">¶</a></dt>
+<dd><p>All incident edges (both incoming and outgoing).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference internal" href="#schemas.graph.GraphEdge" title="schemas.graph.GraphEdge">GraphEdge</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id26">
+<span class="sig-name descname"><span class="pre">edges</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#schemas.graph.GraphEdge" title="schemas.graph.GraphEdge"><span class="pre">GraphEdge</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#id26" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphNodeDetail.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#schemas.graph.GraphNodeDetail.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id27">
+<span class="sig-name descname"><span class="pre">node</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#schemas.graph.GraphNode" title="schemas.graph.GraphNode"><span class="pre">GraphNode</span></a></span><a class="headerlink" href="#id27" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="schemas.graph.GraphNodeDetailResponse">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">schemas.graph.</span></span><span class="sig-name descname"><span class="pre">GraphNodeDetailResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schemas/graph.html#GraphNodeDetailResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#schemas.graph.GraphNodeDetailResponse" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Response wrapper for <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/projects/{project_id}/graph/nodes/{node_id}</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="#schemas.graph.GraphNodeDetail" title="schemas.graph.GraphNodeDetail"><em>GraphNodeDetail</em></a>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphNodeDetailResponse.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#schemas.graph.GraphNodeDetailResponse.data" title="Link to this definition">¶</a></dt>
+<dd><p>The entity node with its incident edges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#schemas.graph.GraphNodeDetail" title="schemas.graph.GraphNodeDetail">GraphNodeDetail</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id28">
+<span class="sig-name descname"><span class="pre">data</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#schemas.graph.GraphNodeDetail" title="schemas.graph.GraphNodeDetail"><span class="pre">GraphNodeDetail</span></a></span><a class="headerlink" href="#id28" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphNodeDetailResponse.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#schemas.graph.GraphNodeDetailResponse.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="schemas.graph.GraphNodesListResponse">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">schemas.graph.</span></span><span class="sig-name descname"><span class="pre">GraphNodesListResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schemas/graph.html#GraphNodesListResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#schemas.graph.GraphNodesListResponse" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Response wrapper for <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/projects/{project_id}/graph/nodes</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="#schemas.graph.PaginatedGraphNodes" title="schemas.graph.PaginatedGraphNodes"><em>PaginatedGraphNodes</em></a>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphNodesListResponse.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#schemas.graph.GraphNodesListResponse.data" title="Link to this definition">¶</a></dt>
+<dd><p>Paginated entity node results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#schemas.graph.PaginatedGraphNodes" title="schemas.graph.PaginatedGraphNodes">PaginatedGraphNodes</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id29">
+<span class="sig-name descname"><span class="pre">data</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#schemas.graph.PaginatedGraphNodes" title="schemas.graph.PaginatedGraphNodes"><span class="pre">PaginatedGraphNodes</span></a></span><a class="headerlink" href="#id29" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.GraphNodesListResponse.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#schemas.graph.GraphNodesListResponse.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="schemas.graph.PaginatedGraphEdges">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">schemas.graph.</span></span><span class="sig-name descname"><span class="pre">PaginatedGraphEdges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_more</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schemas/graph.html#PaginatedGraphEdges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#schemas.graph.PaginatedGraphEdges" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Cursor-paginated response for edge listing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>items</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference internal" href="#schemas.graph.GraphEdge" title="schemas.graph.GraphEdge"><em>GraphEdge</em></a><em>]</em>)</p></li>
+<li><p><strong>next_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>has_more</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.PaginatedGraphEdges.items">
+<span class="sig-name descname"><span class="pre">items</span></span><a class="headerlink" href="#schemas.graph.PaginatedGraphEdges.items" title="Link to this definition">¶</a></dt>
+<dd><p>List of edges for the current page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference internal" href="#schemas.graph.GraphEdge" title="schemas.graph.GraphEdge">GraphEdge</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.PaginatedGraphEdges.next_cursor">
+<span class="sig-name descname"><span class="pre">next_cursor</span></span><a class="headerlink" href="#schemas.graph.PaginatedGraphEdges.next_cursor" title="Link to this definition">¶</a></dt>
+<dd><p>Opaque cursor for the next page (null if last page).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.PaginatedGraphEdges.has_more">
+<span class="sig-name descname"><span class="pre">has_more</span></span><a class="headerlink" href="#schemas.graph.PaginatedGraphEdges.has_more" title="Link to this definition">¶</a></dt>
+<dd><p>True if additional pages exist beyond this one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id30">
+<span class="sig-name descname"><span class="pre">has_more</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#id30" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id31">
+<span class="sig-name descname"><span class="pre">items</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#schemas.graph.GraphEdge" title="schemas.graph.GraphEdge"><span class="pre">GraphEdge</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#id31" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.PaginatedGraphEdges.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#schemas.graph.PaginatedGraphEdges.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id32">
+<span class="sig-name descname"><span class="pre">next_cursor</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><a class="headerlink" href="#id32" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="schemas.graph.PaginatedGraphNodes">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">schemas.graph.</span></span><span class="sig-name descname"><span class="pre">PaginatedGraphNodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_more</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schemas/graph.html#PaginatedGraphNodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#schemas.graph.PaginatedGraphNodes" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Cursor-paginated response for entity node listing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>items</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference internal" href="#schemas.graph.GraphNode" title="schemas.graph.GraphNode"><em>GraphNode</em></a><em>]</em>)</p></li>
+<li><p><strong>next_cursor</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>has_more</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.PaginatedGraphNodes.items">
+<span class="sig-name descname"><span class="pre">items</span></span><a class="headerlink" href="#schemas.graph.PaginatedGraphNodes.items" title="Link to this definition">¶</a></dt>
+<dd><p>List of entity nodes for the current page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference internal" href="#schemas.graph.GraphNode" title="schemas.graph.GraphNode">GraphNode</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.PaginatedGraphNodes.next_cursor">
+<span class="sig-name descname"><span class="pre">next_cursor</span></span><a class="headerlink" href="#schemas.graph.PaginatedGraphNodes.next_cursor" title="Link to this definition">¶</a></dt>
+<dd><p>Opaque cursor for the next page (null if last page).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.PaginatedGraphNodes.has_more">
+<span class="sig-name descname"><span class="pre">has_more</span></span><a class="headerlink" href="#schemas.graph.PaginatedGraphNodes.has_more" title="Link to this definition">¶</a></dt>
+<dd><p>True if additional pages exist beyond this one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id33">
+<span class="sig-name descname"><span class="pre">has_more</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#id33" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id34">
+<span class="sig-name descname"><span class="pre">items</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#schemas.graph.GraphNode" title="schemas.graph.GraphNode"><span class="pre">GraphNode</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#id34" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="schemas.graph.PaginatedGraphNodes.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#schemas.graph.PaginatedGraphNodes.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id35">
+<span class="sig-name descname"><span class="pre">next_cursor</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><a class="headerlink" href="#id35" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="constants-thresholds">
 <h2>Constants &amp; Thresholds<a class="headerlink" href="#constants-thresholds" title="Link to this heading">¶</a></h2>
@@ -1109,37 +2159,178 @@ attribute during community creation.</p></li>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#abstract-interface-packages-reranker-interface">Abstract Interface — <code class="docutils literal notranslate"><span class="pre">packages.reranker.interface</span></code></a><ul>
-<li><a class="reference internal" href="#CrossEncoderReranker"><code class="docutils literal notranslate"><span class="pre">CrossEncoderReranker</span></code></a><ul>
-<li><a class="reference internal" href="#CrossEncoderReranker.backend_name"><code class="docutils literal notranslate"><span class="pre">CrossEncoderReranker.backend_name</span></code></a></li>
-<li><a class="reference internal" href="#CrossEncoderReranker.rerank"><code class="docutils literal notranslate"><span class="pre">CrossEncoderReranker.rerank()</span></code></a></li>
+<li><a class="reference internal" href="#module-packages.reranker.interface">Abstract Interface — <code class="docutils literal notranslate"><span class="pre">packages.reranker.interface</span></code></a><ul>
+<li><a class="reference internal" href="#packages.reranker.interface.CrossEncoderReranker"><code class="docutils literal notranslate"><span class="pre">CrossEncoderReranker</span></code></a><ul>
+<li><a class="reference internal" href="#packages.reranker.interface.CrossEncoderReranker.backend_name"><code class="docutils literal notranslate"><span class="pre">CrossEncoderReranker.backend_name</span></code></a></li>
+<li><a class="reference internal" href="#packages.reranker.interface.CrossEncoderReranker.rerank"><code class="docutils literal notranslate"><span class="pre">CrossEncoderReranker.rerank()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#packages.reranker.interface.DEFAULT_RERANK_TOP_K"><code class="docutils literal notranslate"><span class="pre">DEFAULT_RERANK_TOP_K</span></code></a></li>
+<li><a class="reference internal" href="#packages.reranker.interface.DEFAULT_RERANK_TOP_N"><code class="docutils literal notranslate"><span class="pre">DEFAULT_RERANK_TOP_N</span></code></a></li>
+<li><a class="reference internal" href="#packages.reranker.interface.RRF_K"><code class="docutils literal notranslate"><span class="pre">RRF_K</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">CrossEncoderReranker</span></code></a><ul>
+<li><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">CrossEncoderReranker.backend_name</span></code></a></li>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">CrossEncoderReranker.rerank()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#input-output-contract">Input/output contract</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#implementation-sentencetransformersreranker">Implementation — SentenceTransformersReranker</a></li>
-<li><a class="reference internal" href="#implementation-coherereranker">Implementation — CohereReranker</a></li>
-<li><a class="reference internal" href="#config-driven-factory-packages-reranker-factory">Config-Driven Factory — <code class="docutils literal notranslate"><span class="pre">packages.reranker.factory</span></code></a></li>
+<li><a class="reference internal" href="#implementation-sentencetransformersreranker">Implementation — SentenceTransformersReranker</a><ul>
+<li><a class="reference internal" href="#packages.reranker.sentence_transformers.SentenceTransformersReranker"><code class="docutils literal notranslate"><span class="pre">SentenceTransformersReranker</span></code></a><ul>
+<li><a class="reference internal" href="#packages.reranker.sentence_transformers.SentenceTransformersReranker.DEFAULT_MODEL"><code class="docutils literal notranslate"><span class="pre">SentenceTransformersReranker.DEFAULT_MODEL</span></code></a></li>
+<li><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">SentenceTransformersReranker.DEFAULT_MODEL</span></code></a></li>
+<li><a class="reference internal" href="#packages.reranker.sentence_transformers.SentenceTransformersReranker.__init__"><code class="docutils literal notranslate"><span class="pre">SentenceTransformersReranker.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#packages.reranker.sentence_transformers.SentenceTransformersReranker.backend_name"><code class="docutils literal notranslate"><span class="pre">SentenceTransformersReranker.backend_name</span></code></a></li>
+<li><a class="reference internal" href="#packages.reranker.sentence_transformers.SentenceTransformersReranker.rerank"><code class="docutils literal notranslate"><span class="pre">SentenceTransformersReranker.rerank()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementation-coherereranker">Implementation — CohereReranker</a><ul>
+<li><a class="reference internal" href="#packages.reranker.cohere.CohereReranker"><code class="docutils literal notranslate"><span class="pre">CohereReranker</span></code></a><ul>
+<li><a class="reference internal" href="#packages.reranker.cohere.CohereReranker.DEFAULT_MODEL"><code class="docutils literal notranslate"><span class="pre">CohereReranker.DEFAULT_MODEL</span></code></a></li>
+<li><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">CohereReranker.DEFAULT_MODEL</span></code></a></li>
+<li><a class="reference internal" href="#packages.reranker.cohere.CohereReranker.__init__"><code class="docutils literal notranslate"><span class="pre">CohereReranker.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#packages.reranker.cohere.CohereReranker.backend_name"><code class="docutils literal notranslate"><span class="pre">CohereReranker.backend_name</span></code></a></li>
+<li><a class="reference internal" href="#packages.reranker.cohere.CohereReranker.rerank"><code class="docutils literal notranslate"><span class="pre">CohereReranker.rerank()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-packages.reranker.factory">Config-Driven Factory — <code class="docutils literal notranslate"><span class="pre">packages.reranker.factory</span></code></a><ul>
+<li><a class="reference internal" href="#packages.reranker.factory.RerankerFactory"><code class="docutils literal notranslate"><span class="pre">RerankerFactory</span></code></a><ul>
+<li><a class="reference internal" href="#packages.reranker.factory.RerankerFactory.create"><code class="docutils literal notranslate"><span class="pre">RerankerFactory.create()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#community-detection">Community Detection</a><ul>
-<li><a class="reference internal" href="#algorithms-packages-community-algorithms">Algorithms — <code class="docutils literal notranslate"><span class="pre">packages.community.algorithms</span></code></a><ul>
+<li><a class="reference internal" href="#module-packages.community.algorithms">Algorithms — <code class="docutils literal notranslate"><span class="pre">packages.community.algorithms</span></code></a><ul>
+<li><a class="reference internal" href="#packages.community.algorithms.build_entity_graph"><code class="docutils literal notranslate"><span class="pre">build_entity_graph()</span></code></a></li>
+<li><a class="reference internal" href="#packages.community.algorithms.detect_communities_label_propagation"><code class="docutils literal notranslate"><span class="pre">detect_communities_label_propagation()</span></code></a></li>
 <li><a class="reference internal" href="#build-entity-graph"><code class="docutils literal notranslate"><span class="pre">build_entity_graph</span></code></a><ul>
-<li><a class="reference internal" href="#build_entity_graph"><code class="docutils literal notranslate"><span class="pre">build_entity_graph()</span></code></a></li>
+<li><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">build_entity_graph()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#detect-communities-label-propagation"><code class="docutils literal notranslate"><span class="pre">detect_communities_label_propagation</span></code></a><ul>
-<li><a class="reference internal" href="#detect_communities_label_propagation"><code class="docutils literal notranslate"><span class="pre">detect_communities_label_propagation()</span></code></a></li>
+<li><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">detect_communities_label_propagation()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#dependency">Dependency</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#arq-worker-workers-tasks-summarise-community">ARQ Worker — <code class="docutils literal notranslate"><span class="pre">workers.tasks.summarise_community</span></code></a></li>
+<li><a class="reference internal" href="#module-workers.tasks.summarise_community">ARQ Worker — <code class="docutils literal notranslate"><span class="pre">workers.tasks.summarise_community</span></code></a><ul>
+<li><a class="reference internal" href="#workers.tasks.summarise_community.COMMUNITY_MIN_ENTITY_COUNT"><code class="docutils literal notranslate"><span class="pre">COMMUNITY_MIN_ENTITY_COUNT</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.summarise_community.PROMPT_NAME"><code class="docutils literal notranslate"><span class="pre">PROMPT_NAME</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.summarise_community.summarise_community"><code class="docutils literal notranslate"><span class="pre">summarise_community()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#trigger-mechanisms">Trigger Mechanisms</a></li>
 <li><a class="reference internal" href="#result-storage-querying">Result Storage &amp; Querying</a></li>
-<li><a class="reference internal" href="#pydantic-schemas-schemas-graph">Pydantic Schemas — <code class="docutils literal notranslate"><span class="pre">schemas.graph</span></code></a></li>
+<li><a class="reference internal" href="#module-schemas.graph">Pydantic Schemas — <code class="docutils literal notranslate"><span class="pre">schemas.graph</span></code></a><ul>
+<li><a class="reference internal" href="#schemas.graph.GraphCommunitiesListResponse"><code class="docutils literal notranslate"><span class="pre">GraphCommunitiesListResponse</span></code></a><ul>
+<li><a class="reference internal" href="#schemas.graph.GraphCommunitiesListResponse.data"><code class="docutils literal notranslate"><span class="pre">GraphCommunitiesListResponse.data</span></code></a></li>
+<li><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">GraphCommunitiesListResponse.data</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphCommunitiesListResponse.model_config"><code class="docutils literal notranslate"><span class="pre">GraphCommunitiesListResponse.model_config</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#schemas.graph.GraphCommunity"><code class="docutils literal notranslate"><span class="pre">GraphCommunity</span></code></a><ul>
+<li><a class="reference internal" href="#schemas.graph.GraphCommunity.id"><code class="docutils literal notranslate"><span class="pre">GraphCommunity.id</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphCommunity.name"><code class="docutils literal notranslate"><span class="pre">GraphCommunity.name</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphCommunity.summary"><code class="docutils literal notranslate"><span class="pre">GraphCommunity.summary</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphCommunity.member_count"><code class="docutils literal notranslate"><span class="pre">GraphCommunity.member_count</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphCommunity.created_at"><code class="docutils literal notranslate"><span class="pre">GraphCommunity.created_at</span></code></a></li>
+<li><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">GraphCommunity.created_at</span></code></a></li>
+<li><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">GraphCommunity.id</span></code></a></li>
+<li><a class="reference internal" href="#id10"><code class="docutils literal notranslate"><span class="pre">GraphCommunity.member_count</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphCommunity.model_config"><code class="docutils literal notranslate"><span class="pre">GraphCommunity.model_config</span></code></a></li>
+<li><a class="reference internal" href="#id11"><code class="docutils literal notranslate"><span class="pre">GraphCommunity.name</span></code></a></li>
+<li><a class="reference internal" href="#id12"><code class="docutils literal notranslate"><span class="pre">GraphCommunity.summary</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#schemas.graph.GraphEdge"><code class="docutils literal notranslate"><span class="pre">GraphEdge</span></code></a><ul>
+<li><a class="reference internal" href="#schemas.graph.GraphEdge.id"><code class="docutils literal notranslate"><span class="pre">GraphEdge.id</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphEdge.source_id"><code class="docutils literal notranslate"><span class="pre">GraphEdge.source_id</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphEdge.target_id"><code class="docutils literal notranslate"><span class="pre">GraphEdge.target_id</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphEdge.type"><code class="docutils literal notranslate"><span class="pre">GraphEdge.type</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphEdge.properties"><code class="docutils literal notranslate"><span class="pre">GraphEdge.properties</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphEdge.created_at"><code class="docutils literal notranslate"><span class="pre">GraphEdge.created_at</span></code></a></li>
+<li><a class="reference internal" href="#id13"><code class="docutils literal notranslate"><span class="pre">GraphEdge.created_at</span></code></a></li>
+<li><a class="reference internal" href="#id14"><code class="docutils literal notranslate"><span class="pre">GraphEdge.id</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphEdge.model_config"><code class="docutils literal notranslate"><span class="pre">GraphEdge.model_config</span></code></a></li>
+<li><a class="reference internal" href="#id15"><code class="docutils literal notranslate"><span class="pre">GraphEdge.properties</span></code></a></li>
+<li><a class="reference internal" href="#id16"><code class="docutils literal notranslate"><span class="pre">GraphEdge.source_id</span></code></a></li>
+<li><a class="reference internal" href="#id17"><code class="docutils literal notranslate"><span class="pre">GraphEdge.target_id</span></code></a></li>
+<li><a class="reference internal" href="#id18"><code class="docutils literal notranslate"><span class="pre">GraphEdge.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#schemas.graph.GraphEdgesListResponse"><code class="docutils literal notranslate"><span class="pre">GraphEdgesListResponse</span></code></a><ul>
+<li><a class="reference internal" href="#schemas.graph.GraphEdgesListResponse.data"><code class="docutils literal notranslate"><span class="pre">GraphEdgesListResponse.data</span></code></a></li>
+<li><a class="reference internal" href="#id19"><code class="docutils literal notranslate"><span class="pre">GraphEdgesListResponse.data</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphEdgesListResponse.model_config"><code class="docutils literal notranslate"><span class="pre">GraphEdgesListResponse.model_config</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#schemas.graph.GraphNode"><code class="docutils literal notranslate"><span class="pre">GraphNode</span></code></a><ul>
+<li><a class="reference internal" href="#schemas.graph.GraphNode.id"><code class="docutils literal notranslate"><span class="pre">GraphNode.id</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphNode.name"><code class="docutils literal notranslate"><span class="pre">GraphNode.name</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphNode.type"><code class="docutils literal notranslate"><span class="pre">GraphNode.type</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphNode.summary"><code class="docutils literal notranslate"><span class="pre">GraphNode.summary</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphNode.created_at"><code class="docutils literal notranslate"><span class="pre">GraphNode.created_at</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphNode.metadata"><code class="docutils literal notranslate"><span class="pre">GraphNode.metadata</span></code></a></li>
+<li><a class="reference internal" href="#id20"><code class="docutils literal notranslate"><span class="pre">GraphNode.created_at</span></code></a></li>
+<li><a class="reference internal" href="#id21"><code class="docutils literal notranslate"><span class="pre">GraphNode.id</span></code></a></li>
+<li><a class="reference internal" href="#id22"><code class="docutils literal notranslate"><span class="pre">GraphNode.metadata</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphNode.model_config"><code class="docutils literal notranslate"><span class="pre">GraphNode.model_config</span></code></a></li>
+<li><a class="reference internal" href="#id23"><code class="docutils literal notranslate"><span class="pre">GraphNode.name</span></code></a></li>
+<li><a class="reference internal" href="#id24"><code class="docutils literal notranslate"><span class="pre">GraphNode.summary</span></code></a></li>
+<li><a class="reference internal" href="#id25"><code class="docutils literal notranslate"><span class="pre">GraphNode.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#schemas.graph.GraphNodeDetail"><code class="docutils literal notranslate"><span class="pre">GraphNodeDetail</span></code></a><ul>
+<li><a class="reference internal" href="#schemas.graph.GraphNodeDetail.node"><code class="docutils literal notranslate"><span class="pre">GraphNodeDetail.node</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphNodeDetail.edges"><code class="docutils literal notranslate"><span class="pre">GraphNodeDetail.edges</span></code></a></li>
+<li><a class="reference internal" href="#id26"><code class="docutils literal notranslate"><span class="pre">GraphNodeDetail.edges</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphNodeDetail.model_config"><code class="docutils literal notranslate"><span class="pre">GraphNodeDetail.model_config</span></code></a></li>
+<li><a class="reference internal" href="#id27"><code class="docutils literal notranslate"><span class="pre">GraphNodeDetail.node</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#schemas.graph.GraphNodeDetailResponse"><code class="docutils literal notranslate"><span class="pre">GraphNodeDetailResponse</span></code></a><ul>
+<li><a class="reference internal" href="#schemas.graph.GraphNodeDetailResponse.data"><code class="docutils literal notranslate"><span class="pre">GraphNodeDetailResponse.data</span></code></a></li>
+<li><a class="reference internal" href="#id28"><code class="docutils literal notranslate"><span class="pre">GraphNodeDetailResponse.data</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphNodeDetailResponse.model_config"><code class="docutils literal notranslate"><span class="pre">GraphNodeDetailResponse.model_config</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#schemas.graph.GraphNodesListResponse"><code class="docutils literal notranslate"><span class="pre">GraphNodesListResponse</span></code></a><ul>
+<li><a class="reference internal" href="#schemas.graph.GraphNodesListResponse.data"><code class="docutils literal notranslate"><span class="pre">GraphNodesListResponse.data</span></code></a></li>
+<li><a class="reference internal" href="#id29"><code class="docutils literal notranslate"><span class="pre">GraphNodesListResponse.data</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.GraphNodesListResponse.model_config"><code class="docutils literal notranslate"><span class="pre">GraphNodesListResponse.model_config</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#schemas.graph.PaginatedGraphEdges"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphEdges</span></code></a><ul>
+<li><a class="reference internal" href="#schemas.graph.PaginatedGraphEdges.items"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphEdges.items</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.PaginatedGraphEdges.next_cursor"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphEdges.next_cursor</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.PaginatedGraphEdges.has_more"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphEdges.has_more</span></code></a></li>
+<li><a class="reference internal" href="#id30"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphEdges.has_more</span></code></a></li>
+<li><a class="reference internal" href="#id31"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphEdges.items</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.PaginatedGraphEdges.model_config"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphEdges.model_config</span></code></a></li>
+<li><a class="reference internal" href="#id32"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphEdges.next_cursor</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#schemas.graph.PaginatedGraphNodes"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphNodes</span></code></a><ul>
+<li><a class="reference internal" href="#schemas.graph.PaginatedGraphNodes.items"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphNodes.items</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.PaginatedGraphNodes.next_cursor"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphNodes.next_cursor</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.PaginatedGraphNodes.has_more"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphNodes.has_more</span></code></a></li>
+<li><a class="reference internal" href="#id33"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphNodes.has_more</span></code></a></li>
+<li><a class="reference internal" href="#id34"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphNodes.items</span></code></a></li>
+<li><a class="reference internal" href="#schemas.graph.PaginatedGraphNodes.model_config"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphNodes.model_config</span></code></a></li>
+<li><a class="reference internal" href="#id35"><code class="docutils literal notranslate"><span class="pre">PaginatedGraphNodes.next_cursor</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#constants-thresholds">Constants &amp; Thresholds</a></li>
 <li><a class="reference internal" href="#frontend-hull-visualization">Frontend Hull Visualization</a></li>
 </ul>

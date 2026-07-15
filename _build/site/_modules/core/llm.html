@@ -1,0 +1,1062 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>core.llm - OpenZync Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">OpenZync Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  <span class="sidebar-brand-text">OpenZync Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/contributing.html">Contributing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../domains/core.html">Core Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../domains/llm.html">LLM Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../domains/graph_backends.html">Graph Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../domains/reranker.html">Re-ranking &amp; Community Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../domains/reranker.html#community-detection">Community Detection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Domain Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../domains/auth.html">Authentication &amp; Authorization Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../domains/memory_context.html">Memory &amp; Context Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../domains/admin_webhooks.html">Admin &amp; Webhooks Domain</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API &amp; Workers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../domains/api_layer.html">API Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../domains/workers.html">Worker System — ARQ Background Job Processing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SDK, MCP &amp; Frontend</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../domains/sdk_python.html">Python SDK (openzync)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../domains/mcp_server.html">MCP Server (FastMCP)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../domains/frontend.html">OpenZync Frontend</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Infra</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../domains/infrastructure.html">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</a><input aria-label="Toggle navigation of Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture Decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference (Auto-generated)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/core.html">core package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/routers.html">routers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/models.html">models package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/schemas.html">schemas package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/services.html">services package</a><input aria-label="Toggle navigation of services package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/services.api.html">services.api package</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/services.mcp.html">services.mcp package</a><input aria-label="Toggle navigation of services.mcp package" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/services.mcp.tools.html">services.mcp.tools package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/services.mcp.transport.html">services.mcp.transport package</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../api/services.worker.html">services.worker package</a><input aria-label="Toggle navigation of services.worker package" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/services.worker.prompts.html">services.worker.prompts package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/services.worker.tasks.html">services.worker.tasks package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/repositories.html">repositories package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/middleware.html">middleware package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/dependencies.html">dependencies package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/workers.html">workers package</a><input aria-label="Toggle navigation of workers package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/workers.tasks.html">workers.tasks package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/utils.html">utils package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../api/packages.html">packages package</a><input aria-label="Toggle navigation of packages package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/packages.community.html">packages.community package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/packages.graph_backend.html">packages.graph_backend package</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for core.llm</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;BYOK (Bring Your Own Key) LLM abstraction.</span>
+
+<span class="sd">Defines the ``LLMBackend`` abstract base class, the ``LLMBackendRegistry``</span>
+<span class="sd">for provider registration, and the ``resolve_backend`` factory that chains</span>
+<span class="sd">org-level config → explicit argument → environment variable → auto-detect.</span>
+
+<span class="sd">Usage::</span>
+
+<span class="sd">    from core.llm import resolve_backend, LLMBackend</span>
+
+<span class="sd">    backend: LLMBackend = await resolve_backend(provider=&quot;openai&quot;)</span>
+<span class="sd">    response = await backend.chat([{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hello&quot;}])</span>
+<span class="sd">    print(response.content)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">orjson</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ValidationError</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">LLMStructuredOutputError</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="c1"># ═══════════════════════════════════════════════════════════════════════════════</span>
+<span class="c1"># Data types</span>
+<span class="c1"># ═══════════════════════════════════════════════════════════════════════════════</span>
+
+
+<div class="viewcode-block" id="LLMProvider">
+<a class="viewcode-back" href="../../api/core.html#core.llm.LLMProvider">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LLMProvider</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supported LLM provider identifiers.&quot;&quot;&quot;</span>
+
+    <span class="n">OLLAMA</span> <span class="o">=</span> <span class="s2">&quot;ollama&quot;</span>
+    <span class="n">OPENAI</span> <span class="o">=</span> <span class="s2">&quot;openai&quot;</span>
+    <span class="n">AZURE</span> <span class="o">=</span> <span class="s2">&quot;azure&quot;</span>
+    <span class="n">ANTHROPIC</span> <span class="o">=</span> <span class="s2">&quot;anthropic&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="TokenUsage">
+<a class="viewcode-back" href="../../api/core.html#core.llm.TokenUsage">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TokenUsage</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Token consumption report for a single LLM call.&quot;&quot;&quot;</span>
+
+    <span class="n">prompt_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">completion_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">cache_read_input_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>       <span class="c1"># tokens served from provider cache</span>
+    <span class="n">cache_creation_input_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>   <span class="c1"># tokens written to provider cache</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">total_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sum of prompt and completion tokens.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_tokens</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">completion_tokens</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">total_cache_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sum of cache read and creation tokens.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_read_input_tokens</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_creation_input_tokens</span></div>
+
+
+
+<div class="viewcode-block" id="PromptCachingConfig">
+<a class="viewcode-back" href="../../api/core.html#core.llm.PromptCachingConfig">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PromptCachingConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Per-call configuration for provider-side prompt caching.</span>
+
+<span class="sd">    Each backend interprets the fields relevant to it:</span>
+<span class="sd">    - Anthropic: enabled, anthropic_min_tokens, anthropic_cache_ttl</span>
+<span class="sd">    - OpenAI/Azure: enabled (automatic prefix caching needs no config)</span>
+<span class="sd">    - OpenRouter: enabled, session_id (for sticky routing)</span>
+<span class="sd">    - Ollama: ignored (no caching support)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">anthropic_min_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1024</span>
+    <span class="n">anthropic_cache_ttl</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;5m&quot;</span>
+    <span class="n">session_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="ChatResponse">
+<a class="viewcode-back" href="../../api/core.html#core.llm.ChatResponse">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ChatResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Uniform response from any LLM chat backend.</span>
+
+<span class="sd">    When ``response_model`` was passed to :meth:`LLMBackend.chat` and</span>
+<span class="sd">    validation succeeded, :attr:`validated_data` holds the parsed Pydantic</span>
+<span class="sd">    model instance so callers can access typed fields directly instead</span>
+<span class="sd">    of re-parsing ``content``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">content</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">usage</span><span class="p">:</span> <span class="n">TokenUsage</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">TokenUsage</span><span class="p">)</span>
+    <span class="n">validated_data</span><span class="p">:</span> <span class="n">BaseModel</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="EmbeddingResponse">
+<a class="viewcode-back" href="../../api/core.html#core.llm.EmbeddingResponse">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EmbeddingResponse</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Uniform response from any embedding backend.&quot;&quot;&quot;</span>
+
+    <span class="n">embeddings</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span>
+    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span></div>
+
+
+
+<div class="viewcode-block" id="build_cache_config">
+<a class="viewcode-back" href="../../api/core.html#core.llm.build_cache_config">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_cache_config</span><span class="p">(</span>
+    <span class="n">org_config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PromptCachingConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a PromptCachingConfig from per-org settings or global defaults.</span>
+
+<span class="sd">    ``OZ_PROMPT_CACHING_ENABLED`` is a hard kill switch: when set to</span>
+<span class="sd">    ``False``, caching is disabled for all orgs regardless of per-org</span>
+<span class="sd">    config.  This allows operators to disable caching globally without</span>
+<span class="sd">    touching every org&#39;s settings.</span>
+
+<span class="sd">    Resolution order:</span>
+<span class="sd">    1. ``settings.PROMPT_CACHING_ENABLED`` — hard kill switch (returns</span>
+<span class="sd">       ``enabled=False`` immediately if ``False``).</span>
+<span class="sd">    2. ``org_config.get(&quot;prompt_caching&quot;)`` dict — per-org overrides for</span>
+<span class="sd">       ``anthropic_min_tokens`` and ``anthropic_cache_ttl``.</span>
+<span class="sd">    3. ``settings.PROMPT_CACHING_*`` — global defaults fallback.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        org_config: Optional per-org config dict (from DB JSONB column).</span>
+<span class="sd">            May contain a ``&quot;prompt_caching&quot;`` key with ``enabled``,</span>
+<span class="sd">            ``anthropic_min_tokens``, ``anthropic_cache_ttl``.</span>
+<span class="sd">        session_id: Optional session ID for OpenRouter sticky routing.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A ``PromptCachingConfig`` instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Lazy import to avoid circular dependency at module load time.</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>  <span class="c1"># noqa: PLC0415  # fmt: skip</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">settings</span><span class="o">.</span><span class="n">PROMPT_CACHING_ENABLED</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">PromptCachingConfig</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">pc</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">org_config</span><span class="p">:</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="n">org_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;prompt_caching&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+
+    <span class="k">return</span> <span class="n">PromptCachingConfig</span><span class="p">(</span>
+        <span class="n">enabled</span><span class="o">=</span><span class="n">pc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enabled&quot;</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">PROMPT_CACHING_ENABLED</span><span class="p">),</span>
+        <span class="n">anthropic_min_tokens</span><span class="o">=</span><span class="n">pc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;anthropic_min_tokens&quot;</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">PROMPT_CACHING_ANTHROPIC_MIN_TOKENS</span>
+        <span class="p">),</span>
+        <span class="n">anthropic_cache_ttl</span><span class="o">=</span><span class="n">pc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;anthropic_cache_ttl&quot;</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">PROMPT_CACHING_ANTHROPIC_TTL</span>
+        <span class="p">),</span>
+        <span class="n">session_id</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="c1"># ═══════════════════════════════════════════════════════════════════════════════</span>
+<span class="c1"># Helpers</span>
+<span class="c1"># ═══════════════════════════════════════════════════════════════════════════════</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_last_validation_error</span><span class="p">(</span><span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a short diagnostic message for a validation failure.</span>
+
+<span class="sd">    Tries to parse *content* and validate it against *model*, then returns</span>
+<span class="sd">    the validation error string.  If even JSON parsing fails, returns a</span>
+<span class="sd">    message indicating that.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Try JSON parse first</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parsed</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">orjson</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">content</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+    <span class="k">except</span> <span class="n">orjson</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Invalid JSON: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Try model validation</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">parsed</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="s2">&quot;Unknown validation error&quot;</span>
+
+
+<span class="c1"># ═══════════════════════════════════════════════════════════════════════════════</span>
+<span class="c1"># Abstract backend</span>
+<span class="c1"># ═══════════════════════════════════════════════════════════════════════════════</span>
+
+
+<div class="viewcode-block" id="LLMBackend">
+<a class="viewcode-back" href="../../api/core.html#core.llm.LLMBackend">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LLMBackend</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for all LLM providers.</span>
+
+<span class="sd">    Subclasses implement ``_chat`` and ``embed`` using the provider&#39;s SDK or</span>
+<span class="sd">    HTTP API.  Every backend reports which model it is using and the embedding</span>
+<span class="sd">    dimensionality.</span>
+
+<span class="sd">    The public ``chat`` method adds optional structured-output validation:</span>
+<span class="sd">    when a ``response_model`` is provided, the method auto-injects a system</span>
+<span class="sd">    prompt with the expected JSON schema, validates the response against the</span>
+<span class="sd">    model, and retries up to ``validation_retries`` times on failure with</span>
+<span class="sd">    error-context feedback in the retry messages.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: Number of validation retries when a Pydantic ``response_model`` is</span>
+    <span class="c1">#: provided but the LLM output fails to parse into it.</span>
+    <span class="n">VALIDATION_RETRIES</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+
+<div class="viewcode-block" id="LLMBackend.chat">
+<a class="viewcode-back" href="../../api/core.html#core.llm.LLMBackend.chat">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">chat</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+        <span class="n">response_model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">validation_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cache_config</span><span class="p">:</span> <span class="n">PromptCachingConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChatResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a chat completion, optionally validating against a Pydantic model.</span>
+
+<span class="sd">        When ``response_model`` is ``None`` (default) this method delegates</span>
+<span class="sd">        directly to ``_chat()`` — the per-backend provider call.</span>
+
+<span class="sd">        When ``response_model`` is provided:</span>
+
+<span class="sd">        1. A system instruction with the model&#39;s JSON schema is injected into</span>
+<span class="sd">           *messages* so the LLM knows the expected output shape.</span>
+<span class="sd">        2. The provider is called via ``_chat()``.</span>
+<span class="sd">        3. The response is parsed and validated against *response_model*.</span>
+<span class="sd">        4. On success the ``ChatResponse`` is returned as-is.</span>
+<span class="sd">        5. On failure the conversation history is amended with the bad output</span>
+<span class="sd">           and a retry prompt explaining *why* it failed, then the provider</span>
+<span class="sd">           is called again.</span>
+<span class="sd">        6. After exhausting ``validation_retries`` attempts a</span>
+<span class="sd">           :class:`LLMStructuredOutputError` is raised.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            messages: List of message dicts with ``role`` and ``content``</span>
+<span class="sd">                keys, following the OpenAI message format.</span>
+<span class="sd">            response_model: Optional Pydantic model to validate the output</span>
+<span class="sd">                content against.  When provided, the LLM is instructed to</span>
+<span class="sd">                emit JSON matching the model&#39;s schema.</span>
+<span class="sd">            validation_retries: Override for the number of validation retry</span>
+<span class="sd">                attempts.  Defaults to :attr:`VALIDATION_RETRIES`.</span>
+<span class="sd">            cache_config: Optional prompt caching configuration.  Passed</span>
+<span class="sd">                through to the backend&#39;s ``_chat`` which interprets it</span>
+<span class="sd">                according to the provider&#39;s caching capabilities.</span>
+<span class="sd">            **kwargs: Additional provider-specific parameters (temperature,</span>
+<span class="sd">                max_tokens, top_p, etc.).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A ``ChatResponse`` with the generated text and token usage.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            LLMStructuredOutputError: If the output cannot be validated</span>
+<span class="sd">                against *response_model* after exhausting retries.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">retries</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">validation_retries</span>
+            <span class="k">if</span> <span class="n">validation_retries</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">VALIDATION_RETRIES</span>
+        <span class="p">)</span>
+
+        <span class="c1"># No schema — fast path, delegate directly.</span>
+        <span class="k">if</span> <span class="n">response_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chat</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">cache_config</span><span class="o">=</span><span class="n">cache_config</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="n">messages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inject_schema_instr</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">response_model</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">retries</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">response</span><span class="p">:</span> <span class="n">ChatResponse</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chat</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">cache_config</span><span class="o">=</span><span class="n">cache_config</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="c1"># ── Try clean model_validate_json first ───────────────────────────</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response</span><span class="o">.</span><span class="n">validated_data</span> <span class="o">=</span> <span class="n">response_model</span><span class="o">.</span><span class="n">model_validate_json</span><span class="p">(</span>
+                    <span class="n">response</span><span class="o">.</span><span class="n">content</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="n">response</span>
+            <span class="k">except</span> <span class="n">ValidationError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="c1"># ── Fallback: strip fences, hunt for JSON, try again ──────────────</span>
+            <span class="n">extracted</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_json</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">extracted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">response</span><span class="o">.</span><span class="n">validated_data</span> <span class="o">=</span> <span class="n">response_model</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span>
+                        <span class="n">extracted</span>
+                    <span class="p">)</span>
+                    <span class="c1"># Normalise content to clean JSON so callers can use</span>
+                    <span class="c1"># ``model_validate_json()`` without pre-processing.</span>
+                    <span class="n">response</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">orjson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">extracted</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="n">response</span>
+                <span class="k">except</span> <span class="n">ValidationError</span><span class="p">:</span>
+                    <span class="k">pass</span>  <span class="c1"># fall through to retry</span>
+
+            <span class="c1"># ── Retry or exhaust ──────────────────────────────────────────────</span>
+            <span class="k">if</span> <span class="n">attempt</span> <span class="o">&gt;=</span> <span class="n">retries</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">LLMStructuredOutputError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;LLM output failed to match </span><span class="si">{</span><span class="n">response_model</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;after </span><span class="si">{</span><span class="n">retries</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> attempt(s).&quot;</span><span class="p">,</span>
+                    <span class="n">model_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span>
+                    <span class="n">content_preview</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">[:</span><span class="mi">300</span><span class="p">],</span>
+                    <span class="n">validation_error</span><span class="o">=</span><span class="n">_last_validation_error</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">response_model</span><span class="p">),</span>
+                <span class="p">)</span>
+
+            <span class="n">messages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_retry_messages</span><span class="p">(</span>
+                <span class="n">messages</span><span class="p">,</span>
+                <span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">,</span>
+                <span class="n">response_model</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;unreachable&quot;</span><span class="p">)</span>  <span class="c1"># pragma: no cover</span></div>
+
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_chat</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+        <span class="n">cache_config</span><span class="p">:</span> <span class="n">PromptCachingConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChatResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provider-specific chat implementation.</span>
+
+<span class="sd">        Override this in each backend.  The public :meth:`chat` wraps</span>
+<span class="sd">        this with validation, retry, and structured-output logic.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            messages: List of message dicts following OpenAI format.</span>
+<span class="sd">            cache_config: Optional prompt caching configuration.  Each</span>
+<span class="sd">                backend interprets this according to its provider&#39;s</span>
+<span class="sd">                caching capabilities.</span>
+<span class="sd">            **kwargs: Provider-specific parameters.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A ``ChatResponse``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">...</span>
+
+    <span class="c1"># ── Structured-output helpers ──────────────────────────────────────────────</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inject_schema_instr</span><span class="p">(</span>
+        <span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepend (or append to existing) system instruction with JSON schema.</span>
+
+<span class="sd">        Builds a directive telling the LLM to output valid JSON matching</span>
+<span class="sd">        the Pydantic model&#39;s schema, then injects it into *messages*.</span>
+
+<span class="sd">        If the first message already has ``role == &quot;system&quot;`` the schema</span>
+<span class="sd">        instruction is appended to its content.  Otherwise a new system</span>
+<span class="sd">        message is prepended.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">schema_json</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">orjson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">(),</span> <span class="n">option</span><span class="o">=</span><span class="n">orjson</span><span class="o">.</span><span class="n">OPT_INDENT_2</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="n">instruction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;You MUST respond with valid JSON only. &quot;</span>
+            <span class="s2">&quot;Do NOT include markdown code blocks, explanations, &quot;</span>
+            <span class="s2">&quot;or any text outside the JSON object.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected JSON schema:</span><span class="se">\n</span><span class="si">{</span><span class="n">schema_json</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">messages</span> <span class="ow">and</span> <span class="n">messages</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;role&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;system&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="p">{</span><span class="o">**</span><span class="n">messages</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">messages</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;content&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n\n</span><span class="si">{</span><span class="n">instruction</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">},</span>
+                <span class="o">*</span><span class="n">messages</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
+            <span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">instruction</span><span class="p">},</span> <span class="o">*</span><span class="n">messages</span><span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_retry_messages</span><span class="p">(</span>
+        <span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+        <span class="n">bad_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append assistant error + user retry prompt after a validation failure.</span>
+
+<span class="sd">        Adds the failed output as an ``assistant`` message and follows it</span>
+<span class="sd">        with a ``user`` message explaining the failure and repeating the</span>
+<span class="sd">        expected schema.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">schema_json</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">orjson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">(),</span> <span class="n">option</span><span class="o">=</span><span class="n">orjson</span><span class="o">.</span><span class="n">OPT_INDENT_2</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="o">*</span><span class="n">messages</span><span class="p">,</span>
+            <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;assistant&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">bad_content</span><span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="s2">&quot;The previous response was NOT valid JSON matching the &quot;</span>
+                    <span class="s2">&quot;expected schema.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;Please try again. Output ONLY valid JSON. &quot;</span>
+                    <span class="s2">&quot;No markdown fences, no extra text.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Expected schema:</span><span class="se">\n</span><span class="si">{</span><span class="n">schema_json</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">),</span>
+            <span class="p">},</span>
+        <span class="p">]</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_json</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Strip markdown fences and other wrappers, then parse JSON.</span>
+
+<span class="sd">        Attempts to recover a JSON value from text that may be wrapped in</span>
+<span class="sd">        `````json```` markers, preceded by thinking blocks (e.g. deepseek-r1),</span>
+<span class="sd">        or contain leading/trailing non-JSON text.</span>
+
+<span class="sd">        Returns the parsed Python value (dict / list / str / etc.) on</span>
+<span class="sd">        success, or ``None`` if no valid JSON could be extracted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Strip markdown code fences</span>
+        <span class="k">if</span> <span class="s2">&quot;```json&quot;</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;```json&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;```&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="s2">&quot;```&quot;</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;```&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;```&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="c1"># Find the first JSON object or array start</span>
+        <span class="n">json_start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">,</span> <span class="s2">&quot;[&quot;</span><span class="p">):</span>
+            <span class="n">pos</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">json_start</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">pos</span> <span class="o">&lt;</span> <span class="n">json_start</span><span class="p">):</span>
+                <span class="n">json_start</span> <span class="o">=</span> <span class="n">pos</span>
+
+        <span class="k">if</span> <span class="n">json_start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="n">json_start</span><span class="p">:]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">orjson</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+        <span class="k">except</span> <span class="n">orjson</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># ── Abstract members ───────────────────────────────────────────────────────</span>
+
+<div class="viewcode-block" id="LLMBackend.embed">
+<a class="viewcode-back" href="../../api/core.html#core.llm.LLMBackend.embed">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">embed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbeddingResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate embeddings for one or more text strings.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            texts: List of input strings to embed.</span>
+<span class="sd">            **kwargs: Additional provider-specific parameters.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An ``EmbeddingResponse`` containing the embedding vectors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The model identifier currently in use (e.g. ``&quot;gpt-4o&quot;``).&quot;&quot;&quot;</span>
+        <span class="o">...</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">embedding_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dimensionality of the embedding vectors produced by this backend.</span>
+
+<span class="sd">        Returns 0 if the backend does not support embeddings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+
+<span class="c1"># ═══════════════════════════════════════════════════════════════════════════════</span>
+<span class="c1"># Registry</span>
+<span class="c1"># ═══════════════════════════════════════════════════════════════════════════════</span>
+
+
+<div class="viewcode-block" id="LLMBackendRegistry">
+<a class="viewcode-back" href="../../api/core.html#core.llm.LLMBackendRegistry">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LLMBackendRegistry</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Registry of available LLM backend *classes* (not instances).</span>
+
+<span class="sd">    Backends register themselves at import time via the ``@register``</span>
+<span class="sd">    decorator or an explicit ``register()`` call.  The registry is used by</span>
+<span class="sd">    ``resolve_backend`` to look up the correct class by name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_backends</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">LLMBackend</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="LLMBackendRegistry.register">
+<a class="viewcode-back" href="../../api/core.html#core.llm.LLMBackendRegistry.register">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">backend_cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">LLMBackend</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register a backend class under a provider name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Provider name (e.g. ``&quot;openai&quot;``).  Must match</span>
+<span class="sd">                :class:`LLMProvider` values.</span>
+<span class="sd">            backend_cls: The class to instantiate when this provider is</span>
+<span class="sd">                selected.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If a backend with the same name is already registered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;LLM backend &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; is already registered as </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">backend_cls</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;llm.backend_registered&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;backend_name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;cls&quot;</span><span class="p">:</span> <span class="n">backend_cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="LLMBackendRegistry.get">
+<a class="viewcode-back" href="../../api/core.html#core.llm.LLMBackendRegistry.get">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">LLMBackend</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Look up a registered backend class by provider name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Provider name.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The registered backend class.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the provider name is not registered.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unknown LLM backend: &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Available: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">list_available</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="LLMBackendRegistry.list_available">
+<a class="viewcode-back" href="../../api/core.html#core.llm.LLMBackendRegistry.list_available">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_available</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List all registered provider names.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_backends</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+</div>
+
+
+
+<span class="c1"># ── Concrete backend imports (register at module load) ─────────────────────</span>
+
+<span class="c1"># Use lazy import to avoid circular dependency: llm.py imports llm_backends.py</span>
+<span class="c1"># which imports llm.py.  importlib breaks the cycle by not requiring specific</span>
+<span class="c1"># names from the partially-initialised module.</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;core.llm_backends&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># ═══════════════════════════════════════════════════════════════════════════════</span>
+<span class="c1"># Resolution</span>
+<span class="c1"># ═══════════════════════════════════════════════════════════════════════════════</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">LLMConfigurationError</span> <span class="k">as</span> <span class="n">LLMConfigurationError</span>
+
+
+<div class="viewcode-block" id="resolve_backend">
+<a class="viewcode-back" href="../../api/core.html#core.llm.resolve_backend">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">resolve_backend</span><span class="p">(</span>
+    <span class="n">provider</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">org_config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LLMBackend</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve the appropriate LLM backend via org config or explicit argument.</span>
+
+<span class="sd">    The resolution order is:</span>
+
+<span class="sd">    1. **Org-level config** — ``org_config.get(&quot;llm_backend&quot;)``</span>
+<span class="sd">    2. **Explicit argument** — the ``provider`` parameter</span>
+<span class="sd">    3. **Error** — raises :class:`LLMConfigurationError`</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        provider: Explicit override.  If provided, org config is skipped.</span>
+<span class="sd">        org_config: Optional dict with per-organisation LLM settings.</span>
+<span class="sd">            Supported keys: ``llm_backend``, ``ollama_base_url``,</span>
+<span class="sd">            ``openai_api_key``, ``openai_model``, ``azure_endpoint``,</span>
+<span class="sd">            ``azure_api_key``, ``azure_deployment``, ``anthropic_api_key``,</span>
+<span class="sd">            ``anthropic_model``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An initialised ``LLMBackend`` instance.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        LLMConfigurationError: If no backend could be resolved.</span>
+<span class="sd">        ValueError: If the resolved provider name is unknown.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">provider_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># 1. Org-level config (skip if explicit provider given).</span>
+    <span class="k">if</span> <span class="n">provider</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">org_config</span> <span class="ow">and</span> <span class="n">org_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;llm_backend&quot;</span><span class="p">):</span>
+        <span class="n">provider_name</span> <span class="o">=</span> <span class="n">org_config</span><span class="p">[</span><span class="s2">&quot;llm_backend&quot;</span><span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;llm.resolved_from_org_config&quot;</span><span class="p">,</span>
+            <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;provider&quot;</span><span class="p">:</span> <span class="n">provider_name</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">_create_backend</span><span class="p">(</span><span class="n">provider_name</span><span class="p">,</span> <span class="n">org_config</span><span class="p">)</span>
+
+    <span class="c1"># 2. Explicit argument.</span>
+    <span class="k">if</span> <span class="n">provider</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">provider_name</span> <span class="o">=</span> <span class="n">provider</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;llm.resolved_from_argument&quot;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;provider&quot;</span><span class="p">:</span> <span class="n">provider_name</span><span class="p">})</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">_create_backend</span><span class="p">(</span><span class="n">provider_name</span><span class="p">,</span> <span class="n">org_config</span><span class="p">)</span>
+
+    <span class="c1"># 3. Nothing worked.</span>
+    <span class="k">raise</span> <span class="n">LLMConfigurationError</span><span class="p">(</span>
+        <span class="s2">&quot;No LLM backend configured.  Pass a provider argument or set &quot;</span>
+        <span class="s2">&quot;llm_backend in the per-org configuration.&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="c1"># ── Internal helpers ─────────────────────────────────────────────────────────</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create_backend</span><span class="p">(</span><span class="n">provider</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LLMBackend</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Instantiate an LLM backend for *provider*, passing optional config.</span>
+
+<span class="sd">    All provider-specific values (API keys, model names, endpoints) come</span>
+<span class="sd">    exclusively from *config* — there is **no** env-var fallback and **no**</span>
+<span class="sd">    hardcoded default at this layer.  Every required field must be present</span>
+<span class="sd">    in *config* or the function raises :class:`LLMConfigurationError`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        provider: One of ``&quot;ollama&quot;``, ``&quot;openai&quot;``, ``&quot;azure&quot;``,</span>
+<span class="sd">            ``&quot;anthropic&quot;``, ``&quot;openrouter&quot;``.</span>
+<span class="sd">        config: Optional dict with provider-specific overrides (API keys,</span>
+<span class="sd">            model names, endpoints).  Required fields vary by provider.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An initialised ``LLMBackend`` instance.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        LLMConfigurationError: If a required config field is missing or empty.</span>
+<span class="sd">        ValueError: If *provider* is not recognised.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">backend_cls</span> <span class="o">=</span> <span class="n">LLMBackendRegistry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">provider</span> <span class="o">==</span> <span class="s2">&quot;ollama&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ollama_base_url&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">LLMConfigurationError</span><span class="p">(</span>
+                <span class="s2">&quot;Ollama backend requires ollama_base_url in per-org &quot;</span>
+                <span class="s2">&quot;configuration.  Set it via PATCH /admin/org/config.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">instance</span><span class="p">:</span> <span class="n">LLMBackend</span> <span class="o">=</span> <span class="n">backend_cls</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;ollama_base_url&quot;</span><span class="p">])</span>  <span class="c1"># type: ignore[call-arg]</span>
+    <span class="k">elif</span> <span class="n">provider</span> <span class="o">==</span> <span class="s2">&quot;openai&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;openai_api_key&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">LLMConfigurationError</span><span class="p">(</span>
+                <span class="s2">&quot;OpenAI backend requires openai_api_key in per-org &quot;</span>
+                <span class="s2">&quot;configuration.  Set it via PATCH /admin/org/config.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;openai_api_key&quot;</span><span class="p">]</span>
+        <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;openai_model&quot;</span><span class="p">)</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">backend_cls</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">provider</span> <span class="o">==</span> <span class="s2">&quot;azure&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;azure_endpoint&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">LLMConfigurationError</span><span class="p">(</span>
+                <span class="s2">&quot;Azure backend requires azure_endpoint in per-org &quot;</span>
+                <span class="s2">&quot;configuration.  Set it via PATCH /admin/org/config.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;azure_api_key&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">LLMConfigurationError</span><span class="p">(</span>
+                <span class="s2">&quot;Azure backend requires azure_api_key in per-org &quot;</span>
+                <span class="s2">&quot;configuration.  Set it via PATCH /admin/org/config.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;azure_deployment&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">LLMConfigurationError</span><span class="p">(</span>
+                <span class="s2">&quot;Azure backend requires azure_deployment in per-org &quot;</span>
+                <span class="s2">&quot;configuration.  Set it via PATCH /admin/org/config.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">backend_cls</span><span class="p">(</span>
+            <span class="n">endpoint</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;azure_endpoint&quot;</span><span class="p">],</span>
+            <span class="n">api_key</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;azure_api_key&quot;</span><span class="p">],</span>
+            <span class="n">deployment</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;azure_deployment&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">provider</span> <span class="o">==</span> <span class="s2">&quot;anthropic&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;anthropic_api_key&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">LLMConfigurationError</span><span class="p">(</span>
+                <span class="s2">&quot;Anthropic backend requires anthropic_api_key in per-org &quot;</span>
+                <span class="s2">&quot;configuration.  Set it via PATCH /admin/org/config.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;anthropic_api_key&quot;</span><span class="p">]</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;anthropic_model&quot;</span><span class="p">)</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">backend_cls</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">provider</span> <span class="o">==</span> <span class="s2">&quot;openrouter&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;api_key&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">LLMConfigurationError</span><span class="p">(</span>
+                <span class="s2">&quot;OpenRouter backend requires api_key in per-org &quot;</span>
+                <span class="s2">&quot;configuration.  Set it via PATCH /admin/org/config.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;api_key&quot;</span><span class="p">]</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">)</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">backend_cls</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown provider: </span><span class="si">{</span><span class="n">provider</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">instance</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Rohan Shaw
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

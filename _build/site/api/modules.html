@@ -317,19 +317,411 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="core.html">core package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="core.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#core-arq-module">core.arq module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#core-config-module">core.config module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#core-cursor-module">core.cursor module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#core-db-module">core.db module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#core-events-module">core.events module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#core-exceptions-module">core.exceptions module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#core-graph-backend-module">core.graph_backend module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#core-llm-module">core.llm module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#core-llm-backends-module">core.llm_backends module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#core-logging-module">core.logging module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#core-org-config-module">core.org_config module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#core-prompt-manifest-module">core.prompt_manifest module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.html#core-redis-module">core.redis module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.arq">core.arq module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.arq.ARQPool"><code class="docutils literal notranslate"><span class="pre">ARQPool</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.arq.ARQPool.__init__"><code class="docutils literal notranslate"><span class="pre">ARQPool.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.arq.ARQPool.close"><code class="docutils literal notranslate"><span class="pre">ARQPool.close()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.arq.ARQPool.enqueue"><code class="docutils literal notranslate"><span class="pre">ARQPool.enqueue()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.arq.ARQPool.initialize"><code class="docutils literal notranslate"><span class="pre">ARQPool.initialize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.arq.ARQPool.pool"><code class="docutils literal notranslate"><span class="pre">ARQPool.pool</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.arq.close_arq"><code class="docutils literal notranslate"><span class="pre">close_arq()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.arq.get_arq"><code class="docutils literal notranslate"><span class="pre">get_arq()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.arq.init_arq"><code class="docutils literal notranslate"><span class="pre">init_arq()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.config">core.config module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.config.BootstrapSettings"><code class="docutils literal notranslate"><span class="pre">BootstrapSettings</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.BootstrapSettings.OPENBAO_ADDR"><code class="docutils literal notranslate"><span class="pre">BootstrapSettings.OPENBAO_ADDR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.BootstrapSettings.OPENBAO_ROLE_ID"><code class="docutils literal notranslate"><span class="pre">BootstrapSettings.OPENBAO_ROLE_ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.BootstrapSettings.OPENBAO_SECRET_ID"><code class="docutils literal notranslate"><span class="pre">BootstrapSettings.OPENBAO_SECRET_ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.BootstrapSettings.OPENBAO_WORKER_ROLE_ID"><code class="docutils literal notranslate"><span class="pre">BootstrapSettings.OPENBAO_WORKER_ROLE_ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.BootstrapSettings.OPENBAO_WORKER_SECRET_ID"><code class="docutils literal notranslate"><span class="pre">BootstrapSettings.OPENBAO_WORKER_SECRET_ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.BootstrapSettings.model_config"><code class="docutils literal notranslate"><span class="pre">BootstrapSettings.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.config.Settings"><code class="docutils literal notranslate"><span class="pre">Settings</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.CORS_ORIGINS"><code class="docutils literal notranslate"><span class="pre">Settings.CORS_ORIGINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.DATABASE_URL"><code class="docutils literal notranslate"><span class="pre">Settings.DATABASE_URL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.ENVIRONMENT"><code class="docutils literal notranslate"><span class="pre">Settings.ENVIRONMENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.FALKORDB_MAX_CONNECTIONS"><code class="docutils literal notranslate"><span class="pre">Settings.FALKORDB_MAX_CONNECTIONS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.FALKORDB_SOCKET_TIMEOUT"><code class="docutils literal notranslate"><span class="pre">Settings.FALKORDB_SOCKET_TIMEOUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.FALKORDB_URL"><code class="docutils literal notranslate"><span class="pre">Settings.FALKORDB_URL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.HOSTS_ALLOWED"><code class="docutils literal notranslate"><span class="pre">Settings.HOSTS_ALLOWED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.JWT_ACCESS_TOKEN_TTL_MINUTES"><code class="docutils literal notranslate"><span class="pre">Settings.JWT_ACCESS_TOKEN_TTL_MINUTES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.JWT_REFRESH_TOKEN_TTL_DAYS"><code class="docutils literal notranslate"><span class="pre">Settings.JWT_REFRESH_TOKEN_TTL_DAYS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.LOG_LEVEL"><code class="docutils literal notranslate"><span class="pre">Settings.LOG_LEVEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.MAX_WORKERS"><code class="docutils literal notranslate"><span class="pre">Settings.MAX_WORKERS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.PROMETHEUS_URL"><code class="docutils literal notranslate"><span class="pre">Settings.PROMETHEUS_URL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.PROMPT_CACHING_ANTHROPIC_MIN_TOKENS"><code class="docutils literal notranslate"><span class="pre">Settings.PROMPT_CACHING_ANTHROPIC_MIN_TOKENS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.PROMPT_CACHING_ANTHROPIC_TTL"><code class="docutils literal notranslate"><span class="pre">Settings.PROMPT_CACHING_ANTHROPIC_TTL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.PROMPT_CACHING_ENABLED"><code class="docutils literal notranslate"><span class="pre">Settings.PROMPT_CACHING_ENABLED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.RATE_LIMIT_IP_MAX"><code class="docutils literal notranslate"><span class="pre">Settings.RATE_LIMIT_IP_MAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.RATE_LIMIT_WINDOW_SEC"><code class="docutils literal notranslate"><span class="pre">Settings.RATE_LIMIT_WINDOW_SEC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.REDIS_URL"><code class="docutils literal notranslate"><span class="pre">Settings.REDIS_URL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.SECRET_KEY"><code class="docutils literal notranslate"><span class="pre">Settings.SECRET_KEY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.SMTP_FROM_ADDR"><code class="docutils literal notranslate"><span class="pre">Settings.SMTP_FROM_ADDR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.SMTP_HOST"><code class="docutils literal notranslate"><span class="pre">Settings.SMTP_HOST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.SMTP_PASSWORD"><code class="docutils literal notranslate"><span class="pre">Settings.SMTP_PASSWORD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.SMTP_PORT"><code class="docutils literal notranslate"><span class="pre">Settings.SMTP_PORT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.SMTP_START_TLS"><code class="docutils literal notranslate"><span class="pre">Settings.SMTP_START_TLS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.SMTP_USERNAME"><code class="docutils literal notranslate"><span class="pre">Settings.SMTP_USERNAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.SMTP_USE_TLS"><code class="docutils literal notranslate"><span class="pre">Settings.SMTP_USE_TLS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.WEBHOOK_SIGNING_SECRET"><code class="docutils literal notranslate"><span class="pre">Settings.WEBHOOK_SIGNING_SECRET</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.config.Settings.model_config"><code class="docutils literal notranslate"><span class="pre">Settings.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.config.__getattr__"><code class="docutils literal notranslate"><span class="pre">__getattr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.config.get_settings"><code class="docutils literal notranslate"><span class="pre">get_settings()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.config.set_settings"><code class="docutils literal notranslate"><span class="pre">set_settings()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.cursor">core.cursor module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.cursor.decode_cursor"><code class="docutils literal notranslate"><span class="pre">decode_cursor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.cursor.encode_cursor"><code class="docutils literal notranslate"><span class="pre">encode_cursor()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.db">core.db module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.db.check_db_health"><code class="docutils literal notranslate"><span class="pre">check_db_health()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.db.close_db_engine"><code class="docutils literal notranslate"><span class="pre">close_db_engine()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.db.get_async_session"><code class="docutils literal notranslate"><span class="pre">get_async_session()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.db.get_db"><code class="docutils literal notranslate"><span class="pre">get_db()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.db.init_db_engine"><code class="docutils literal notranslate"><span class="pre">init_db_engine()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.events">core.events module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.events.EventMeta"><code class="docutils literal notranslate"><span class="pre">EventMeta</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventMeta.category"><code class="docutils literal notranslate"><span class="pre">EventMeta.category</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventMeta.description"><code class="docutils literal notranslate"><span class="pre">EventMeta.description</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventMeta.label"><code class="docutils literal notranslate"><span class="pre">EventMeta.label</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventMeta.type"><code class="docutils literal notranslate"><span class="pre">EventMeta.type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.events.EventType"><code class="docutils literal notranslate"><span class="pre">EventType</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventType.CLASSIFICATION_CREATED"><code class="docutils literal notranslate"><span class="pre">EventType.CLASSIFICATION_CREATED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventType.EPISODE_PROCESSED"><code class="docutils literal notranslate"><span class="pre">EventType.EPISODE_PROCESSED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventType.EXTRACTION_CREATED"><code class="docutils literal notranslate"><span class="pre">EventType.EXTRACTION_CREATED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventType.FACT_DELETED"><code class="docutils literal notranslate"><span class="pre">EventType.FACT_DELETED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventType.FACT_EXTRACTED"><code class="docutils literal notranslate"><span class="pre">EventType.FACT_EXTRACTED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventType.GRAPH_EDGE_CREATED"><code class="docutils literal notranslate"><span class="pre">EventType.GRAPH_EDGE_CREATED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventType.GRAPH_ENTITY_CREATED"><code class="docutils literal notranslate"><span class="pre">EventType.GRAPH_ENTITY_CREATED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventType.GRAPH_ENTITY_UPDATED"><code class="docutils literal notranslate"><span class="pre">EventType.GRAPH_ENTITY_UPDATED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventType.INGEST_BATCH_COMPLETED"><code class="docutils literal notranslate"><span class="pre">EventType.INGEST_BATCH_COMPLETED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventType.INGEST_EPISODE_COMPLETED"><code class="docutils literal notranslate"><span class="pre">EventType.INGEST_EPISODE_COMPLETED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventType.MESSAGE_ADDED"><code class="docutils literal notranslate"><span class="pre">EventType.MESSAGE_ADDED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventType.SESSION_CLOSED"><code class="docutils literal notranslate"><span class="pre">EventType.SESSION_CLOSED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventType.SESSION_CREATED"><code class="docutils literal notranslate"><span class="pre">EventType.SESSION_CREATED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.events.EventType.USER_CREATED"><code class="docutils literal notranslate"><span class="pre">EventType.USER_CREATED</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.events.event_categories"><code class="docutils literal notranslate"><span class="pre">event_categories()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.events.event_type_labels"><code class="docutils literal notranslate"><span class="pre">event_type_labels()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.exceptions">core.exceptions module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.AppError"><code class="docutils literal notranslate"><span class="pre">AppError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.AppError.__init__"><code class="docutils literal notranslate"><span class="pre">AppError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.AppError.code"><code class="docutils literal notranslate"><span class="pre">AppError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.AppError.status_code"><code class="docutils literal notranslate"><span class="pre">AppError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.AuthenticationError"><code class="docutils literal notranslate"><span class="pre">AuthenticationError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.AuthenticationError.__init__"><code class="docutils literal notranslate"><span class="pre">AuthenticationError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.AuthenticationError.code"><code class="docutils literal notranslate"><span class="pre">AuthenticationError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.AuthenticationError.status_code"><code class="docutils literal notranslate"><span class="pre">AuthenticationError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.AuthorizationError"><code class="docutils literal notranslate"><span class="pre">AuthorizationError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.AuthorizationError.__init__"><code class="docutils literal notranslate"><span class="pre">AuthorizationError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.AuthorizationError.code"><code class="docutils literal notranslate"><span class="pre">AuthorizationError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.AuthorizationError.status_code"><code class="docutils literal notranslate"><span class="pre">AuthorizationError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.CacheUnavailableError"><code class="docutils literal notranslate"><span class="pre">CacheUnavailableError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.CacheUnavailableError.__init__"><code class="docutils literal notranslate"><span class="pre">CacheUnavailableError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.CacheUnavailableError.code"><code class="docutils literal notranslate"><span class="pre">CacheUnavailableError.code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.ConflictError"><code class="docutils literal notranslate"><span class="pre">ConflictError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.ConflictError.__init__"><code class="docutils literal notranslate"><span class="pre">ConflictError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.ConflictError.code"><code class="docutils literal notranslate"><span class="pre">ConflictError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.ConflictError.status_code"><code class="docutils literal notranslate"><span class="pre">ConflictError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.DatabaseUnavailableError"><code class="docutils literal notranslate"><span class="pre">DatabaseUnavailableError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.DatabaseUnavailableError.__init__"><code class="docutils literal notranslate"><span class="pre">DatabaseUnavailableError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.DatabaseUnavailableError.code"><code class="docutils literal notranslate"><span class="pre">DatabaseUnavailableError.code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.EdgeNotFoundError"><code class="docutils literal notranslate"><span class="pre">EdgeNotFoundError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.EdgeNotFoundError.__init__"><code class="docutils literal notranslate"><span class="pre">EdgeNotFoundError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.EdgeNotFoundError.code"><code class="docutils literal notranslate"><span class="pre">EdgeNotFoundError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.EdgeNotFoundError.status_code"><code class="docutils literal notranslate"><span class="pre">EdgeNotFoundError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.EntityNotFoundError"><code class="docutils literal notranslate"><span class="pre">EntityNotFoundError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.EntityNotFoundError.__init__"><code class="docutils literal notranslate"><span class="pre">EntityNotFoundError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.EntityNotFoundError.code"><code class="docutils literal notranslate"><span class="pre">EntityNotFoundError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.EntityNotFoundError.status_code"><code class="docutils literal notranslate"><span class="pre">EntityNotFoundError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.EpisodeNotFoundError"><code class="docutils literal notranslate"><span class="pre">EpisodeNotFoundError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.EpisodeNotFoundError.__init__"><code class="docutils literal notranslate"><span class="pre">EpisodeNotFoundError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.EpisodeNotFoundError.code"><code class="docutils literal notranslate"><span class="pre">EpisodeNotFoundError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.EpisodeNotFoundError.status_code"><code class="docutils literal notranslate"><span class="pre">EpisodeNotFoundError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.ExternalServiceError"><code class="docutils literal notranslate"><span class="pre">ExternalServiceError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.ExternalServiceError.__init__"><code class="docutils literal notranslate"><span class="pre">ExternalServiceError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.ExternalServiceError.code"><code class="docutils literal notranslate"><span class="pre">ExternalServiceError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.ExternalServiceError.status_code"><code class="docutils literal notranslate"><span class="pre">ExternalServiceError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.GraphBackendUnavailableError"><code class="docutils literal notranslate"><span class="pre">GraphBackendUnavailableError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.GraphBackendUnavailableError.__init__"><code class="docutils literal notranslate"><span class="pre">GraphBackendUnavailableError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.GraphBackendUnavailableError.code"><code class="docutils literal notranslate"><span class="pre">GraphBackendUnavailableError.code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.GraphTimeoutError"><code class="docutils literal notranslate"><span class="pre">GraphTimeoutError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.GraphTimeoutError.__init__"><code class="docutils literal notranslate"><span class="pre">GraphTimeoutError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.GraphTimeoutError.code"><code class="docutils literal notranslate"><span class="pre">GraphTimeoutError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.GraphTimeoutError.status_code"><code class="docutils literal notranslate"><span class="pre">GraphTimeoutError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.InsufficientCreditsError"><code class="docutils literal notranslate"><span class="pre">InsufficientCreditsError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.InsufficientCreditsError.__init__"><code class="docutils literal notranslate"><span class="pre">InsufficientCreditsError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.InsufficientCreditsError.code"><code class="docutils literal notranslate"><span class="pre">InsufficientCreditsError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.InsufficientCreditsError.status_code"><code class="docutils literal notranslate"><span class="pre">InsufficientCreditsError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.LLMConfigurationError"><code class="docutils literal notranslate"><span class="pre">LLMConfigurationError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.LLMConfigurationError.__init__"><code class="docutils literal notranslate"><span class="pre">LLMConfigurationError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.LLMConfigurationError.code"><code class="docutils literal notranslate"><span class="pre">LLMConfigurationError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.LLMConfigurationError.status_code"><code class="docutils literal notranslate"><span class="pre">LLMConfigurationError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.LLMStructuredOutputError"><code class="docutils literal notranslate"><span class="pre">LLMStructuredOutputError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.LLMStructuredOutputError.__init__"><code class="docutils literal notranslate"><span class="pre">LLMStructuredOutputError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.LLMStructuredOutputError.code"><code class="docutils literal notranslate"><span class="pre">LLMStructuredOutputError.code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.MetricsUnavailableError"><code class="docutils literal notranslate"><span class="pre">MetricsUnavailableError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.MetricsUnavailableError.__init__"><code class="docutils literal notranslate"><span class="pre">MetricsUnavailableError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.MetricsUnavailableError.code"><code class="docutils literal notranslate"><span class="pre">MetricsUnavailableError.code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.NotFoundError"><code class="docutils literal notranslate"><span class="pre">NotFoundError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.NotFoundError.__init__"><code class="docutils literal notranslate"><span class="pre">NotFoundError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.NotFoundError.code"><code class="docutils literal notranslate"><span class="pre">NotFoundError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.NotFoundError.status_code"><code class="docutils literal notranslate"><span class="pre">NotFoundError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.PayloadTooLargeError"><code class="docutils literal notranslate"><span class="pre">PayloadTooLargeError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.PayloadTooLargeError.__init__"><code class="docutils literal notranslate"><span class="pre">PayloadTooLargeError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.PayloadTooLargeError.code"><code class="docutils literal notranslate"><span class="pre">PayloadTooLargeError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.PayloadTooLargeError.status_code"><code class="docutils literal notranslate"><span class="pre">PayloadTooLargeError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.RateLimitError"><code class="docutils literal notranslate"><span class="pre">RateLimitError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.RateLimitError.__init__"><code class="docutils literal notranslate"><span class="pre">RateLimitError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.RateLimitError.code"><code class="docutils literal notranslate"><span class="pre">RateLimitError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.RateLimitError.status_code"><code class="docutils literal notranslate"><span class="pre">RateLimitError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.RateLimitUnavailableError"><code class="docutils literal notranslate"><span class="pre">RateLimitUnavailableError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.RateLimitUnavailableError.__init__"><code class="docutils literal notranslate"><span class="pre">RateLimitUnavailableError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.RateLimitUnavailableError.code"><code class="docutils literal notranslate"><span class="pre">RateLimitUnavailableError.code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.SearchLegFailedError"><code class="docutils literal notranslate"><span class="pre">SearchLegFailedError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.SearchLegFailedError.__init__"><code class="docutils literal notranslate"><span class="pre">SearchLegFailedError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.SearchLegFailedError.code"><code class="docutils literal notranslate"><span class="pre">SearchLegFailedError.code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.ServiceUnavailableError"><code class="docutils literal notranslate"><span class="pre">ServiceUnavailableError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.ServiceUnavailableError.__init__"><code class="docutils literal notranslate"><span class="pre">ServiceUnavailableError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.ServiceUnavailableError.code"><code class="docutils literal notranslate"><span class="pre">ServiceUnavailableError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.ServiceUnavailableError.status_code"><code class="docutils literal notranslate"><span class="pre">ServiceUnavailableError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.ValidationError"><code class="docutils literal notranslate"><span class="pre">ValidationError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.ValidationError.__init__"><code class="docutils literal notranslate"><span class="pre">ValidationError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.ValidationError.code"><code class="docutils literal notranslate"><span class="pre">ValidationError.code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.exceptions.ValidationError.status_code"><code class="docutils literal notranslate"><span class="pre">ValidationError.status_code</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.exceptions.register_exception_handlers"><code class="docutils literal notranslate"><span class="pre">register_exception_handlers()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.graph_backend">core.graph_backend module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.graph_backend.GraphBackendDispatcher"><code class="docutils literal notranslate"><span class="pre">GraphBackendDispatcher</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.graph_backend.GraphBackendDispatcher.__init__"><code class="docutils literal notranslate"><span class="pre">GraphBackendDispatcher.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.graph_backend.GraphBackendDispatcher.create_all_backends"><code class="docutils literal notranslate"><span class="pre">GraphBackendDispatcher.create_all_backends()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.graph_backend.GraphBackendDispatcher.register"><code class="docutils literal notranslate"><span class="pre">GraphBackendDispatcher.register()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.graph_backend.GraphBackendDispatcher.resolve_and_create"><code class="docutils literal notranslate"><span class="pre">GraphBackendDispatcher.resolve_and_create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.graph_backend.GraphBackendDispatcher.resolve_backend_name"><code class="docutils literal notranslate"><span class="pre">GraphBackendDispatcher.resolve_backend_name()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.graph_backend.init_dispatcher"><code class="docutils literal notranslate"><span class="pre">init_dispatcher()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.llm">core.llm module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.llm.ChatResponse"><code class="docutils literal notranslate"><span class="pre">ChatResponse</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.ChatResponse.__init__"><code class="docutils literal notranslate"><span class="pre">ChatResponse.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.ChatResponse.content"><code class="docutils literal notranslate"><span class="pre">ChatResponse.content</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.ChatResponse.model"><code class="docutils literal notranslate"><span class="pre">ChatResponse.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.ChatResponse.usage"><code class="docutils literal notranslate"><span class="pre">ChatResponse.usage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.ChatResponse.validated_data"><code class="docutils literal notranslate"><span class="pre">ChatResponse.validated_data</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.llm.EmbeddingResponse"><code class="docutils literal notranslate"><span class="pre">EmbeddingResponse</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.EmbeddingResponse.__init__"><code class="docutils literal notranslate"><span class="pre">EmbeddingResponse.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.EmbeddingResponse.dim"><code class="docutils literal notranslate"><span class="pre">EmbeddingResponse.dim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.EmbeddingResponse.embeddings"><code class="docutils literal notranslate"><span class="pre">EmbeddingResponse.embeddings</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.EmbeddingResponse.model"><code class="docutils literal notranslate"><span class="pre">EmbeddingResponse.model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.llm.LLMBackend"><code class="docutils literal notranslate"><span class="pre">LLMBackend</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.LLMBackend.VALIDATION_RETRIES"><code class="docutils literal notranslate"><span class="pre">LLMBackend.VALIDATION_RETRIES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.LLMBackend.chat"><code class="docutils literal notranslate"><span class="pre">LLMBackend.chat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.LLMBackend.embed"><code class="docutils literal notranslate"><span class="pre">LLMBackend.embed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.LLMBackend.embedding_dim"><code class="docutils literal notranslate"><span class="pre">LLMBackend.embedding_dim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.LLMBackend.model_name"><code class="docutils literal notranslate"><span class="pre">LLMBackend.model_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.llm.LLMBackendRegistry"><code class="docutils literal notranslate"><span class="pre">LLMBackendRegistry</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.LLMBackendRegistry.get"><code class="docutils literal notranslate"><span class="pre">LLMBackendRegistry.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.LLMBackendRegistry.list_available"><code class="docutils literal notranslate"><span class="pre">LLMBackendRegistry.list_available()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.LLMBackendRegistry.register"><code class="docutils literal notranslate"><span class="pre">LLMBackendRegistry.register()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.llm.LLMProvider"><code class="docutils literal notranslate"><span class="pre">LLMProvider</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.LLMProvider.ANTHROPIC"><code class="docutils literal notranslate"><span class="pre">LLMProvider.ANTHROPIC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.LLMProvider.AZURE"><code class="docutils literal notranslate"><span class="pre">LLMProvider.AZURE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.LLMProvider.OLLAMA"><code class="docutils literal notranslate"><span class="pre">LLMProvider.OLLAMA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.LLMProvider.OPENAI"><code class="docutils literal notranslate"><span class="pre">LLMProvider.OPENAI</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.llm.PromptCachingConfig"><code class="docutils literal notranslate"><span class="pre">PromptCachingConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.PromptCachingConfig.__init__"><code class="docutils literal notranslate"><span class="pre">PromptCachingConfig.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.PromptCachingConfig.anthropic_cache_ttl"><code class="docutils literal notranslate"><span class="pre">PromptCachingConfig.anthropic_cache_ttl</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.PromptCachingConfig.anthropic_min_tokens"><code class="docutils literal notranslate"><span class="pre">PromptCachingConfig.anthropic_min_tokens</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.PromptCachingConfig.enabled"><code class="docutils literal notranslate"><span class="pre">PromptCachingConfig.enabled</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.PromptCachingConfig.session_id"><code class="docutils literal notranslate"><span class="pre">PromptCachingConfig.session_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.llm.TokenUsage"><code class="docutils literal notranslate"><span class="pre">TokenUsage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.TokenUsage.__init__"><code class="docutils literal notranslate"><span class="pre">TokenUsage.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.TokenUsage.cache_creation_input_tokens"><code class="docutils literal notranslate"><span class="pre">TokenUsage.cache_creation_input_tokens</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.TokenUsage.cache_read_input_tokens"><code class="docutils literal notranslate"><span class="pre">TokenUsage.cache_read_input_tokens</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.TokenUsage.completion_tokens"><code class="docutils literal notranslate"><span class="pre">TokenUsage.completion_tokens</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.TokenUsage.prompt_tokens"><code class="docutils literal notranslate"><span class="pre">TokenUsage.prompt_tokens</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.TokenUsage.total_cache_tokens"><code class="docutils literal notranslate"><span class="pre">TokenUsage.total_cache_tokens</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm.TokenUsage.total_tokens"><code class="docutils literal notranslate"><span class="pre">TokenUsage.total_tokens</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.llm.build_cache_config"><code class="docutils literal notranslate"><span class="pre">build_cache_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.llm.resolve_backend"><code class="docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.llm_backends">core.llm_backends module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#supported-backends">Supported backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.llm_backends.AnthropicBackend"><code class="docutils literal notranslate"><span class="pre">AnthropicBackend</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.AnthropicBackend.DEFAULT_MODEL"><code class="docutils literal notranslate"><span class="pre">AnthropicBackend.DEFAULT_MODEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.AnthropicBackend.MAX_RETRIES"><code class="docutils literal notranslate"><span class="pre">AnthropicBackend.MAX_RETRIES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.AnthropicBackend.__init__"><code class="docutils literal notranslate"><span class="pre">AnthropicBackend.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.AnthropicBackend.embed"><code class="docutils literal notranslate"><span class="pre">AnthropicBackend.embed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.AnthropicBackend.embedding_dim"><code class="docutils literal notranslate"><span class="pre">AnthropicBackend.embedding_dim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.AnthropicBackend.model_name"><code class="docutils literal notranslate"><span class="pre">AnthropicBackend.model_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.llm_backends.AzureBackend"><code class="docutils literal notranslate"><span class="pre">AzureBackend</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.AzureBackend.DEFAULT_EMBED_DIM"><code class="docutils literal notranslate"><span class="pre">AzureBackend.DEFAULT_EMBED_DIM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.AzureBackend.MAX_RETRIES"><code class="docutils literal notranslate"><span class="pre">AzureBackend.MAX_RETRIES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.AzureBackend.__init__"><code class="docutils literal notranslate"><span class="pre">AzureBackend.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.AzureBackend.embed"><code class="docutils literal notranslate"><span class="pre">AzureBackend.embed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.AzureBackend.embedding_dim"><code class="docutils literal notranslate"><span class="pre">AzureBackend.embedding_dim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.AzureBackend.model_name"><code class="docutils literal notranslate"><span class="pre">AzureBackend.model_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.llm_backends.OllamaBackend"><code class="docutils literal notranslate"><span class="pre">OllamaBackend</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OllamaBackend.DEFAULT_CHAT_MODEL"><code class="docutils literal notranslate"><span class="pre">OllamaBackend.DEFAULT_CHAT_MODEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OllamaBackend.DEFAULT_EMBED_DIM"><code class="docutils literal notranslate"><span class="pre">OllamaBackend.DEFAULT_EMBED_DIM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OllamaBackend.DEFAULT_EMBED_MODEL"><code class="docutils literal notranslate"><span class="pre">OllamaBackend.DEFAULT_EMBED_MODEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OllamaBackend.__init__"><code class="docutils literal notranslate"><span class="pre">OllamaBackend.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OllamaBackend.embed"><code class="docutils literal notranslate"><span class="pre">OllamaBackend.embed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OllamaBackend.embedding_dim"><code class="docutils literal notranslate"><span class="pre">OllamaBackend.embedding_dim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OllamaBackend.model_name"><code class="docutils literal notranslate"><span class="pre">OllamaBackend.model_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.llm_backends.OpenAIBackend"><code class="docutils literal notranslate"><span class="pre">OpenAIBackend</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OpenAIBackend.DEFAULT_EMBED_DIM"><code class="docutils literal notranslate"><span class="pre">OpenAIBackend.DEFAULT_EMBED_DIM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OpenAIBackend.DEFAULT_EMBED_MODEL"><code class="docutils literal notranslate"><span class="pre">OpenAIBackend.DEFAULT_EMBED_MODEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OpenAIBackend.DEFAULT_MODEL"><code class="docutils literal notranslate"><span class="pre">OpenAIBackend.DEFAULT_MODEL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OpenAIBackend.MAX_RETRIES"><code class="docutils literal notranslate"><span class="pre">OpenAIBackend.MAX_RETRIES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OpenAIBackend.__init__"><code class="docutils literal notranslate"><span class="pre">OpenAIBackend.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OpenAIBackend.embed"><code class="docutils literal notranslate"><span class="pre">OpenAIBackend.embed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OpenAIBackend.embedding_dim"><code class="docutils literal notranslate"><span class="pre">OpenAIBackend.embedding_dim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OpenAIBackend.model_name"><code class="docutils literal notranslate"><span class="pre">OpenAIBackend.model_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.llm_backends.OpenRouterBackend"><code class="docutils literal notranslate"><span class="pre">OpenRouterBackend</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OpenRouterBackend.BASE_URL"><code class="docutils literal notranslate"><span class="pre">OpenRouterBackend.BASE_URL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OpenRouterBackend.MAX_RETRIES"><code class="docutils literal notranslate"><span class="pre">OpenRouterBackend.MAX_RETRIES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OpenRouterBackend.__init__"><code class="docutils literal notranslate"><span class="pre">OpenRouterBackend.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OpenRouterBackend.embed"><code class="docutils literal notranslate"><span class="pre">OpenRouterBackend.embed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OpenRouterBackend.embedding_dim"><code class="docutils literal notranslate"><span class="pre">OpenRouterBackend.embedding_dim</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.llm_backends.OpenRouterBackend.model_name"><code class="docutils literal notranslate"><span class="pre">OpenRouterBackend.model_name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.logging">core.logging module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.logging.SENSITIVE_KEYS"><code class="docutils literal notranslate"><span class="pre">SENSITIVE_KEYS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.logging.add_pii_redaction"><code class="docutils literal notranslate"><span class="pre">add_pii_redaction()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.logging.bind_request_context"><code class="docutils literal notranslate"><span class="pre">bind_request_context()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.logging.setup_logging"><code class="docutils literal notranslate"><span class="pre">setup_logging()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.org_config">core.org_config module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.org_config.CACHE_KEY_PREFIX"><code class="docutils literal notranslate"><span class="pre">CACHE_KEY_PREFIX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.org_config.ORG_CONFIG_CACHE_TTL"><code class="docutils literal notranslate"><span class="pre">ORG_CONFIG_CACHE_TTL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.org_config.build_cache_key"><code class="docutils literal notranslate"><span class="pre">build_cache_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.org_config.get_org_config"><code class="docutils literal notranslate"><span class="pre">get_org_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.org_config.update_org_config"><code class="docutils literal notranslate"><span class="pre">update_org_config()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.prompt_manifest">core.prompt_manifest module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.prompt_manifest.MANIFEST_FILENAME"><code class="docutils literal notranslate"><span class="pre">MANIFEST_FILENAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.prompt_manifest.PROMPTS_DIR"><code class="docutils literal notranslate"><span class="pre">PROMPTS_DIR</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.prompt_manifest.PromptManifest"><code class="docutils literal notranslate"><span class="pre">PromptManifest</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.prompt_manifest.PromptManifest.version"><code class="docutils literal notranslate"><span class="pre">PromptManifest.version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.prompt_manifest.PromptManifest.templates"><code class="docutils literal notranslate"><span class="pre">PromptManifest.templates</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.prompt_manifest.PromptManifest.by_name"><code class="docutils literal notranslate"><span class="pre">PromptManifest.by_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.prompt_manifest.PromptManifest.by_type"><code class="docutils literal notranslate"><span class="pre">PromptManifest.by_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.prompt_manifest.PromptManifest.__init__"><code class="docutils literal notranslate"><span class="pre">PromptManifest.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#id0"><code class="docutils literal notranslate"><span class="pre">PromptManifest.by_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#id1"><code class="docutils literal notranslate"><span class="pre">PromptManifest.by_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.prompt_manifest.PromptManifest.get_by_name"><code class="docutils literal notranslate"><span class="pre">PromptManifest.get_by_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.prompt_manifest.PromptManifest.get_default_for_type"><code class="docutils literal notranslate"><span class="pre">PromptManifest.get_default_for_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.prompt_manifest.PromptManifest.get_default_names"><code class="docutils literal notranslate"><span class="pre">PromptManifest.get_default_names()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#core.prompt_manifest.PromptManifest.get_template_text"><code class="docutils literal notranslate"><span class="pre">PromptManifest.get_template_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#id2"><code class="docutils literal notranslate"><span class="pre">PromptManifest.templates</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.html#id3"><code class="docutils literal notranslate"><span class="pre">PromptManifest.version</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.prompt_manifest.invalidate_manifest_cache"><code class="docutils literal notranslate"><span class="pre">invalidate_manifest_cache()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.prompt_manifest.load_manifest"><code class="docutils literal notranslate"><span class="pre">load_manifest()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-core.redis">core.redis module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.redis.check_redis_health"><code class="docutils literal notranslate"><span class="pre">check_redis_health()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.redis.close_redis"><code class="docutils literal notranslate"><span class="pre">close_redis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.redis.get_redis"><code class="docutils literal notranslate"><span class="pre">get_redis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#core.redis.init_redis"><code class="docutils literal notranslate"><span class="pre">init_redis()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

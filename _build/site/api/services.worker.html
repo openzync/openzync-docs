@@ -311,18 +311,245 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="services-worker-package">
-<h1>services.worker package<a class="headerlink" href="#services-worker-package" title="Link to this heading">¶</a></h1>
+          <section id="module-services.worker">
+<span id="services-worker-package"></span><h1>services.worker package<a class="headerlink" href="#module-services.worker" title="Link to this heading">¶</a></h1>
+<p>ARQ worker package for OpenZync background tasks.</p>
+<p>The worker process is started via:</p>
+<blockquote>
+<div><p>python -m services.worker.worker</p>
+</div></blockquote>
+<p>Configuration is loaded from environment variables through
+<a class="reference internal" href="../domains/workers.html#WorkerSettings" title="WorkerSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a>.  Task functions are registered in
+<a class="reference internal" href="#services.worker.worker.HIGH_QUEUE_TASKS" title="services.worker.worker.HIGH_QUEUE_TASKS"><code class="xref py py-data docutils literal notranslate"><span class="pre">worker.HIGH_QUEUE_TASKS</span></code></a> and <a class="reference internal" href="#services.worker.worker.LOW_QUEUE_TASKS" title="services.worker.worker.LOW_QUEUE_TASKS"><code class="xref py py-data docutils literal notranslate"><span class="pre">worker.LOW_QUEUE_TASKS</span></code></a> as they are
+implemented (Phase 1b+).</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">services.worker.</span></span><span class="sig-name descname"><span class="pre">WorkerSettings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">DATABASE_URL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">REDIS_URL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ENV</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'development'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MAX_WORKERS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JOB_TIMEOUT_DEFAULT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JOB_KEEP_RESULT_FOR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JOB_KEEP_RESULT_FOR_FAILURE</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">86400</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">HIGH_QUEUE_NAME</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'high'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LOW_QUEUE_NAME</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'low'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">POLL_DELAY</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">HEALTH_CHECK_INTERVAL</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">HEALTH_PORT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8081</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LOG_LEVEL</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'INFO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STRUCTLOG_FORMAT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STRUCTURED_EXTRACTION_MAX_TOKENS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">PROMETHEUS_PORT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9095</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FALKORDB_URL</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'redis://localhost:6379'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FALKORDB_MAX_CONNECTIONS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FALKORDB_SOCKET_TIMEOUT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AUTO_RUN_COMMUNITY_DETECTION</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker_settings.html#WorkerSettings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.WorkerSettings" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Worker-specific configuration — populated from OpenBao or env vars.</p>
+<p>All durations are in <strong>seconds</strong> unless otherwise noted.</p>
+<p>Create via <a class="reference internal" href="#services.worker.WorkerSettings.from_openbao" title="services.worker.WorkerSettings.from_openbao"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_openbao()</span></code></a> for production, or instantiate directly
+for local development / testing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>DATABASE_URL</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>REDIS_URL</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>ENV</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>MAX_WORKERS</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="(in Python v3.14)"><em>Annotated</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>Ge</em><em>(</em><em>ge=1</em><em>)</em><em>, </em><em>Le</em><em>(</em><em>le=32</em><em>)</em><em>]</em>)</p></li>
+<li><p><strong>JOB_TIMEOUT_DEFAULT</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>JOB_KEEP_RESULT_FOR</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>JOB_KEEP_RESULT_FOR_FAILURE</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>HIGH_QUEUE_NAME</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>LOW_QUEUE_NAME</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>POLL_DELAY</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>HEALTH_CHECK_INTERVAL</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>HEALTH_PORT</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>LOG_LEVEL</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>STRUCTLOG_FORMAT</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><em>Literal</em></a><em>[</em><em>'json'</em><em>, </em><em>'console'</em><em>]</em>)</p></li>
+<li><p><strong>STRUCTURED_EXTRACTION_MAX_TOKENS</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="(in Python v3.14)"><em>Annotated</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>Ge</em><em>(</em><em>ge=256</em><em>)</em><em>, </em><em>Le</em><em>(</em><em>le=16384</em><em>)</em><em>]</em>)</p></li>
+<li><p><strong>PROMETHEUS_PORT</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>FALKORDB_URL</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>FALKORDB_MAX_CONNECTIONS</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="(in Python v3.14)"><em>Annotated</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>Ge</em><em>(</em><em>ge=1</em><em>)</em><em>, </em><em>Le</em><em>(</em><em>le=100</em><em>)</em><em>]</em>)</p></li>
+<li><p><strong>FALKORDB_SOCKET_TIMEOUT</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="(in Python v3.14)"><em>Annotated</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>Ge</em><em>(</em><em>ge=1</em><em>)</em><em>]</em>)</p></li>
+<li><p><strong>AUTO_RUN_COMMUNITY_DETECTION</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.AUTO_RUN_COMMUNITY_DETECTION">
+<span class="sig-name descname"><span class="pre">AUTO_RUN_COMMUNITY_DETECTION</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.AUTO_RUN_COMMUNITY_DETECTION" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.DATABASE_URL">
+<span class="sig-name descname"><span class="pre">DATABASE_URL</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.DATABASE_URL" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.ENV">
+<span class="sig-name descname"><span class="pre">ENV</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.ENV" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.FALKORDB_MAX_CONNECTIONS">
+<span class="sig-name descname"><span class="pre">FALKORDB_MAX_CONNECTIONS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.FALKORDB_MAX_CONNECTIONS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.FALKORDB_SOCKET_TIMEOUT">
+<span class="sig-name descname"><span class="pre">FALKORDB_SOCKET_TIMEOUT</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.FALKORDB_SOCKET_TIMEOUT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.FALKORDB_URL">
+<span class="sig-name descname"><span class="pre">FALKORDB_URL</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.FALKORDB_URL" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.HEALTH_CHECK_INTERVAL">
+<span class="sig-name descname"><span class="pre">HEALTH_CHECK_INTERVAL</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.HEALTH_CHECK_INTERVAL" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.HEALTH_PORT">
+<span class="sig-name descname"><span class="pre">HEALTH_PORT</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.HEALTH_PORT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.HIGH_QUEUE_NAME">
+<span class="sig-name descname"><span class="pre">HIGH_QUEUE_NAME</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.HIGH_QUEUE_NAME" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.JOB_KEEP_RESULT_FOR">
+<span class="sig-name descname"><span class="pre">JOB_KEEP_RESULT_FOR</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.JOB_KEEP_RESULT_FOR" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.JOB_KEEP_RESULT_FOR_FAILURE">
+<span class="sig-name descname"><span class="pre">JOB_KEEP_RESULT_FOR_FAILURE</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.JOB_KEEP_RESULT_FOR_FAILURE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.JOB_TIMEOUT_DEFAULT">
+<span class="sig-name descname"><span class="pre">JOB_TIMEOUT_DEFAULT</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.JOB_TIMEOUT_DEFAULT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.LOG_LEVEL">
+<span class="sig-name descname"><span class="pre">LOG_LEVEL</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.LOG_LEVEL" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.LOW_QUEUE_NAME">
+<span class="sig-name descname"><span class="pre">LOW_QUEUE_NAME</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.LOW_QUEUE_NAME" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.MAX_WORKERS">
+<span class="sig-name descname"><span class="pre">MAX_WORKERS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.MAX_WORKERS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.POLL_DELAY">
+<span class="sig-name descname"><span class="pre">POLL_DELAY</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.POLL_DELAY" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.PROMETHEUS_PORT">
+<span class="sig-name descname"><span class="pre">PROMETHEUS_PORT</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.PROMETHEUS_PORT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.REDIS_URL">
+<span class="sig-name descname"><span class="pre">REDIS_URL</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.REDIS_URL" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.STRUCTLOG_FORMAT">
+<span class="sig-name descname"><span class="pre">STRUCTLOG_FORMAT</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'json'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'console'</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#services.worker.WorkerSettings.STRUCTLOG_FORMAT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.STRUCTURED_EXTRACTION_MAX_TOKENS">
+<span class="sig-name descname"><span class="pre">STRUCTURED_EXTRACTION_MAX_TOKENS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.STRUCTURED_EXTRACTION_MAX_TOKENS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.from_openbao">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_openbao</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bao_client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker_settings.html#WorkerSettings.from_openbao"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.WorkerSettings.from_openbao" title="Link to this definition">¶</a></dt>
+<dd><p>Create a <code class="docutils literal notranslate"><span class="pre">WorkerSettings</span></code> by reading system config from OpenBao.</p>
+<p>Maps OpenBao snake_case keys to <code class="docutils literal notranslate"><span class="pre">WorkerSettings</span></code> field names.
+Queue names, timeouts, and ports that are deployment-specific are
+kept at their defaults (or can be overridden via env vars).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bao_client</strong> (<em>OpenBaoClient</em>) – An authenticated <a class="reference internal" href="../domains/core.html#OpenBaoClient" title="OpenBaoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenBaoClient</span></code></a> instance.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A fully-populated <a class="reference internal" href="../domains/workers.html#WorkerSettings" title="WorkerSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a> instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings" title="services.worker.worker_settings.WorkerSettings"><em>WorkerSettings</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.high_queue_full">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">high_queue_full</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.high_queue_full" title="Link to this definition">¶</a></dt>
+<dd><p>Fully qualified high-priority queue name (e.g. <code class="docutils literal notranslate"><span class="pre">OpenZync:prod:queue:high</span></code>).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.low_queue_full">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">low_queue_full</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.WorkerSettings.low_queue_full" title="Link to this definition">¶</a></dt>
+<dd><p>Fully qualified low-priority queue name (e.g. <code class="docutils literal notranslate"><span class="pre">OpenZync:prod:queue:low</span></code>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.WorkerSettings.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#services.worker.WorkerSettings.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.get_queue_name">
+<span class="sig-prename descclassname"><span class="pre">services.worker.</span></span><span class="sig-name descname"><span class="pre">get_queue_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker_settings.html#get_queue_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.get_queue_name" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a namespaced queue name.</p>
+<p>Pattern: <code class="docutils literal notranslate"><span class="pre">OpenZync:{env}:queue:{queue_type}</span></code></p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p><code class="docutils literal notranslate"><span class="pre">OpenZync:dev:queue:high</span></code>
+<code class="docutils literal notranslate"><span class="pre">OpenZync:prod:queue:low</span></code></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Environment name (e.g. <code class="docutils literal notranslate"><span class="pre">dev</span></code>, <code class="docutils literal notranslate"><span class="pre">staging</span></code>, <code class="docutils literal notranslate"><span class="pre">prod</span></code>).</p></li>
+<li><p><strong>queue_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Queue type — one of <code class="docutils literal notranslate"><span class="pre">&quot;high&quot;</span></code> (real-time ingestion) or
+<code class="docutils literal notranslate"><span class="pre">&quot;low&quot;</span></code> (scheduled batch / background maintenance).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Fully qualified queue name string.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">queue_type</span></code> is not <code class="docutils literal notranslate"><span class="pre">&quot;high&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;low&quot;</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <section id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="services.worker.prompts.html">services.worker.prompts package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="services.worker.tasks.html">services.worker.tasks package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="services.worker.tasks.html#task-signature-convention">Task signature convention</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services.worker.tasks.html#services.worker.tasks.TASKS_HIGH"><code class="docutils literal notranslate"><span class="pre">TASKS_HIGH</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="services.worker.tasks.html#services.worker.tasks.TASKS_LOW"><code class="docutils literal notranslate"><span class="pre">TASKS_LOW</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="services.worker.tasks.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="services.worker.tasks.html#services-worker-tasks-audit-log-module">services.worker.tasks.audit_log module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="services.worker.tasks.html#services-worker-tasks-base-module">services.worker.tasks.base module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="services.worker.tasks.html#services-worker-tasks-deliver-webhook-module">services.worker.tasks.deliver_webhook module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services.worker.tasks.html#module-services.worker.tasks.audit_log">services.worker.tasks.audit_log module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="services.worker.tasks.html#services.worker.tasks.audit_log.write_audit_log"><code class="docutils literal notranslate"><span class="pre">write_audit_log()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="services.worker.tasks.html#module-services.worker.tasks.base">services.worker.tasks.base module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="services.worker.tasks.html#services.worker.tasks.base.with_retry"><code class="docutils literal notranslate"><span class="pre">with_retry()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="services.worker.tasks.html#module-services.worker.tasks.deliver_webhook">services.worker.tasks.deliver_webhook module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="services.worker.tasks.html#services.worker.tasks.deliver_webhook.HTTP_TIMEOUT"><code class="docutils literal notranslate"><span class="pre">HTTP_TIMEOUT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="services.worker.tasks.html#services.worker.tasks.deliver_webhook.MAX_ATTEMPTS"><code class="docutils literal notranslate"><span class="pre">MAX_ATTEMPTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="services.worker.tasks.html#services.worker.tasks.deliver_webhook.deliver_webhook"><code class="docutils literal notranslate"><span class="pre">deliver_webhook()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -331,14 +558,723 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="services-worker-prompt-renderer-module">
-<h2>services.worker.prompt_renderer module<a class="headerlink" href="#services-worker-prompt-renderer-module" title="Link to this heading">¶</a></h2>
+<section id="module-services.worker.prompt_renderer">
+<span id="services-worker-prompt-renderer-module"></span><h2>services.worker.prompt_renderer module<a class="headerlink" href="#module-services.worker.prompt_renderer" title="Link to this heading">¶</a></h2>
+<p>Prompt template resolution with auto-injected context.</p>
+<p>All prompt templates live in the <code class="docutils literal notranslate"><span class="pre">prompt_templates</span></code> database table and are
+resolved at runtime via <a class="reference internal" href="#services.worker.prompt_renderer.resolve_prompt_template_by_type" title="services.worker.prompt_renderer.resolve_prompt_template_by_type"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_prompt_template_by_type()</span></code></a>.  The resolved
+<code class="docutils literal notranslate"><span class="pre">template_text</span></code> is returned as-is (plain text, no Jinja2) — context is
+assembled and injected by the caller via <a class="reference internal" href="#services.worker.prompt_renderer.build_enrichment_prompt" title="services.worker.prompt_renderer.build_enrichment_prompt"><code class="xref py py-func docutils literal notranslate"><span class="pre">build_enrichment_prompt()</span></code></a>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.jinja2</span></code> files under <code class="docutils literal notranslate"><span class="pre">prompts/</span></code> are the canonical source of truth
+for system-default prompts (Option A).  They are read at signup time by
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">PromptTemplateRepository.seed_default_prompts()</span></code> and at import time by
+<a class="reference internal" href="repositories.html#repositories.prompt_template_repository.PromptTemplateRepository.import_system_template" title="repositories.prompt_template_repository.PromptTemplateRepository.import_system_template"><code class="xref py py-meth docutils literal notranslate"><span class="pre">import_system_template()</span></code></a>.  The runtime
+resolution path (<code class="docutils literal notranslate"><span class="pre">get_active_by_type</span></code>) only queries org-scoped DB rows.</p>
+<dl>
+<dt>Usage (workers):</dt><dd><p>from services.worker.prompt_renderer import render_prompt</p>
+<dl class="simple">
+<dt>system_prompt, ctx = await render_prompt(</dt><dd><p>“fact_extraction”,
+org_id=org_id,
+episode_id=episode_id,
+session_id=session_id,
+db_session_factory=session_factory,
+return_context=True,</p>
+</dd>
+</dl>
+<p>)
+prompt = build_enrichment_prompt(system_prompt, ctx)</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">services.worker.prompt_renderer.</span></span><span class="sig-name descname"><span class="pre">DataSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/prompt_renderer.html#DataSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.prompt_renderer.DataSource" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Known DB-backed sources for prompt context variables.</p>
+<p>Each value is a dot-separated descriptor.  The actual DB logic lives
+in the corresponding provider function in <code class="docutils literal notranslate"><span class="pre">_PROVIDER_DISPATCH</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.CUSTOM_INSTRUCTIONS">
+<span class="sig-name descname"><span class="pre">CUSTOM_INSTRUCTIONS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'org.custom_instructions'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.CUSTOM_INSTRUCTIONS" title="Link to this definition">¶</a></dt>
+<dd><p>Custom instructions for the prompt’s scope (currently used by user_summary).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.EPISODE_CONTENT">
+<span class="sig-name descname"><span class="pre">EPISODE_CONTENT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'episode.content'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.EPISODE_CONTENT" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">content</span></code> column of the current episode being enriched.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.EPISODE_METADATA">
+<span class="sig-name descname"><span class="pre">EPISODE_METADATA</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'episode.metadata'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.EPISODE_METADATA" title="Link to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">metadata</span></code> JSONB of the current episode being enriched.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.ORG_CLASSIFICATION_LABELS">
+<span class="sig-name descname"><span class="pre">ORG_CLASSIFICATION_LABELS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'org.classification_labels'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.ORG_CLASSIFICATION_LABELS" title="Link to this definition">¶</a></dt>
+<dd><p>Classification labels from <code class="docutils literal notranslate"><span class="pre">extraction_schemas</span> <span class="pre">WHERE</span> <span class="pre">type='classification'</span></code>.
+Returns a dict with keys <code class="docutils literal notranslate"><span class="pre">intent_labels</span></code>, <code class="docutils literal notranslate"><span class="pre">emotion_labels</span></code>,
+<code class="docutils literal notranslate"><span class="pre">valence_options</span></code>, <code class="docutils literal notranslate"><span class="pre">arousal_options</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.ORG_ENTITY_TYPES">
+<span class="sig-name descname"><span class="pre">ORG_ENTITY_TYPES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'org.entity_types'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.ORG_ENTITY_TYPES" title="Link to this definition">¶</a></dt>
+<dd><p>Entity type ontology from <code class="docutils literal notranslate"><span class="pre">extraction_schemas</span> <span class="pre">WHERE</span> <span class="pre">type='entity_type'</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.ORG_STRUCTURED_SCHEMAS">
+<span class="sig-name descname"><span class="pre">ORG_STRUCTURED_SCHEMAS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'org.structured_schemas'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.ORG_STRUCTURED_SCHEMAS" title="Link to this definition">¶</a></dt>
+<dd><p>Active structured extraction schemas (<code class="docutils literal notranslate"><span class="pre">extraction_schemas</span> <span class="pre">WHERE</span>
+<span class="pre">type='structured'</span></code>).  Returns a list of dicts with <code class="docutils literal notranslate"><span class="pre">name</span></code>,
+<code class="docutils literal notranslate"><span class="pre">json_schema</span></code>, <code class="docutils literal notranslate"><span class="pre">prompt_template</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.SESSION_ENTITIES">
+<span class="sig-name descname"><span class="pre">SESSION_ENTITIES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'session.entities'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.SESSION_ENTITIES" title="Link to this definition">¶</a></dt>
+<dd><p>Known entities for a session (from <code class="docutils literal notranslate"><span class="pre">FactRepository</span></code>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.SESSION_FACTS">
+<span class="sig-name descname"><span class="pre">SESSION_FACTS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'session.facts'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.SESSION_FACTS" title="Link to this definition">¶</a></dt>
+<dd><p>Existing facts for a session (from <code class="docutils literal notranslate"><span class="pre">FactRepository.list_by_session</span></code>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.SESSION_RECENT_HISTORY">
+<span class="sig-name descname"><span class="pre">SESSION_RECENT_HISTORY</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'session.recent_history'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.SESSION_RECENT_HISTORY" title="Link to this definition">¶</a></dt>
+<dd><p>Recent conversation turns for a session (last 10, chronological).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.SIMILAR_EPISODES">
+<span class="sig-name descname"><span class="pre">SIMILAR_EPISODES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'similar.episodes'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.SIMILAR_EPISODES" title="Link to this definition">¶</a></dt>
+<dd><p>Semantically similar episodes via BM25 full-text search (scoped to user).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.SIMILAR_FACTS">
+<span class="sig-name descname"><span class="pre">SIMILAR_FACTS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'similar.facts'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.SIMILAR_FACTS" title="Link to this definition">¶</a></dt>
+<dd><p>Semantically similar facts via BM25 full-text search (scoped to user).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.USER_CLASSIFICATIONS">
+<span class="sig-name descname"><span class="pre">USER_CLASSIFICATIONS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'user.classifications'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.USER_CLASSIFICATIONS" title="Link to this definition">¶</a></dt>
+<dd><p>Aggregate classification labels (top intents / emotions) for a user.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.USER_ENTITIES">
+<span class="sig-name descname"><span class="pre">USER_ENTITIES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'user.entities'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.USER_ENTITIES" title="Link to this definition">¶</a></dt>
+<dd><p>Distinct graph entities linked to a user’s sessions (up to 50).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.USER_EPISODES">
+<span class="sig-name descname"><span class="pre">USER_EPISODES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'user.episodes'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.USER_EPISODES" title="Link to this definition">¶</a></dt>
+<dd><p>Last 100 episodes for a user (chronological, for user summary).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.DataSource.USER_FACTS">
+<span class="sig-name descname"><span class="pre">USER_FACTS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'user.facts'</span></span><a class="headerlink" href="#services.worker.prompt_renderer.DataSource.USER_FACTS" title="Link to this definition">¶</a></dt>
+<dd><p>Last 100 extracted facts for a user.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.build_enrichment_prompt">
+<span class="sig-prename descclassname"><span class="pre">services.worker.prompt_renderer.</span></span><span class="sig-name descname"><span class="pre">build_enrichment_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system_prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/prompt_renderer.html#build_enrichment_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.prompt_renderer.build_enrichment_prompt" title="Link to this definition">¶</a></dt>
+<dd><p>Build a full enrichment prompt by appending context sections.</p>
+<p>Takes the raw system instructions from the DB and automatically injects
+all available context (metadata, entities, facts, history, semantic
+search results) as structured sections after the instructions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>system_prompt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Raw system instructions from the DB template.</p></li>
+<li><p><strong>ctx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>) – Context dict from <code class="docutils literal notranslate"><span class="pre">render_prompt(return_context=True)</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A fully assembled prompt string ready for the LLM.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.render_prompt">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">services.worker.prompt_renderer.</span></span><span class="sig-name descname"><span class="pre">render_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_type</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session_factory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">extra_context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/prompt_renderer.html#render_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.prompt_renderer.render_prompt" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch and return a system prompt with auto-injected context.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">org_id</span></code> and <code class="docutils literal notranslate"><span class="pre">db_session_factory</span></code> are provided, context
+variables are auto-fetched from the DB according to the registered
+<code class="docutils literal notranslate"><span class="pre">TYPE_DATA_SOURCES</span></code> for the given <code class="docutils literal notranslate"><span class="pre">prompt_type</span></code>.  Explicit
+<code class="docutils literal notranslate"><span class="pre">extra_context</span></code> kwargs take precedence over auto-injected values.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">org_id</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> (or <code class="docutils literal notranslate"><span class="pre">db_session_factory</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>),
+no auto-injection occurs — only <code class="docutils literal notranslate"><span class="pre">extra_context</span></code> and the optional
+<code class="docutils literal notranslate"><span class="pre">template_text</span></code> are used.  This is the direct-invocation mode
+suitable for eval tests and one-off prompts.</p>
+<p>The returned <code class="docutils literal notranslate"><span class="pre">template_text</span></code> is plain text (no Jinja2).  Call
+<code class="docutils literal notranslate"><span class="pre">build_enrichment_prompt()</span></code> to assemble the full prompt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The template type (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;fact_extraction&quot;</span></code>).
+Used to look up the registry of data sources to auto-inject.</p></li>
+<li><p><strong>template_text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Raw template string.  If <code class="docutils literal notranslate"><span class="pre">None</span></code> and <code class="docutils literal notranslate"><span class="pre">org_id</span></code>
+is provided, resolved from DB via <code class="docutils literal notranslate"><span class="pre">resolve_prompt_template_by_type</span></code>.</p></li>
+<li><p><strong>org_id</strong> (<em>UUID</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Organisation UUID.  Required for auto-injection.</p></li>
+<li><p><strong>episode_id</strong> (<em>UUID</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Episode UUID.  Used to fetch conversation content
+and recent history.</p></li>
+<li><p><strong>session_id</strong> (<em>UUID</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Session UUID.  Used to fetch known entities and
+existing facts for delta extraction.</p></li>
+<li><p><strong>user_id</strong> (<em>UUID</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – User UUID.  Used to fetch user-specific data
+(episodes, facts, entities, classifications).</p></li>
+<li><p><strong>db_session_factory</strong> (<em>async_sessionmaker</em><em>[</em><em>AsyncSession</em><em>] </em><em>| </em><em>None</em>) – Session factory for DB access.  Required
+for auto-injection (and template resolution from DB).</p></li>
+<li><p><strong>return_context</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns <code class="docutils literal notranslate"><span class="pre">(prompt,</span> <span class="pre">context_dict)</span></code>
+instead of just the prompt string.  Useful for callers that
+need the injected context for post-processing (e.g. entity
+resolution after fact extraction).</p></li>
+<li><p><strong>**extra_context</strong> (<em>Any</em>) – Explicit template variables.  These override
+any auto-injected values with the same key.</p></li>
+<li><p><strong>project_id</strong> (<em>UUID</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>graph_backend</strong> (<a class="reference internal" href="packages.graph_backend.html#packages.graph_backend.GraphBackend" title="packages.graph_backend.GraphBackend"><em>GraphBackend</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The system prompt text (plain text, no Jinja2).  When
+<code class="docutils literal notranslate"><span class="pre">return_context=True</span></code>, returns <code class="docutils literal notranslate"><span class="pre">(prompt,</span> <span class="pre">context_dict)</span></code>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">template_text</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> and cannot be
+    resolved from the DB.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.14)"><strong>KeyError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">prompt_type</span></code> is not in <code class="docutils literal notranslate"><span class="pre">TYPE_DATA_SOURCES</span></code>
+    (only when auto-injection is active).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)">tuple</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, Any]]</p>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prompt</span> <span class="o">=</span> <span class="k">await</span> <span class="n">render_prompt</span><span class="p">(</span>
+    <span class="s2">&quot;fact_extraction&quot;</span><span class="p">,</span>
+    <span class="n">org_id</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="n">episode_id</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="n">session_id</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="n">db_session_factory</span><span class="o">=</span><span class="n">session_factory</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.prompt_renderer.resolve_prompt_template_by_type">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">services.worker.prompt_renderer.</span></span><span class="sig-name descname"><span class="pre">resolve_prompt_template_by_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_session_factory</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/prompt_renderer.html#resolve_prompt_template_by_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.prompt_renderer.resolve_prompt_template_by_type" title="Link to this definition">¶</a></dt>
+<dd><p>Resolve the active default prompt template for a given type.</p>
+<p>Looks up the org-specific default for this type (<code class="docutils literal notranslate"><span class="pre">is_default_for_type</span>
+<span class="pre">=</span> <span class="pre">True</span></code>).  Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if no default exists (no system-level
+fallback — defaults come from disk manifest).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The template type (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;fact_extraction&quot;</span></code>).</p></li>
+<li><p><strong>org_id</strong> (<em>UUID</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Organisation UUID (string or <code class="docutils literal notranslate"><span class="pre">UUID</span></code> instance).</p></li>
+<li><p><strong>db_session_factory</strong> (<em>async_sessionmaker</em><em>[</em><em>AsyncSession</em><em>]</em>) – An <code class="docutils literal notranslate"><span class="pre">async_sessionmaker</span></code> bound to the write
+database engine.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The active template body, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no default exists.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="services-worker-worker-module">
-<h2>services.worker.worker module<a class="headerlink" href="#services-worker-worker-module" title="Link to this heading">¶</a></h2>
+<section id="module-services.worker.worker">
+<span id="services-worker-worker-module"></span><h2>services.worker.worker module<a class="headerlink" href="#module-services.worker.worker" title="Link to this heading">¶</a></h2>
+<p>ARQ worker entrypoint — starts the worker pool, registers tasks, handles signals.</p>
+<p>Usage:</p>
+<blockquote>
+<div><p>python -m services.worker.worker</p>
+</div></blockquote>
+<p>Environment variables are loaded via <code class="xref py py-mod docutils literal notranslate"><span class="pre">pydantic-settings</span></code> from
+<a class="reference internal" href="#services.worker.worker_settings.WorkerSettings" title="services.worker.worker_settings.WorkerSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">services.worker.worker_settings.WorkerSettings</span></code></a>.</p>
+<section id="architecture">
+<h3>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">¶</a></h3>
+<p>Two separate ARQ worker pools run in a single process:</p>
+<ul class="simple">
+<li><p><strong>High-priority queue</strong> — real-time ingestion tasks
+(entity extraction, embedding, classification, graph sync).</p></li>
+<li><p><strong>Low-priority queue</strong> — batch / scheduled tasks
+(community summarisation, data ingestion, entity merge dedup).</p></li>
+</ul>
+<p>Each pool has independent concurrency and timeout settings.  The worker also
+exposes a Prometheus metrics endpoint and an aiohttp health-check server for
+Kubernetes liveness / readiness probes.</p>
 </section>
-<section id="services-worker-worker-settings-module">
-<h2>services.worker.worker_settings module<a class="headerlink" href="#services-worker-worker-settings-module" title="Link to this heading">¶</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="services.worker.worker.HIGH_QUEUE_TASKS">
+<span class="sig-prename descclassname"><span class="pre">services.worker.worker.</span></span><span class="sig-name descname"><span class="pre">HIGH_QUEUE_TASKS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;function</span> <span class="pre">enrich_episode&gt;,</span> <span class="pre">&lt;function</span> <span class="pre">classify_dialog&gt;,</span> <span class="pre">&lt;function</span> <span class="pre">extract_entities&gt;,</span> <span class="pre">&lt;function</span> <span class="pre">embed_episode&gt;,</span> <span class="pre">&lt;function</span> <span class="pre">extract_facts&gt;,</span> <span class="pre">&lt;function</span> <span class="pre">embed_fact&gt;,</span> <span class="pre">&lt;function</span> <span class="pre">extract_structured&gt;]</span></span><a class="headerlink" href="#services.worker.worker.HIGH_QUEUE_TASKS" title="Link to this definition">¶</a></dt>
+<dd><p>Tasks assigned to the high-priority queue (real-time ingestion).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="services.worker.worker.LOW_QUEUE_TASKS">
+<span class="sig-prename descclassname"><span class="pre">services.worker.worker.</span></span><span class="sig-name descname"><span class="pre">LOW_QUEUE_TASKS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;function</span> <span class="pre">link_entities_to_episode&gt;,</span> <span class="pre">&lt;function</span> <span class="pre">compute_observations&gt;,</span> <span class="pre">&lt;function</span> <span class="pre">summarise_community&gt;,</span> <span class="pre">&lt;function</span> <span class="pre">merge_duplicate_entities&gt;,</span> <span class="pre">&lt;function</span> <span class="pre">write_audit_log&gt;,</span> <span class="pre">&lt;function</span> <span class="pre">deliver_webhook&gt;,</span> <span class="pre">&lt;function</span> <span class="pre">generate_user_summary&gt;,</span> <span class="pre">&lt;function</span> <span class="pre">reconcile_enrichment&gt;]</span></span><a class="headerlink" href="#services.worker.worker.LOW_QUEUE_TASKS" title="Link to this definition">¶</a></dt>
+<dd><p>Tasks assigned to the low-priority queue (scheduled batch).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.worker.create_arq_worker">
+<span class="sig-prename descclassname"><span class="pre">services.worker.worker.</span></span><span class="sig-name descname"><span class="pre">create_arq_worker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">queue_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">functions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">redis_settings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concurrency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cron_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker.html#create_arq_worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.worker.create_arq_worker" title="Link to this definition">¶</a></dt>
+<dd><p>Create a configured ARQ Worker instance for the given queue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>queue_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Logical queue name (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;high&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;low&quot;</span></code>).  The
+fully qualified name is derived via <code class="xref py py-func docutils literal notranslate"><span class="pre">get_queue_name()</span></code>.</p></li>
+<li><p><strong>functions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><em>Callable</em></a><em>[</em><em>[</em><em>...</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em><em>]</em><em>]</em>) – List of async task functions to register with this worker.</p></li>
+<li><p><strong>redis_settings</strong> (<em>RedisSettings</em>) – ARQ <code class="xref py py-class docutils literal notranslate"><span class="pre">RedisSettings</span></code> instance.</p></li>
+<li><p><strong>concurrency</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of concurrent tasks this worker processes.</p></li>
+<li><p><strong>timeout</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Default job timeout in seconds.</p></li>
+<li><p><strong>cron_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><em>CronJob</em><em>] </em><em>| </em><em>None</em>) – Optional list of <code class="xref py py-class docutils literal notranslate"><span class="pre">CronJob</span></code> instances for scheduled
+tasks (e.g. nightly community detection).</p></li>
+<li><p><strong>ctx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>] </em><em>| </em><em>None</em>) – Shared context dict passed to every task invocation.  Used to
+inject the shared DB engine, session factory, and other resources
+so tasks don’t create their own per-invocation connections.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Configured <code class="xref py py-class docutils literal notranslate"><span class="pre">ArqWorker</span></code> instance (not yet started).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Worker</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.worker.entrypoint">
+<span class="sig-prename descclassname"><span class="pre">services.worker.worker.</span></span><span class="sig-name descname"><span class="pre">entrypoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker.html#entrypoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.worker.entrypoint" title="Link to this definition">¶</a></dt>
+<dd><p>Synchronous entrypoint for <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">services.worker.worker</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.worker.handle_signal">
+<span class="sig-prename descclassname"><span class="pre">services.worker.worker.</span></span><span class="sig-name descname"><span class="pre">handle_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signum</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker.html#handle_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.worker.handle_signal" title="Link to this definition">¶</a></dt>
+<dd><p>Handle SIGTERM/SIGINT for graceful shutdown.</p>
+<p>Sets a global flag; the worker loop checks this between jobs.  The current
+job completes; no new jobs are accepted.  A second signal forces an exit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Signal number (e.g. <code class="docutils literal notranslate"><span class="pre">signal.SIGTERM</span></code>).</p></li>
+<li><p><strong>_frame</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a><em> | </em><em>None</em>) – Current stack frame (ignored — present for signal handler API
+compatibility).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.worker.health_check">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">services.worker.worker.</span></span><span class="sig-name descname"><span class="pre">health_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker.html#health_check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.worker.health_check" title="Link to this definition">¶</a></dt>
+<dd><p>ARQ health check — verifies Redis connectivity.</p>
+<p>Used by Kubernetes liveness / readiness probes and Docker HEALTHCHECK.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>HTTP 200 with <code class="docutils literal notranslate"><span class="pre">{&quot;status&quot;:</span> <span class="pre">&quot;ok&quot;,</span> <span class="pre">&quot;redis_connected&quot;:</span> <span class="pre">true}</span></code>
+HTTP 503 if Redis is unreachable or no pool is configured.</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>request</strong> (<em>Request</em>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Response</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.worker.main">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">services.worker.worker.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.worker.main" title="Link to this definition">¶</a></dt>
+<dd><p>Start the ARQ worker pool, Prometheus server, and health endpoint.</p>
+<p>Startup sequence:</p>
+<ol class="arabic simple">
+<li><p>Bootstrap from OpenBao — load secrets (DATABASE_URL, REDIS_URL) via
+worker-specific or main AppRole credentials (fail-fast).</p></li>
+<li><p>Configure structured logging</p></li>
+<li><p>Start the Prometheus metrics HTTP server on <code class="docutils literal notranslate"><span class="pre">PROMETHEUS_PORT</span></code></p></li>
+<li><p>Create ARQ Redis connection settings from <code class="docutils literal notranslate"><span class="pre">REDIS_URL</span></code></p></li>
+<li><p>Create high and low priority worker pools</p></li>
+<li><p>Register SIGTERM / SIGINT handlers for graceful shutdown</p></li>
+<li><p>Start aiohttp health check server on <code class="docutils literal notranslate"><span class="pre">HEALTH_PORT</span></code> (<code class="docutils literal notranslate"><span class="pre">/health</span></code>, <code class="docutils literal notranslate"><span class="pre">/ready</span></code>)</p></li>
+<li><p>Start queue depth monitoring as a background <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Task</span></code></a></p></li>
+<li><p>Run both worker pools concurrently until a shutdown signal is received</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Never returns normally — always exits via signal handler.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NoReturn" title="(in Python v3.14)"><em>NoReturn</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.worker.monitor_queue_depth">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">services.worker.worker.</span></span><span class="sig-name descname"><span class="pre">monitor_queue_depth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">redis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker.html#monitor_queue_depth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.worker.monitor_queue_depth" title="Link to this definition">¶</a></dt>
+<dd><p>Periodically sample queue depth for all known queues.</p>
+<p>Runs as a background <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Task</span></code></a> in the worker event loop.
+Exposes queue depth as a Prometheus Gauge metric.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>redis</strong> (<em>ArqRedis</em>) – Connected <code class="xref py py-class docutils literal notranslate"><span class="pre">ArqRedis</span></code> instance (from the high-priority
+worker pool).</p></li>
+<li><p><strong>interval</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Polling interval in seconds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.worker.on_job_end">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">services.worker.worker.</span></span><span class="sig-name descname"><span class="pre">on_job_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker.html#on_job_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.worker.on_job_end" title="Link to this definition">¶</a></dt>
+<dd><p>Log and record Prometheus metrics when a job ends.</p>
+<p>Called by ARQ after a job completes (success or failure).
+The <code class="docutils literal notranslate"><span class="pre">ctx</span></code> dict may contain <code class="docutils literal notranslate"><span class="pre">job_id</span></code> depending on ARQ version,
+but we always read it from the context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ctx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>) – ARQ worker context dict (includes <code class="docutils literal notranslate"><span class="pre">task_type</span></code>, <code class="docutils literal notranslate"><span class="pre">org_id</span></code>,
+<code class="docutils literal notranslate"><span class="pre">trace_id</span></code> — populated by each task function).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.worker.on_shutdown">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">services.worker.worker.</span></span><span class="sig-name descname"><span class="pre">on_shutdown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_ctx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker.html#on_shutdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.worker.on_shutdown" title="Link to this definition">¶</a></dt>
+<dd><p>Log when the worker pool shuts down and clean up resources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>_ctx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>) – ARQ worker context dict (unused on shutdown).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.worker.setup_logging">
+<span class="sig-prename descclassname"><span class="pre">services.worker.worker.</span></span><span class="sig-name descname"><span class="pre">setup_logging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker.html#setup_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.worker.setup_logging" title="Link to this definition">¶</a></dt>
+<dd><p>Configure structlog for ARQ worker logging.</p>
+<p>In production (<code class="docutils literal notranslate"><span class="pre">STRUCTLOG_FORMAT=json</span></code>) logs are emitted as JSON for
+ingestion by Loki.  In development, human-readable console output.</p>
+<p>Every log entry is automatically enriched with:
+* <code class="docutils literal notranslate"><span class="pre">timestamp</span></code> (ISO-8601)
+* <code class="docutils literal notranslate"><span class="pre">level</span></code>
+* <code class="docutils literal notranslate"><span class="pre">logger</span></code> (<code class="docutils literal notranslate"><span class="pre">OpenZync.worker</span></code>)
+* <code class="docutils literal notranslate"><span class="pre">trace_id</span></code>, <code class="docutils literal notranslate"><span class="pre">org_id</span></code>, <code class="docutils literal notranslate"><span class="pre">task_type</span></code>, <code class="docutils literal notranslate"><span class="pre">job_id</span></code> — bound per-task</p>
+<blockquote>
+<div><p>via <code class="xref py py-func docutils literal notranslate"><span class="pre">structlog.contextvars.bind_contextvars()</span></code>.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-services.worker.worker_settings">
+<span id="services-worker-worker-settings-module"></span><h2>services.worker.worker_settings module<a class="headerlink" href="#module-services.worker.worker_settings" title="Link to this heading">¶</a></h2>
+<p>Worker-specific configuration — loaded from pydantic-settings.</p>
+<p>All worker configuration lives here rather than in <code class="docutils literal notranslate"><span class="pre">core.config</span></code> because the
+worker process is independently deployable and should not depend on API-specific
+settings.  Import the <code class="docutils literal notranslate"><span class="pre">settings</span></code> singleton rather than instantiating
+<a class="reference internal" href="../domains/workers.html#WorkerSettings" title="WorkerSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a> directly.</p>
+<dl>
+<dt>Usage:</dt><dd><p>from services.worker.worker_settings import settings</p>
+<p>arq_redis = await create_pool(RedisSettings.from_dsn(str(settings.REDIS_URL)))
+queue = settings.high_queue_full</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">services.worker.worker_settings.</span></span><span class="sig-name descname"><span class="pre">WorkerSettings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">DATABASE_URL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">REDIS_URL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ENV</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'development'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MAX_WORKERS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JOB_TIMEOUT_DEFAULT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JOB_KEEP_RESULT_FOR</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">JOB_KEEP_RESULT_FOR_FAILURE</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">86400</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">HIGH_QUEUE_NAME</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'high'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LOW_QUEUE_NAME</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'low'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">POLL_DELAY</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">HEALTH_CHECK_INTERVAL</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">HEALTH_PORT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8081</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LOG_LEVEL</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'INFO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STRUCTLOG_FORMAT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STRUCTURED_EXTRACTION_MAX_TOKENS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">PROMETHEUS_PORT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9095</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FALKORDB_URL</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'redis://localhost:6379'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FALKORDB_MAX_CONNECTIONS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FALKORDB_SOCKET_TIMEOUT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">AUTO_RUN_COMMUNITY_DETECTION</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker_settings.html#WorkerSettings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/#pydantic.BaseModel" title="(in Pydantic v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Worker-specific configuration — populated from OpenBao or env vars.</p>
+<p>All durations are in <strong>seconds</strong> unless otherwise noted.</p>
+<p>Create via <a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.from_openbao" title="services.worker.worker_settings.WorkerSettings.from_openbao"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_openbao()</span></code></a> for production, or instantiate directly
+for local development / testing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>DATABASE_URL</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>REDIS_URL</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>ENV</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>MAX_WORKERS</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="(in Python v3.14)"><em>Annotated</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>Ge</em><em>(</em><em>ge=1</em><em>)</em><em>, </em><em>Le</em><em>(</em><em>le=32</em><em>)</em><em>]</em>)</p></li>
+<li><p><strong>JOB_TIMEOUT_DEFAULT</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>JOB_KEEP_RESULT_FOR</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>JOB_KEEP_RESULT_FOR_FAILURE</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>HIGH_QUEUE_NAME</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>LOW_QUEUE_NAME</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>POLL_DELAY</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>)</p></li>
+<li><p><strong>HEALTH_CHECK_INTERVAL</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>HEALTH_PORT</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>LOG_LEVEL</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>STRUCTLOG_FORMAT</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><em>Literal</em></a><em>[</em><em>'json'</em><em>, </em><em>'console'</em><em>]</em>)</p></li>
+<li><p><strong>STRUCTURED_EXTRACTION_MAX_TOKENS</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="(in Python v3.14)"><em>Annotated</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>Ge</em><em>(</em><em>ge=256</em><em>)</em><em>, </em><em>Le</em><em>(</em><em>le=16384</em><em>)</em><em>]</em>)</p></li>
+<li><p><strong>PROMETHEUS_PORT</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>)</p></li>
+<li><p><strong>FALKORDB_URL</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>)</p></li>
+<li><p><strong>FALKORDB_MAX_CONNECTIONS</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="(in Python v3.14)"><em>Annotated</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>Ge</em><em>(</em><em>ge=1</em><em>)</em><em>, </em><em>Le</em><em>(</em><em>le=100</em><em>)</em><em>]</em>)</p></li>
+<li><p><strong>FALKORDB_SOCKET_TIMEOUT</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="(in Python v3.14)"><em>Annotated</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em>, </em><em>Ge</em><em>(</em><em>ge=1</em><em>)</em><em>]</em>)</p></li>
+<li><p><strong>AUTO_RUN_COMMUNITY_DETECTION</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.AUTO_RUN_COMMUNITY_DETECTION">
+<span class="sig-name descname"><span class="pre">AUTO_RUN_COMMUNITY_DETECTION</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.AUTO_RUN_COMMUNITY_DETECTION" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.DATABASE_URL">
+<span class="sig-name descname"><span class="pre">DATABASE_URL</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.DATABASE_URL" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.ENV">
+<span class="sig-name descname"><span class="pre">ENV</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.ENV" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.FALKORDB_MAX_CONNECTIONS">
+<span class="sig-name descname"><span class="pre">FALKORDB_MAX_CONNECTIONS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.FALKORDB_MAX_CONNECTIONS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.FALKORDB_SOCKET_TIMEOUT">
+<span class="sig-name descname"><span class="pre">FALKORDB_SOCKET_TIMEOUT</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.FALKORDB_SOCKET_TIMEOUT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.FALKORDB_URL">
+<span class="sig-name descname"><span class="pre">FALKORDB_URL</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.FALKORDB_URL" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.HEALTH_CHECK_INTERVAL">
+<span class="sig-name descname"><span class="pre">HEALTH_CHECK_INTERVAL</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.HEALTH_CHECK_INTERVAL" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.HEALTH_PORT">
+<span class="sig-name descname"><span class="pre">HEALTH_PORT</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.HEALTH_PORT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.HIGH_QUEUE_NAME">
+<span class="sig-name descname"><span class="pre">HIGH_QUEUE_NAME</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.HIGH_QUEUE_NAME" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.JOB_KEEP_RESULT_FOR">
+<span class="sig-name descname"><span class="pre">JOB_KEEP_RESULT_FOR</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.JOB_KEEP_RESULT_FOR" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.JOB_KEEP_RESULT_FOR_FAILURE">
+<span class="sig-name descname"><span class="pre">JOB_KEEP_RESULT_FOR_FAILURE</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.JOB_KEEP_RESULT_FOR_FAILURE" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.JOB_TIMEOUT_DEFAULT">
+<span class="sig-name descname"><span class="pre">JOB_TIMEOUT_DEFAULT</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.JOB_TIMEOUT_DEFAULT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.LOG_LEVEL">
+<span class="sig-name descname"><span class="pre">LOG_LEVEL</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.LOG_LEVEL" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.LOW_QUEUE_NAME">
+<span class="sig-name descname"><span class="pre">LOW_QUEUE_NAME</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.LOW_QUEUE_NAME" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.MAX_WORKERS">
+<span class="sig-name descname"><span class="pre">MAX_WORKERS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.MAX_WORKERS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.POLL_DELAY">
+<span class="sig-name descname"><span class="pre">POLL_DELAY</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.POLL_DELAY" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.PROMETHEUS_PORT">
+<span class="sig-name descname"><span class="pre">PROMETHEUS_PORT</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.PROMETHEUS_PORT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.REDIS_URL">
+<span class="sig-name descname"><span class="pre">REDIS_URL</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.REDIS_URL" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.STRUCTLOG_FORMAT">
+<span class="sig-name descname"><span class="pre">STRUCTLOG_FORMAT</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'json'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'console'</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.STRUCTLOG_FORMAT" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.STRUCTURED_EXTRACTION_MAX_TOKENS">
+<span class="sig-name descname"><span class="pre">STRUCTURED_EXTRACTION_MAX_TOKENS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.STRUCTURED_EXTRACTION_MAX_TOKENS" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.from_openbao">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_openbao</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bao_client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker_settings.html#WorkerSettings.from_openbao"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.from_openbao" title="Link to this definition">¶</a></dt>
+<dd><p>Create a <code class="docutils literal notranslate"><span class="pre">WorkerSettings</span></code> by reading system config from OpenBao.</p>
+<p>Maps OpenBao snake_case keys to <code class="docutils literal notranslate"><span class="pre">WorkerSettings</span></code> field names.
+Queue names, timeouts, and ports that are deployment-specific are
+kept at their defaults (or can be overridden via env vars).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bao_client</strong> (<em>OpenBaoClient</em>) – An authenticated <a class="reference internal" href="../domains/core.html#OpenBaoClient" title="OpenBaoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenBaoClient</span></code></a> instance.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A fully-populated <a class="reference internal" href="../domains/workers.html#WorkerSettings" title="WorkerSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a> instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings" title="services.worker.worker_settings.WorkerSettings"><em>WorkerSettings</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.high_queue_full">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">high_queue_full</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.high_queue_full" title="Link to this definition">¶</a></dt>
+<dd><p>Fully qualified high-priority queue name (e.g. <code class="docutils literal notranslate"><span class="pre">OpenZync:prod:queue:high</span></code>).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.low_queue_full">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">low_queue_full</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.low_queue_full" title="Link to this definition">¶</a></dt>
+<dd><p>Fully qualified low-priority queue name (e.g. <code class="docutils literal notranslate"><span class="pre">OpenZync:prod:queue:low</span></code>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.worker.worker_settings.WorkerSettings.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#services.worker.worker_settings.WorkerSettings.model_config" title="Link to this definition">¶</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.worker_settings.get_queue_name">
+<span class="sig-prename descclassname"><span class="pre">services.worker.worker_settings.</span></span><span class="sig-name descname"><span class="pre">get_queue_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker_settings.html#get_queue_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.worker_settings.get_queue_name" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a namespaced queue name.</p>
+<p>Pattern: <code class="docutils literal notranslate"><span class="pre">OpenZync:{env}:queue:{queue_type}</span></code></p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<p><code class="docutils literal notranslate"><span class="pre">OpenZync:dev:queue:high</span></code>
+<code class="docutils literal notranslate"><span class="pre">OpenZync:prod:queue:low</span></code></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Environment name (e.g. <code class="docutils literal notranslate"><span class="pre">dev</span></code>, <code class="docutils literal notranslate"><span class="pre">staging</span></code>, <code class="docutils literal notranslate"><span class="pre">prod</span></code>).</p></li>
+<li><p><strong>queue_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Queue type — one of <code class="docutils literal notranslate"><span class="pre">&quot;high&quot;</span></code> (real-time ingestion) or
+<code class="docutils literal notranslate"><span class="pre">&quot;low&quot;</span></code> (scheduled batch / background maintenance).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Fully qualified queue name string.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">queue_type</span></code> is not <code class="docutils literal notranslate"><span class="pre">&quot;high&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;low&quot;</span></code>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.worker_settings.get_worker_settings">
+<span class="sig-prename descclassname"><span class="pre">services.worker.worker_settings.</span></span><span class="sig-name descname"><span class="pre">get_worker_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker_settings.html#get_worker_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.worker_settings.get_worker_settings" title="Link to this definition">¶</a></dt>
+<dd><p>Return the initialised <a class="reference internal" href="../domains/workers.html#WorkerSettings" title="WorkerSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a> singleton.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The module-level singleton instance.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – If <a class="reference internal" href="#services.worker.worker_settings.init_worker_settings_from_bao" title="services.worker.worker_settings.init_worker_settings_from_bao"><code class="xref py py-func docutils literal notranslate"><span class="pre">init_worker_settings_from_bao()</span></code></a> has not
+    been called yet.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings" title="services.worker.worker_settings.WorkerSettings"><em>WorkerSettings</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.worker_settings.init_worker_settings_from_bao">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">services.worker.worker_settings.</span></span><span class="sig-name descname"><span class="pre">init_worker_settings_from_bao</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bao_client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/worker_settings.html#init_worker_settings_from_bao"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.worker_settings.init_worker_settings_from_bao" title="Link to this definition">¶</a></dt>
+<dd><p>Initialise the global <a class="reference internal" href="../domains/workers.html#WorkerSettings" title="WorkerSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a> singleton from OpenBao.</p>
+<p>Must be called once at worker startup, before any task is dispatched.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bao_client</strong> (<em>OpenBaoClient</em>) – An authenticated <a class="reference internal" href="../domains/core.html#OpenBaoClient" title="OpenBaoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenBaoClient</span></code></a> instance.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The newly-created <a class="reference internal" href="../domains/workers.html#WorkerSettings" title="WorkerSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a> instance (also stored
+as the module-level singleton).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings" title="services.worker.worker_settings.WorkerSettings"><em>WorkerSettings</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -398,11 +1334,108 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">services.worker package</a><ul>
+<li><a class="reference internal" href="#services.worker.WorkerSettings"><code class="docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a><ul>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.AUTO_RUN_COMMUNITY_DETECTION"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.AUTO_RUN_COMMUNITY_DETECTION</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.DATABASE_URL"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.DATABASE_URL</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.ENV"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.ENV</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.FALKORDB_MAX_CONNECTIONS"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.FALKORDB_MAX_CONNECTIONS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.FALKORDB_SOCKET_TIMEOUT"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.FALKORDB_SOCKET_TIMEOUT</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.FALKORDB_URL"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.FALKORDB_URL</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.HEALTH_CHECK_INTERVAL"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.HEALTH_CHECK_INTERVAL</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.HEALTH_PORT"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.HEALTH_PORT</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.HIGH_QUEUE_NAME"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.HIGH_QUEUE_NAME</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.JOB_KEEP_RESULT_FOR"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.JOB_KEEP_RESULT_FOR</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.JOB_KEEP_RESULT_FOR_FAILURE"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.JOB_KEEP_RESULT_FOR_FAILURE</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.JOB_TIMEOUT_DEFAULT"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.JOB_TIMEOUT_DEFAULT</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.LOG_LEVEL"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.LOG_LEVEL</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.LOW_QUEUE_NAME"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.LOW_QUEUE_NAME</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.MAX_WORKERS"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.MAX_WORKERS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.POLL_DELAY"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.POLL_DELAY</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.PROMETHEUS_PORT"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.PROMETHEUS_PORT</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.REDIS_URL"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.REDIS_URL</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.STRUCTLOG_FORMAT"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.STRUCTLOG_FORMAT</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.STRUCTURED_EXTRACTION_MAX_TOKENS"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.STRUCTURED_EXTRACTION_MAX_TOKENS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.from_openbao"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.from_openbao()</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.high_queue_full"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.high_queue_full</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.low_queue_full"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.low_queue_full</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.WorkerSettings.model_config"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.model_config</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#services.worker.get_queue_name"><code class="docutils literal notranslate"><span class="pre">get_queue_name()</span></code></a></li>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#services-worker-prompt-renderer-module">services.worker.prompt_renderer module</a></li>
-<li><a class="reference internal" href="#services-worker-worker-module">services.worker.worker module</a></li>
-<li><a class="reference internal" href="#services-worker-worker-settings-module">services.worker.worker_settings module</a></li>
+<li><a class="reference internal" href="#module-services.worker.prompt_renderer">services.worker.prompt_renderer module</a><ul>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource"><code class="docutils literal notranslate"><span class="pre">DataSource</span></code></a><ul>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.CUSTOM_INSTRUCTIONS"><code class="docutils literal notranslate"><span class="pre">DataSource.CUSTOM_INSTRUCTIONS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.EPISODE_CONTENT"><code class="docutils literal notranslate"><span class="pre">DataSource.EPISODE_CONTENT</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.EPISODE_METADATA"><code class="docutils literal notranslate"><span class="pre">DataSource.EPISODE_METADATA</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.ORG_CLASSIFICATION_LABELS"><code class="docutils literal notranslate"><span class="pre">DataSource.ORG_CLASSIFICATION_LABELS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.ORG_ENTITY_TYPES"><code class="docutils literal notranslate"><span class="pre">DataSource.ORG_ENTITY_TYPES</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.ORG_STRUCTURED_SCHEMAS"><code class="docutils literal notranslate"><span class="pre">DataSource.ORG_STRUCTURED_SCHEMAS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.SESSION_ENTITIES"><code class="docutils literal notranslate"><span class="pre">DataSource.SESSION_ENTITIES</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.SESSION_FACTS"><code class="docutils literal notranslate"><span class="pre">DataSource.SESSION_FACTS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.SESSION_RECENT_HISTORY"><code class="docutils literal notranslate"><span class="pre">DataSource.SESSION_RECENT_HISTORY</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.SIMILAR_EPISODES"><code class="docutils literal notranslate"><span class="pre">DataSource.SIMILAR_EPISODES</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.SIMILAR_FACTS"><code class="docutils literal notranslate"><span class="pre">DataSource.SIMILAR_FACTS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.USER_CLASSIFICATIONS"><code class="docutils literal notranslate"><span class="pre">DataSource.USER_CLASSIFICATIONS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.USER_ENTITIES"><code class="docutils literal notranslate"><span class="pre">DataSource.USER_ENTITIES</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.USER_EPISODES"><code class="docutils literal notranslate"><span class="pre">DataSource.USER_EPISODES</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.DataSource.USER_FACTS"><code class="docutils literal notranslate"><span class="pre">DataSource.USER_FACTS</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.build_enrichment_prompt"><code class="docutils literal notranslate"><span class="pre">build_enrichment_prompt()</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.render_prompt"><code class="docutils literal notranslate"><span class="pre">render_prompt()</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.prompt_renderer.resolve_prompt_template_by_type"><code class="docutils literal notranslate"><span class="pre">resolve_prompt_template_by_type()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-services.worker.worker">services.worker.worker module</a><ul>
+<li><a class="reference internal" href="#architecture">Architecture</a></li>
+<li><a class="reference internal" href="#services.worker.worker.HIGH_QUEUE_TASKS"><code class="docutils literal notranslate"><span class="pre">HIGH_QUEUE_TASKS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker.LOW_QUEUE_TASKS"><code class="docutils literal notranslate"><span class="pre">LOW_QUEUE_TASKS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker.create_arq_worker"><code class="docutils literal notranslate"><span class="pre">create_arq_worker()</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker.entrypoint"><code class="docutils literal notranslate"><span class="pre">entrypoint()</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker.handle_signal"><code class="docutils literal notranslate"><span class="pre">handle_signal()</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker.health_check"><code class="docutils literal notranslate"><span class="pre">health_check()</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker.monitor_queue_depth"><code class="docutils literal notranslate"><span class="pre">monitor_queue_depth()</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker.on_job_end"><code class="docutils literal notranslate"><span class="pre">on_job_end()</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker.on_shutdown"><code class="docutils literal notranslate"><span class="pre">on_shutdown()</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker.setup_logging"><code class="docutils literal notranslate"><span class="pre">setup_logging()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-services.worker.worker_settings">services.worker.worker_settings module</a><ul>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings"><code class="docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a><ul>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.AUTO_RUN_COMMUNITY_DETECTION"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.AUTO_RUN_COMMUNITY_DETECTION</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.DATABASE_URL"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.DATABASE_URL</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.ENV"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.ENV</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.FALKORDB_MAX_CONNECTIONS"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.FALKORDB_MAX_CONNECTIONS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.FALKORDB_SOCKET_TIMEOUT"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.FALKORDB_SOCKET_TIMEOUT</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.FALKORDB_URL"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.FALKORDB_URL</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.HEALTH_CHECK_INTERVAL"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.HEALTH_CHECK_INTERVAL</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.HEALTH_PORT"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.HEALTH_PORT</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.HIGH_QUEUE_NAME"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.HIGH_QUEUE_NAME</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.JOB_KEEP_RESULT_FOR"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.JOB_KEEP_RESULT_FOR</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.JOB_KEEP_RESULT_FOR_FAILURE"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.JOB_KEEP_RESULT_FOR_FAILURE</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.JOB_TIMEOUT_DEFAULT"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.JOB_TIMEOUT_DEFAULT</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.LOG_LEVEL"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.LOG_LEVEL</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.LOW_QUEUE_NAME"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.LOW_QUEUE_NAME</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.MAX_WORKERS"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.MAX_WORKERS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.POLL_DELAY"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.POLL_DELAY</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.PROMETHEUS_PORT"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.PROMETHEUS_PORT</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.REDIS_URL"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.REDIS_URL</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.STRUCTLOG_FORMAT"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.STRUCTLOG_FORMAT</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.STRUCTURED_EXTRACTION_MAX_TOKENS"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.STRUCTURED_EXTRACTION_MAX_TOKENS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.from_openbao"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.from_openbao()</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.high_queue_full"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.high_queue_full</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.low_queue_full"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.low_queue_full</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.WorkerSettings.model_config"><code class="docutils literal notranslate"><span class="pre">WorkerSettings.model_config</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#services.worker.worker_settings.get_queue_name"><code class="docutils literal notranslate"><span class="pre">get_queue_name()</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.get_worker_settings"><code class="docutils literal notranslate"><span class="pre">get_worker_settings()</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.worker_settings.init_worker_settings_from_bao"><code class="docutils literal notranslate"><span class="pre">init_worker_settings_from_bao()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

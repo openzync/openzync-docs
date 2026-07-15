@@ -311,26 +311,95 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="workers-package">
-<h1>workers package<a class="headerlink" href="#workers-package" title="Link to this heading">¶</a></h1>
+          <section id="module-workers">
+<span id="workers-package"></span><h1>workers package<a class="headerlink" href="#module-workers" title="Link to this heading">¶</a></h1>
+<p>Background worker tasks for the MemGraph enrichment pipeline.</p>
+<p>Workers are dispatched by ARQ (via Redis) after an episode is committed to
+PostgreSQL.  Each worker is responsible for a single enrichment step:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">extract_entities</span></code> — LLM-based entity extraction → Graphiti nodes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">embed_episode</span></code>    — Embedding generation → <code class="docutils literal notranslate"><span class="pre">episodes.embedding</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extract_facts</span></code>    — LLM-based fact extraction → <code class="docutils literal notranslate"><span class="pre">facts</span></code> table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">link_entities_to_episode</span></code> — Links extracted entities to the episode.</p></li>
+</ul>
+<p>Workers are idempotent: they check <code class="docutils literal notranslate"><span class="pre">episodes.enrichment_status</span></code> bits before
+doing work and skip if the step has already been completed.</p>
 <section id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="workers.tasks.html">workers.tasks package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers.tasks.classify_dialog"><code class="docutils literal notranslate"><span class="pre">classify_dialog()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers.tasks.compute_observations"><code class="docutils literal notranslate"><span class="pre">compute_observations()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers.tasks.embed_episode"><code class="docutils literal notranslate"><span class="pre">embed_episode()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers.tasks.embed_fact"><code class="docutils literal notranslate"><span class="pre">embed_fact()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers.tasks.enrich_episode"><code class="docutils literal notranslate"><span class="pre">enrich_episode()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers.tasks.extract_entities"><code class="docutils literal notranslate"><span class="pre">extract_entities()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers.tasks.extract_facts"><code class="docutils literal notranslate"><span class="pre">extract_facts()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers.tasks.extract_structured"><code class="docutils literal notranslate"><span class="pre">extract_structured()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers.tasks.ingest_business_data"><code class="docutils literal notranslate"><span class="pre">ingest_business_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers.tasks.link_entities_to_episode"><code class="docutils literal notranslate"><span class="pre">link_entities_to_episode()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers.tasks.merge_duplicate_entities"><code class="docutils literal notranslate"><span class="pre">merge_duplicate_entities()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers.tasks.summarise_community"><code class="docutils literal notranslate"><span class="pre">summarise_community()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers-tasks-base-module">workers.tasks.base module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers-tasks-classify-dialog-module">workers.tasks.classify_dialog module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers-tasks-embed-episode-module">workers.tasks.embed_episode module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers-tasks-embed-fact-module">workers.tasks.embed_fact module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers-tasks-extract-entities-module">workers.tasks.extract_entities module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers-tasks-extract-facts-module">workers.tasks.extract_facts module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers-tasks-extract-structured-module">workers.tasks.extract_structured module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers-tasks-generate-user-summary-module">workers.tasks.generate_user_summary module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers-tasks-ingest-business-data-module">workers.tasks.ingest_business_data module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers-tasks-link-entities-to-episode-module">workers.tasks.link_entities_to_episode module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers-tasks-merge-duplicate-entities-module">workers.tasks.merge_duplicate_entities module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#workers-tasks-summarise-community-module">workers.tasks.summarise_community module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#module-workers.tasks.base">workers.tasks.base module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.base.ENRICHMENT_ALL"><code class="docutils literal notranslate"><span class="pre">ENRICHMENT_ALL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.base.with_retry"><code class="docutils literal notranslate"><span class="pre">with_retry()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#module-workers.tasks.classify_dialog">workers.tasks.classify_dialog module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.classify_dialog.classify_dialog"><code class="docutils literal notranslate"><span class="pre">classify_dialog()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.classify_dialog.process_classification_output"><code class="docutils literal notranslate"><span class="pre">process_classification_output()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#module-workers.tasks.embed_episode">workers.tasks.embed_episode module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.embed_episode.embed_episode"><code class="docutils literal notranslate"><span class="pre">embed_episode()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#module-workers.tasks.embed_fact">workers.tasks.embed_fact module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.embed_fact.embed_fact"><code class="docutils literal notranslate"><span class="pre">embed_fact()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#module-workers.tasks.extract_entities">workers.tasks.extract_entities module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.extract_entities.extract_entities"><code class="docutils literal notranslate"><span class="pre">extract_entities()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.extract_entities.process_entities_output"><code class="docutils literal notranslate"><span class="pre">process_entities_output()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#module-workers.tasks.extract_facts">workers.tasks.extract_facts module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.extract_facts.extract_facts"><code class="docutils literal notranslate"><span class="pre">extract_facts()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.extract_facts.process_facts_output"><code class="docutils literal notranslate"><span class="pre">process_facts_output()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#module-workers.tasks.extract_structured">workers.tasks.extract_structured module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.extract_structured.extract_structured"><code class="docutils literal notranslate"><span class="pre">extract_structured()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.extract_structured.process_structured_output"><code class="docutils literal notranslate"><span class="pre">process_structured_output()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#module-workers.tasks.generate_user_summary">workers.tasks.generate_user_summary module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.generate_user_summary.generate_user_summary"><code class="docutils literal notranslate"><span class="pre">generate_user_summary()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#module-workers.tasks.ingest_business_data">workers.tasks.ingest_business_data module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.ingest_business_data.ARQ_QUEUE"><code class="docutils literal notranslate"><span class="pre">ARQ_QUEUE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.ingest_business_data.ingest_business_data"><code class="docutils literal notranslate"><span class="pre">ingest_business_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#module-workers.tasks.link_entities_to_episode">workers.tasks.link_entities_to_episode module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.link_entities_to_episode.link_entities_to_episode"><code class="docutils literal notranslate"><span class="pre">link_entities_to_episode()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#module-workers.tasks.merge_duplicate_entities">workers.tasks.merge_duplicate_entities module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.merge_duplicate_entities.FUZZY_SIMILARITY_THRESHOLD"><code class="docutils literal notranslate"><span class="pre">FUZZY_SIMILARITY_THRESHOLD</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.merge_duplicate_entities.MERGE_BATCH_SIZE"><code class="docutils literal notranslate"><span class="pre">MERGE_BATCH_SIZE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.merge_duplicate_entities.merge_duplicate_entities"><code class="docutils literal notranslate"><span class="pre">merge_duplicate_entities()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="workers.tasks.html#module-workers.tasks.summarise_community">workers.tasks.summarise_community module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.summarise_community.COMMUNITY_MIN_ENTITY_COUNT"><code class="docutils literal notranslate"><span class="pre">COMMUNITY_MIN_ENTITY_COUNT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.summarise_community.PROMPT_NAME"><code class="docutils literal notranslate"><span class="pre">PROMPT_NAME</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="workers.tasks.html#workers.tasks.summarise_community.summarise_community"><code class="docutils literal notranslate"><span class="pre">summarise_community()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

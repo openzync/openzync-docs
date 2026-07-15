@@ -562,11 +562,11 @@ handles:</p>
 and retrieves context for LLM injection.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.memory.AsyncMemoryClient">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.memory.</span></span><span class="sig-name descname"><span class="pre">AsyncMemoryClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">http</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/memory.html#AsyncMemoryClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.memory.AsyncMemoryClient" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.memory.</span></span><span class="sig-name descname"><span class="pre">AsyncMemoryClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">http</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.memory.AsyncMemoryClient" title="Link to this definition">¶</a></dt>
 <dd><p>Async client for memory operations.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.memory.AsyncMemoryClient.ingest">
-<span class="sig-name descname"><span class="pre">ingest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idempotency_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/memory.html#AsyncMemoryClient.ingest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.memory.AsyncMemoryClient.ingest" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ingest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idempotency_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.memory.AsyncMemoryClient.ingest" title="Link to this definition">¶</a></dt>
 <dd><p>Ingest conversation messages into a project’s memory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -623,7 +623,7 @@ deduplication window are silently ignored.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.memory.AsyncMemoryClient.get_context">
-<span class="sig-name descname"><span class="pre">get_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/memory.html#AsyncMemoryClient.get_context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.memory.AsyncMemoryClient.get_context" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.memory.AsyncMemoryClient.get_context" title="Link to this definition">¶</a></dt>
 <dd><p>Assemble a formatted context block for LLM injection.  The server
 performs hybrid retrieval (semantic + keyword + graph traversal) across
 the project’s memory and returns a single context string.</p>
@@ -658,7 +658,7 @@ assembly info.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.memory.AsyncMemoryClient.delete">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/memory.html#AsyncMemoryClient.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.memory.AsyncMemoryClient.delete" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#openzync.memory.AsyncMemoryClient.delete" title="Link to this definition">¶</a></dt>
 <dd><p>Delete <strong>all</strong> memory for the project (soft-delete).  This
 operation is irreversible — use with care.</p>
 <dl class="field-list simple">
@@ -683,11 +683,11 @@ operation is irreversible — use with care.</p>
 into a project’s knowledge graph.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.facts.AsyncFactsClient">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.facts.</span></span><span class="sig-name descname"><span class="pre">AsyncFactsClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">http</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/facts.html#AsyncFactsClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.facts.AsyncFactsClient" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.facts.</span></span><span class="sig-name descname"><span class="pre">AsyncFactsClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">http</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.facts.AsyncFactsClient" title="Link to this definition">¶</a></dt>
 <dd><p>Async client for business fact operations.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.facts.AsyncFactsClient.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">facts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/facts.html#AsyncFactsClient.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.facts.AsyncFactsClient.add" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">facts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.facts.AsyncFactsClient.add" title="Link to this definition">¶</a></dt>
 <dd><p>Ingest a batch of fact triples into the knowledge graph.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -747,11 +747,11 @@ facts passed basic validation.</p>
 relationship edges, community summaries, and hybrid search.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.graph.AsyncGraphClient">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.graph.</span></span><span class="sig-name descname"><span class="pre">AsyncGraphClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">http</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/graph.html#AsyncGraphClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.graph.AsyncGraphClient" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.graph.</span></span><span class="sig-name descname"><span class="pre">AsyncGraphClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">http</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.graph.AsyncGraphClient" title="Link to this definition">¶</a></dt>
 <dd><p>Async client for knowledge graph operations.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.graph.AsyncGraphClient.nodes">
-<span class="sig-name descname"><span class="pre">nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/graph.html#AsyncGraphClient.nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.graph.AsyncGraphClient.nodes" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.graph.AsyncGraphClient.nodes" title="Link to this definition">¶</a></dt>
 <dd><p>List entity nodes with optional type filter.  Returns a paginated async
 iterator that auto-fetches subsequent pages as items are consumed.</p>
 <dl class="field-list simple">
@@ -783,7 +783,7 @@ iterator that auto-fetches subsequent pages as items are consumed.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.graph.AsyncGraphClient.node_detail">
-<span class="sig-name descname"><span class="pre">node_detail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/graph.html#AsyncGraphClient.node_detail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.graph.AsyncGraphClient.node_detail" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">node_detail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.graph.AsyncGraphClient.node_detail" title="Link to this definition">¶</a></dt>
 <dd><p>Get a single entity node with all its incident edges (relationships
 to other nodes).</p>
 <dl class="field-list simple">
@@ -815,7 +815,7 @@ a list of incident <code class="xref py py-class docutils literal notranslate"><
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.graph.AsyncGraphClient.delete_node">
-<span class="sig-name descname"><span class="pre">delete_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/graph.html#AsyncGraphClient.delete_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.graph.AsyncGraphClient.delete_node" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">delete_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.graph.AsyncGraphClient.delete_node" title="Link to this definition">¶</a></dt>
 <dd><p>Delete an entity node and all its incident edges from the knowledge
 graph.</p>
 <dl class="field-list simple">
@@ -836,7 +836,7 @@ graph.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.graph.AsyncGraphClient.edges">
-<span class="sig-name descname"><span class="pre">edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/graph.html#AsyncGraphClient.edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.graph.AsyncGraphClient.edges" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.graph.AsyncGraphClient.edges" title="Link to this definition">¶</a></dt>
 <dd><p>List relationship edges for a specific entity node.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -865,7 +865,7 @@ graph.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.graph.AsyncGraphClient.communities">
-<span class="sig-name descname"><span class="pre">communities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/graph.html#AsyncGraphClient.communities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.graph.AsyncGraphClient.communities" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">communities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#openzync.graph.AsyncGraphClient.communities" title="Link to this definition">¶</a></dt>
 <dd><p>List community summary nodes.  Communities are clusters of related
 entities discovered by the graph analysis pipeline.</p>
 <dl class="field-list simple">
@@ -886,7 +886,7 @@ entities discovered by the graph analysis pipeline.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.graph.AsyncGraphClient.search">
-<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'episodes,facts'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/graph.html#AsyncGraphClient.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.graph.AsyncGraphClient.search" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'episodes,facts'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.graph.AsyncGraphClient.search" title="Link to this definition">¶</a></dt>
 <dd><p>Hybrid search across the project’s memory.  Combines semantic
 (embedding), keyword (BM25), and graph traversal signals to surface
 relevant results.</p>
@@ -929,11 +929,11 @@ caller-defined entities with an <code class="docutils literal notranslate"><span
 system.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.users.AsyncUsersClient">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.users.</span></span><span class="sig-name descname"><span class="pre">AsyncUsersClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">http</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/users.html#AsyncUsersClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.users.AsyncUsersClient" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.users.</span></span><span class="sig-name descname"><span class="pre">AsyncUsersClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">http</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.users.AsyncUsersClient" title="Link to this definition">¶</a></dt>
 <dd><p>Async client for user operations.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.users.AsyncUsersClient.create">
-<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/users.html#AsyncUsersClient.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.users.AsyncUsersClient.create" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.users.AsyncUsersClient.create" title="Link to this definition">¶</a></dt>
 <dd><p>Create a new user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -971,7 +971,7 @@ exists.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.users.AsyncUsersClient.get">
-<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/users.html#AsyncUsersClient.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.users.AsyncUsersClient.get" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.users.AsyncUsersClient.get" title="Link to this definition">¶</a></dt>
 <dd><p>Get user details by internal UUID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -995,7 +995,7 @@ exists.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.users.AsyncUsersClient.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/users.html#AsyncUsersClient.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.users.AsyncUsersClient.update" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.users.AsyncUsersClient.update" title="Link to this definition">¶</a></dt>
 <dd><p>Update user fields.  Only provided fields are changed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1028,7 +1028,7 @@ entirely when provided.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.users.AsyncUsersClient.delete">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/users.html#AsyncUsersClient.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.users.AsyncUsersClient.delete" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.users.AsyncUsersClient.delete" title="Link to this definition">¶</a></dt>
 <dd><p>Soft-delete a user.  The user is marked <code class="docutils literal notranslate"><span class="pre">is_deleted=True</span></code> but data
 is retained.</p>
 <dl class="field-list simple">
@@ -1049,7 +1049,7 @@ is retained.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.users.AsyncUsersClient.list">
-<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/users.html#AsyncUsersClient.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.users.AsyncUsersClient.list" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.users.AsyncUsersClient.list" title="Link to this definition">¶</a></dt>
 <dd><p>List users with cursor-based pagination.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1077,7 +1077,7 @@ is retained.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.users.AsyncUsersClient.list_iter">
-<span class="sig-name descname"><span class="pre">list_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/users.html#AsyncUsersClient.list_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.users.AsyncUsersClient.list_iter" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">list_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.users.AsyncUsersClient.list_iter" title="Link to this definition">¶</a></dt>
 <dd><p>Iterate over <strong>all</strong> users with automatic pagination.  Fetches
 subsequent pages transparently as the iterator is consumed.</p>
 <dl class="field-list simple">
@@ -1106,11 +1106,11 @@ subsequent pages transparently as the iterator is consumed.</p>
 group messages and facts into logical conversations.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.sessions.AsyncSessionsClient">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.sessions.</span></span><span class="sig-name descname"><span class="pre">AsyncSessionsClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">http</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/sessions.html#AsyncSessionsClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.sessions.AsyncSessionsClient" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.sessions.</span></span><span class="sig-name descname"><span class="pre">AsyncSessionsClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">http</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.sessions.AsyncSessionsClient" title="Link to this definition">¶</a></dt>
 <dd><p>Async client for session operations.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.sessions.AsyncSessionsClient.create">
-<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/sessions.html#AsyncSessionsClient.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.sessions.AsyncSessionsClient.create" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">external_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.sessions.AsyncSessionsClient.create" title="Link to this definition">¶</a></dt>
 <dd><p>Create a new session within a project.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1143,7 +1143,7 @@ already exists in this project.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.sessions.AsyncSessionsClient.get">
-<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/sessions.html#AsyncSessionsClient.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.sessions.AsyncSessionsClient.get" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.sessions.AsyncSessionsClient.get" title="Link to this definition">¶</a></dt>
 <dd><p>Get session details by internal UUID.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1167,7 +1167,7 @@ already exists in this project.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.sessions.AsyncSessionsClient.delete">
-<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/sessions.html#AsyncSessionsClient.delete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.sessions.AsyncSessionsClient.delete" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.sessions.AsyncSessionsClient.delete" title="Link to this definition">¶</a></dt>
 <dd><p>Close and soft-delete a session.  The session is marked
 <code class="docutils literal notranslate"><span class="pre">is_active=False</span></code>.</p>
 <dl class="field-list simple">
@@ -1188,7 +1188,7 @@ already exists in this project.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.sessions.AsyncSessionsClient.list">
-<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/sessions.html#AsyncSessionsClient.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.sessions.AsyncSessionsClient.list" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.sessions.AsyncSessionsClient.list" title="Link to this definition">¶</a></dt>
 <dd><p>List sessions for a project with cursor-based pagination.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1214,7 +1214,7 @@ already exists in this project.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.sessions.AsyncSessionsClient.messages">
-<span class="sig-name descname"><span class="pre">messages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/sessions.html#AsyncSessionsClient.messages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.sessions.AsyncSessionsClient.messages" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">messages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.sessions.AsyncSessionsClient.messages" title="Link to this definition">¶</a></dt>
 <dd><p>Get messages for a session.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1250,11 +1250,11 @@ are scoped to a project via the API key — you rarely need to provide a
 <code class="docutils literal notranslate"><span class="pre">project_id</span></code> explicitly.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.projects.AsyncProjectsClient">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.projects.</span></span><span class="sig-name descname"><span class="pre">AsyncProjectsClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">http</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/projects.html#AsyncProjectsClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.projects.AsyncProjectsClient" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.projects.</span></span><span class="sig-name descname"><span class="pre">AsyncProjectsClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">http</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.projects.AsyncProjectsClient" title="Link to this definition">¶</a></dt>
 <dd><p>Async client for project operations.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.projects.AsyncProjectsClient.create">
-<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/projects.html#AsyncProjectsClient.create"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.create" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.create" title="Link to this definition">¶</a></dt>
 <dd><p>Create a new project.  The authenticated user is automatically added
 as an <code class="docutils literal notranslate"><span class="pre">owner</span></code>.</p>
 <dl class="field-list simple">
@@ -1284,7 +1284,7 @@ as an <code class="docutils literal notranslate"><span class="pre">owner</span><
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.projects.AsyncProjectsClient.get">
-<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/projects.html#AsyncProjectsClient.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.get" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.get" title="Link to this definition">¶</a></dt>
 <dd><p>Get project details for the project associated with the current API
 key.</p>
 <dl class="field-list simple">
@@ -1304,7 +1304,7 @@ key.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.projects.AsyncProjectsClient.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_archived</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/projects.html#AsyncProjectsClient.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.update" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_archived</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.update" title="Link to this definition">¶</a></dt>
 <dd><p>Update project fields.  Only provided fields are changed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1332,7 +1332,7 @@ key.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.projects.AsyncProjectsClient.list">
-<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/projects.html#AsyncProjectsClient.list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.list" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.list" title="Link to this definition">¶</a></dt>
 <dd><p>List projects with offset-based pagination.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1357,7 +1357,7 @@ key.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.projects.AsyncProjectsClient.list_iter">
-<span class="sig-name descname"><span class="pre">list_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/projects.html#AsyncProjectsClient.list_iter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.list_iter" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">list_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.list_iter" title="Link to this definition">¶</a></dt>
 <dd><p>Iterate over all projects with automatic pagination.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1378,7 +1378,7 @@ key.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.projects.AsyncProjectsClient.archive">
-<span class="sig-name descname"><span class="pre">archive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/projects.html#AsyncProjectsClient.archive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.archive" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">archive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.archive" title="Link to this definition">¶</a></dt>
 <dd><p>Archive (soft-delete) the project associated with the current API key.
 This operation is irreversible.</p>
 <dl class="field-list simple">
@@ -1396,7 +1396,7 @@ This operation is irreversible.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.projects.AsyncProjectsClient.add_member">
-<span class="sig-name descname"><span class="pre">add_member</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'member'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/projects.html#AsyncProjectsClient.add_member"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.add_member" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add_member</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'member'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.add_member" title="Link to this definition">¶</a></dt>
 <dd><p>Add a user as a member of the project.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1423,7 +1423,7 @@ This operation is irreversible.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.projects.AsyncProjectsClient.remove_member">
-<span class="sig-name descname"><span class="pre">remove_member</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/projects.html#AsyncProjectsClient.remove_member"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.remove_member" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">remove_member</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.remove_member" title="Link to this definition">¶</a></dt>
 <dd><p>Remove a member from the project.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1443,7 +1443,7 @@ This operation is irreversible.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.projects.AsyncProjectsClient.list_members">
-<span class="sig-name descname"><span class="pre">list_members</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/projects.html#AsyncProjectsClient.list_members"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.list_members" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">list_members</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.projects.AsyncProjectsClient.list_members" title="Link to this definition">¶</a></dt>
 <dd><p>List members of the project.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1475,7 +1475,7 @@ This operation is irreversible.</p>
 The SDK provides two iterator classes that handle page fetching transparently.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync._pagination.AsyncPaginatedIterator">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync._pagination.</span></span><span class="sig-name descname"><span class="pre">AsyncPaginatedIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fetch_page</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/_pagination.html#AsyncPaginatedIterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync._pagination.AsyncPaginatedIterator" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync._pagination.</span></span><span class="sig-name descname"><span class="pre">AsyncPaginatedIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fetch_page</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync._pagination.AsyncPaginatedIterator" title="Link to this definition">¶</a></dt>
 <dd><p>Async iterator that auto-fetches subsequent pages as items are consumed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1489,13 +1489,13 @@ string and returns a paginated response dict with <code class="docutils literal 
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync._pagination.AsyncPaginatedIterator.__aiter__">
-<span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/_pagination.html#AsyncPaginatedIterator.__aiter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync._pagination.AsyncPaginatedIterator.__aiter__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#openzync._pagination.AsyncPaginatedIterator.__aiter__" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the iterator itself.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync._pagination.AsyncPaginatedIterator.__anext__">
-<span class="sig-name descname"><span class="pre">__anext__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/_pagination.html#AsyncPaginatedIterator.__anext__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync._pagination.AsyncPaginatedIterator.__anext__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__anext__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#openzync._pagination.AsyncPaginatedIterator.__anext__" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the next item or raises <code class="docutils literal notranslate"><span class="pre">StopAsyncIteration</span></code>.  Fetches a
 new page transparently when the current page is exhausted.</p>
 </dd></dl>
@@ -1518,7 +1518,7 @@ new page transparently when the current page is exhausted.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync._pagination.SyncPaginatedIterator">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync._pagination.</span></span><span class="sig-name descname"><span class="pre">SyncPaginatedIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fetch_page</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/_pagination.html#SyncPaginatedIterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync._pagination.SyncPaginatedIterator" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync._pagination.</span></span><span class="sig-name descname"><span class="pre">SyncPaginatedIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fetch_page</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync._pagination.SyncPaginatedIterator" title="Link to this definition">¶</a></dt>
 <dd><p>Synchronous wrapper around <a class="reference internal" href="#openzync._pagination.AsyncPaginatedIterator" title="openzync._pagination.AsyncPaginatedIterator"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncPaginatedIterator</span></code></a>.  Each
 <code class="docutils literal notranslate"><span class="pre">__next__</span></code> call runs the underlying async fetch via
 <a class="reference external" href="https://docs.python.org/3/library/asyncio-runner.html#asyncio.run" title="(in Python v3.14)"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.run()</span></code></a>.</p>
@@ -1567,7 +1567,7 @@ convenience:</p>
 <h3><a class="toc-backref" href="#id19" role="doc-backlink">Memory models</a><a class="headerlink" href="#memory-models" title="Link to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.Message">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">Message</span></span><a class="reference internal" href="../_modules/openzync/models/memory.html#Message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.Message" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">Message</span></span><a class="headerlink" href="#openzync.models.Message" title="Link to this definition">¶</a></dt>
 <dd><p>A single conversation turn.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.Message.role">
@@ -1625,7 +1625,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.IngestMemoryRequest">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">IngestMemoryRequest</span></span><a class="reference internal" href="../_modules/openzync/models/memory.html#IngestMemoryRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.IngestMemoryRequest" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">IngestMemoryRequest</span></span><a class="headerlink" href="#openzync.models.IngestMemoryRequest" title="Link to this definition">¶</a></dt>
 <dd><p>Request body for <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/projects/{project_id}/memory</span></code>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.IngestMemoryRequest.session_id">
@@ -1657,7 +1657,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.IngestMemoryResponse">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">IngestMemoryResponse</span></span><a class="reference internal" href="../_modules/openzync/models/memory.html#IngestMemoryResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.IngestMemoryResponse" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">IngestMemoryResponse</span></span><a class="headerlink" href="#openzync.models.IngestMemoryResponse" title="Link to this definition">¶</a></dt>
 <dd><p>Response returned after successful ingestion.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.IngestMemoryResponse.job_id">
@@ -1707,7 +1707,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.ContextResponse">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">ContextResponse</span></span><a class="reference internal" href="../_modules/openzync/models/memory.html#ContextResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.ContextResponse" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">ContextResponse</span></span><a class="headerlink" href="#openzync.models.ContextResponse" title="Link to this definition">¶</a></dt>
 <dd><p>Response from the context assembly endpoint.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.ContextResponse.context">
@@ -1738,7 +1738,7 @@ convenience:</p>
 <h3><a class="toc-backref" href="#id20" role="doc-backlink">Facts models</a><a class="headerlink" href="#facts-models" title="Link to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.FactTriple">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">FactTriple</span></span><a class="reference internal" href="../_modules/openzync/models/facts.html#FactTriple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.FactTriple" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">FactTriple</span></span><a class="headerlink" href="#openzync.models.FactTriple" title="Link to this definition">¶</a></dt>
 <dd><p>A single fact triple for batch ingestion.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.FactTriple.subject">
@@ -1823,7 +1823,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.FactBatchResponse">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">FactBatchResponse</span></span><a class="reference internal" href="../_modules/openzync/models/facts.html#FactBatchResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.FactBatchResponse" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">FactBatchResponse</span></span><a class="headerlink" href="#openzync.models.FactBatchResponse" title="Link to this definition">¶</a></dt>
 <dd><p>Response after successful fact batch ingestion.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.FactBatchResponse.job_id">
@@ -1879,7 +1879,7 @@ convenience:</p>
 <h3><a class="toc-backref" href="#id21" role="doc-backlink">Graph models</a><a class="headerlink" href="#graph-models" title="Link to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.GraphNode">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">GraphNode</span></span><a class="reference internal" href="../_modules/openzync/models/graph.html#GraphNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.GraphNode" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">GraphNode</span></span><a class="headerlink" href="#openzync.models.GraphNode" title="Link to this definition">¶</a></dt>
 <dd><p>A single entity node in the knowledge graph.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.GraphNode.id">
@@ -1950,7 +1950,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.GraphEdge">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">GraphEdge</span></span><a class="reference internal" href="../_modules/openzync/models/graph.html#GraphEdge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.GraphEdge" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">GraphEdge</span></span><a class="headerlink" href="#openzync.models.GraphEdge" title="Link to this definition">¶</a></dt>
 <dd><p>A single relationship edge in the knowledge graph.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.GraphEdge.id">
@@ -2021,7 +2021,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.GraphNodeDetail">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">GraphNodeDetail</span></span><a class="reference internal" href="../_modules/openzync/models/graph.html#GraphNodeDetail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.GraphNodeDetail" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">GraphNodeDetail</span></span><a class="headerlink" href="#openzync.models.GraphNodeDetail" title="Link to this definition">¶</a></dt>
 <dd><p>A single entity node with all its incident edges.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.GraphNodeDetail.node">
@@ -2049,7 +2049,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.GraphCommunity">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">GraphCommunity</span></span><a class="reference internal" href="../_modules/openzync/models/graph.html#GraphCommunity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.GraphCommunity" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">GraphCommunity</span></span><a class="headerlink" href="#openzync.models.GraphCommunity" title="Link to this definition">¶</a></dt>
 <dd><p>A community summary node.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.GraphCommunity.id">
@@ -2111,7 +2111,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.PaginatedGraphNodes">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">PaginatedGraphNodes</span></span><a class="reference internal" href="../_modules/openzync/models/graph.html#PaginatedGraphNodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.PaginatedGraphNodes" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">PaginatedGraphNodes</span></span><a class="headerlink" href="#openzync.models.PaginatedGraphNodes" title="Link to this definition">¶</a></dt>
 <dd><p>Cursor-paginated response for entity node listing.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.PaginatedGraphNodes.items">
@@ -2147,7 +2147,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.PaginatedGraphEdges">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">PaginatedGraphEdges</span></span><a class="reference internal" href="../_modules/openzync/models/graph.html#PaginatedGraphEdges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.PaginatedGraphEdges" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">PaginatedGraphEdges</span></span><a class="headerlink" href="#openzync.models.PaginatedGraphEdges" title="Link to this definition">¶</a></dt>
 <dd><p>Cursor-paginated response for edge listing.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.PaginatedGraphEdges.items">
@@ -2186,7 +2186,7 @@ convenience:</p>
 <h3><a class="toc-backref" href="#id22" role="doc-backlink">User models</a><a class="headerlink" href="#user-models" title="Link to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.UserCreateRequest">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">UserCreateRequest</span></span><a class="reference internal" href="../_modules/openzync/models/user.html#UserCreateRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.UserCreateRequest" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">UserCreateRequest</span></span><a class="headerlink" href="#openzync.models.UserCreateRequest" title="Link to this definition">¶</a></dt>
 <dd><p>Request body for <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/users</span></code>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.UserCreateRequest.external_id">
@@ -2245,7 +2245,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.UserUpdateRequest">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">UserUpdateRequest</span></span><a class="reference internal" href="../_modules/openzync/models/user.html#UserUpdateRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.UserUpdateRequest" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">UserUpdateRequest</span></span><a class="headerlink" href="#openzync.models.UserUpdateRequest" title="Link to this definition">¶</a></dt>
 <dd><p>Request body for <code class="docutils literal notranslate"><span class="pre">PATCH</span> <span class="pre">/v1/users/{user_id}</span></code>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.UserUpdateRequest.name">
@@ -2281,7 +2281,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.UserResponse">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">UserResponse</span></span><a class="reference internal" href="../_modules/openzync/models/user.html#UserResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.UserResponse" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">UserResponse</span></span><a class="headerlink" href="#openzync.models.UserResponse" title="Link to this definition">¶</a></dt>
 <dd><p>Response from user CRUD endpoints.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.UserResponse.id">
@@ -2412,7 +2412,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.UserListResponse">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">UserListResponse</span></span><a class="reference internal" href="../_modules/openzync/models/user.html#UserListResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.UserListResponse" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">UserListResponse</span></span><a class="headerlink" href="#openzync.models.UserListResponse" title="Link to this definition">¶</a></dt>
 <dd><p>Response from <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/users</span></code>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.UserListResponse.data">
@@ -2451,7 +2451,7 @@ convenience:</p>
 <h3><a class="toc-backref" href="#id23" role="doc-backlink">Session models</a><a class="headerlink" href="#session-models" title="Link to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.SessionCreateRequest">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">SessionCreateRequest</span></span><a class="reference internal" href="../_modules/openzync/models/session.html#SessionCreateRequest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.SessionCreateRequest" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">SessionCreateRequest</span></span><a class="headerlink" href="#openzync.models.SessionCreateRequest" title="Link to this definition">¶</a></dt>
 <dd><p>Request body for <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/projects/{project_id}/sessions</span></code>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.SessionCreateRequest.external_id">
@@ -2484,7 +2484,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.SessionResponse">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">SessionResponse</span></span><a class="reference internal" href="../_modules/openzync/models/session.html#SessionResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.SessionResponse" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">SessionResponse</span></span><a class="headerlink" href="#openzync.models.SessionResponse" title="Link to this definition">¶</a></dt>
 <dd><p>Response from session CRUD endpoints.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.SessionResponse.id">
@@ -2585,7 +2585,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.SessionListResponse">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">SessionListResponse</span></span><a class="reference internal" href="../_modules/openzync/models/session.html#SessionListResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.SessionListResponse" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">SessionListResponse</span></span><a class="headerlink" href="#openzync.models.SessionListResponse" title="Link to this definition">¶</a></dt>
 <dd><p>Response from <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/projects/{project_id}/sessions</span></code>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.SessionListResponse.data">
@@ -2621,7 +2621,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.SessionMessagesResponse">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">SessionMessagesResponse</span></span><a class="reference internal" href="../_modules/openzync/models/session.html#SessionMessagesResponse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.SessionMessagesResponse" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.models.</span></span><span class="sig-name descname"><span class="pre">SessionMessagesResponse</span></span><a class="headerlink" href="#openzync.models.SessionMessagesResponse" title="Link to this definition">¶</a></dt>
 <dd><p>Response from <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/projects/{project_id}/sessions/{session_id}/messages</span></code>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.SessionMessagesResponse.data">
@@ -2656,7 +2656,7 @@ convenience:</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.models.SessionMessagesResponse.MessageItem">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">MessageItem</span></span><a class="reference internal" href="../_modules/openzync/models/session.html#SessionMessagesResponse.MessageItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.models.SessionMessagesResponse.MessageItem" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">MessageItem</span></span><a class="headerlink" href="#openzync.models.SessionMessagesResponse.MessageItem" title="Link to this definition">¶</a></dt>
 <dd><p>A single message within a session.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync.models.SessionMessagesResponse.MessageItem.id">
@@ -3029,7 +3029,7 @@ convenience:</p>
 these automatically — you never need to inspect raw response bodies.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync._errors.OpenZyncError">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync._errors.</span></span><span class="sig-name descname"><span class="pre">OpenZyncError</span></span><a class="reference internal" href="../_modules/openzync/_errors.html#OpenZyncError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync._errors.OpenZyncError" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync._errors.</span></span><span class="sig-name descname"><span class="pre">OpenZyncError</span></span><a class="headerlink" href="#openzync._errors.OpenZyncError" title="Link to this definition">¶</a></dt>
 <dd><p>Base exception for all SDK errors.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openzync._errors.OpenZyncError.status_code">
@@ -3183,7 +3183,7 @@ as memory, chat history, retriever, and tools for LangChain agents.</p>
 <h3><a class="toc-backref" href="#id28" role="doc-backlink">OZChatMessageHistory</a><a class="headerlink" href="#ozchatmessagehistory" title="Link to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.integrations.langchain.OZChatMessageHistory">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.integrations.langchain.</span></span><span class="sig-name descname"><span class="pre">OZChatMessageHistory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_messages</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/integrations/langchain/message_history.html#OZChatMessageHistory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.integrations.langchain.OZChatMessageHistory" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.integrations.langchain.</span></span><span class="sig-name descname"><span class="pre">OZChatMessageHistory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_messages</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.integrations.langchain.OZChatMessageHistory" title="Link to this definition">¶</a></dt>
 <dd><p>Implements <code class="xref py py-class docutils literal notranslate"><span class="pre">langchain_core.chat_history.BaseChatMessageHistory</span></code> with
 OpenZync as the backing store.</p>
 <dl class="field-list simple">
@@ -3232,7 +3232,7 @@ inside a running event loop.  Use async methods in async environments.</p>
 <h3><a class="toc-backref" href="#id29" role="doc-backlink">OZMemory</a><a class="headerlink" href="#ozmemory" title="Link to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.integrations.langchain.OZMemory">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.integrations.langchain.</span></span><span class="sig-name descname"><span class="pre">OZMemory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'chat_history'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_messages</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_messages</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/integrations/langchain/memory.html#OZMemory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.integrations.langchain.OZMemory" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.integrations.langchain.</span></span><span class="sig-name descname"><span class="pre">OZMemory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'chat_history'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_messages</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_messages</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.integrations.langchain.OZMemory" title="Link to this definition">¶</a></dt>
 <dd><p>Implements <code class="xref py py-class docutils literal notranslate"><span class="pre">langchain_core.memory.BaseMemory</span></code> backed by OpenZync.
 Designed as a drop-in replacement for
 <code class="docutils literal notranslate"><span class="pre">ConversationBufferMemory</span></code> in LangChain chains.</p>
@@ -3271,7 +3271,7 @@ not provided).</p></li>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="openzync.integrations.langchain.OZMemory.get_context">
-<span class="sig-name descname"><span class="pre">get_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/integrations/langchain/memory.html#OZMemory.get_context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.integrations.langchain.OZMemory.get_context" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.integrations.langchain.OZMemory.get_context" title="Link to this definition">¶</a></dt>
 <dd><p>Retrieve relevant context from memory for LLM injection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -3297,7 +3297,7 @@ for use as a system-prompt prefix.</p>
 <h3><a class="toc-backref" href="#id30" role="doc-backlink">OZGraphRetriever</a><a class="headerlink" href="#ozgraphretriever" title="Link to this heading">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.integrations.langchain.OZGraphRetriever">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.integrations.langchain.</span></span><span class="sig-name descname"><span class="pre">OZGraphRetriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'episodes,facts'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/integrations/langchain/retriever.html#OZGraphRetriever"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.integrations.langchain.OZGraphRetriever" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.integrations.langchain.</span></span><span class="sig-name descname"><span class="pre">OZGraphRetriever</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'episodes,facts'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.integrations.langchain.OZGraphRetriever" title="Link to this definition">¶</a></dt>
 <dd><p>Implements <code class="xref py py-class docutils literal notranslate"><span class="pre">langchain_core.retrievers.BaseRetriever</span></code> that uses
 OpenZync’s hybrid graph search to surface relevant context.</p>
 <dl class="field-list simple">
@@ -3343,7 +3343,7 @@ OpenZync’s hybrid graph search to surface relevant context.</p>
 LLM agents access to the OpenZync knowledge graph.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.integrations.langchain.AddFactsTool">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.integrations.langchain.</span></span><span class="sig-name descname"><span class="pre">AddFactsTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/integrations/langchain/tools/facts.html#AddFactsTool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.integrations.langchain.AddFactsTool" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.integrations.langchain.</span></span><span class="sig-name descname"><span class="pre">AddFactsTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.integrations.langchain.AddFactsTool" title="Link to this definition">¶</a></dt>
 <dd><p>Tool that adds structured fact triples to the knowledge graph.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">openzync.integrations.langchain.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddFactsTool</span>
 
@@ -3361,7 +3361,7 @@ LLM agents access to the OpenZync knowledge graph.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.integrations.langchain.GraphSearchTool">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.integrations.langchain.</span></span><span class="sig-name descname"><span class="pre">GraphSearchTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/integrations/langchain/tools/graph.html#GraphSearchTool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.integrations.langchain.GraphSearchTool" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.integrations.langchain.</span></span><span class="sig-name descname"><span class="pre">GraphSearchTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.integrations.langchain.GraphSearchTool" title="Link to this definition">¶</a></dt>
 <dd><p>Tool that searches the knowledge graph for relevant episodes, facts, or
 entities.</p>
 <p>Input schema: <code class="xref py py-class docutils literal notranslate"><span class="pre">GraphSearchInput</span></code> (<code class="docutils literal notranslate"><span class="pre">query</span></code>, <code class="docutils literal notranslate"><span class="pre">project_id</span></code>,
@@ -3370,7 +3370,7 @@ optional <code class="docutils literal notranslate"><span class="pre">types</spa
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.integrations.langchain.GraphNodeDetailTool">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.integrations.langchain.</span></span><span class="sig-name descname"><span class="pre">GraphNodeDetailTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/integrations/langchain/tools/graph.html#GraphNodeDetailTool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.integrations.langchain.GraphNodeDetailTool" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.integrations.langchain.</span></span><span class="sig-name descname"><span class="pre">GraphNodeDetailTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.integrations.langchain.GraphNodeDetailTool" title="Link to this definition">¶</a></dt>
 <dd><p>Tool that retrieves detailed information about a specific graph node,
 including all incident relationships.</p>
 <p>Input schema: <code class="xref py py-class docutils literal notranslate"><span class="pre">GraphNodeDetailInput</span></code> (<code class="docutils literal notranslate"><span class="pre">project_id</span></code>, <code class="docutils literal notranslate"><span class="pre">node_id</span></code>).</p>
@@ -3378,7 +3378,7 @@ including all incident relationships.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="openzync.integrations.langchain.ListGraphNodesTool">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.integrations.langchain.</span></span><span class="sig-name descname"><span class="pre">ListGraphNodesTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/openzync/integrations/langchain/tools/graph.html#ListGraphNodesTool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openzync.integrations.langchain.ListGraphNodesTool" title="Link to this definition">¶</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">openzync.integrations.langchain.</span></span><span class="sig-name descname"><span class="pre">ListGraphNodesTool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#openzync.integrations.langchain.ListGraphNodesTool" title="Link to this definition">¶</a></dt>
 <dd><p>Tool that lists entity nodes in the knowledge graph, optionally filtered
 by entity type.</p>
 <p>Input schema: <code class="xref py py-class docutils literal notranslate"><span class="pre">ListGraphNodesInput</span></code> (<code class="docutils literal notranslate"><span class="pre">project_id</span></code>, optional

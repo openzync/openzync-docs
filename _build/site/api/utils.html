@@ -311,16 +311,252 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="utils-package">
-<h1>utils package<a class="headerlink" href="#utils-package" title="Link to this heading">¶</a></h1>
+          <section id="module-utils">
+<span id="utils-package"></span><h1>utils package<a class="headerlink" href="#module-utils" title="Link to this heading">¶</a></h1>
+<p>OpenZync cryptographic and security utilities.</p>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="utils-crypto-module">
-<h2>utils.crypto module<a class="headerlink" href="#utils-crypto-module" title="Link to this heading">¶</a></h2>
+<section id="module-utils.crypto">
+<span id="utils-crypto-module"></span><h2>utils.crypto module<a class="headerlink" href="#module-utils.crypto" title="Link to this heading">¶</a></h2>
+<p>Cryptographic utilities for API key generation, hashing, and JWT management.</p>
+<p>All key material is generated from <code class="docutils literal notranslate"><span class="pre">secrets</span></code> (CSPRNG).  API keys use SHA-256
+with a random 16-byte salt — never bcrypt (too slow for per-request auth).
+JWT tokens use HS256 with the application secret key.</p>
+<dl>
+<dt>Usage:</dt><dd><p>from utils.crypto import generate_api_key, hash_api_key, verify_api_key</p>
+<p>raw_key = generate_api_key()
+key_hash, salt = hash_api_key(raw_key)
+assert verify_api_key(raw_key, key_hash, salt)</p>
+</dd>
+</dl>
+<dl class="py data">
+<dt class="sig sig-object py" id="utils.crypto.BASE62_ALPHABET">
+<span class="sig-prename descclassname"><span class="pre">utils.crypto.</span></span><span class="sig-name descname"><span class="pre">BASE62_ALPHABET</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'</span></span><a class="headerlink" href="#utils.crypto.BASE62_ALPHABET" title="Link to this definition">¶</a></dt>
+<dd><p>0-9 (10), A-Z (26), a-z (26) = 62 chars.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Base62 character set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.crypto.base62_encode">
+<span class="sig-prename descclassname"><span class="pre">utils.crypto.</span></span><span class="sig-name descname"><span class="pre">base62_encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/crypto.html#base62_encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.crypto.base62_encode" title="Link to this definition">¶</a></dt>
+<dd><p>Encode a non-negative integer as a base62 string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>num</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Arbitrary non-negative integer.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Base62-encoded string (least significant digit last).</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">num</span></code> is negative.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.crypto.compute_lookup_hash">
+<span class="sig-prename descclassname"><span class="pre">utils.crypto.</span></span><span class="sig-name descname"><span class="pre">compute_lookup_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/crypto.html#compute_lookup_hash"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.crypto.compute_lookup_hash" title="Link to this definition">¶</a></dt>
+<dd><p>Compute a deterministic, <strong>unsalted</strong> hash for fast cache/DB lookup.</p>
+<p>This is <strong>not</strong> a security hash — it is used purely for indexing and
+caching.  The salted <a class="reference internal" href="../domains/auth.html#hash_api_key" title="hash_api_key"><code class="xref py py-func docutils literal notranslate"><span class="pre">hash_api_key()</span></code></a> is used for verification.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>raw_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The full API key string.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>64-character hex string (SHA-256 of the raw key, no salt).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.crypto.create_jwt_token">
+<span class="sig-prename descclassname"><span class="pre">utils.crypto.</span></span><span class="sig-name descname"><span class="pre">create_jwt_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires_delta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/crypto.html#create_jwt_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.crypto.create_jwt_token" title="Link to this definition">¶</a></dt>
+<dd><p>Create a signed JWT token (HS256).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>) – Payload claims to encode (e.g. <code class="docutils literal notranslate"><span class="pre">{&quot;sub&quot;:</span> <span class="pre">user_id,</span> <span class="pre">&quot;org_id&quot;:</span> <span class="pre">...}</span></code>).</p></li>
+<li><p><strong>secret</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – HMAC secret key (must be at least 32 chars in production).</p></li>
+<li><p><strong>expires_delta</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.14)"><em>timedelta</em></a>) – Relative duration until the token expires.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Encoded JWT string (three base64url segments separated by dots).</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>jwt.PyJWTError</strong> – If encoding fails.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.crypto.generate_api_key">
+<span class="sig-prename descclassname"><span class="pre">utils.crypto.</span></span><span class="sig-name descname"><span class="pre">generate_api_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'oz_live_'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/crypto.html#generate_api_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.crypto.generate_api_key" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a cryptographically random API key.</p>
+<p>The key consists of 48 CSPRNG bytes encoded as base62 (≈ 67 chars) with
+a human-readable prefix.  Total length ≈ 73 characters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>prefix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Optional key prefix for identifying the environment or owner.
+Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;oz_live_&quot;</span></code> (production OpenZync).  Use
+<code class="docutils literal notranslate"><span class="pre">&quot;oz_test_&quot;</span></code> for test/development keys.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Full API key string, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;oz_live_3Ab9...kQ7&quot;</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">key</span> <span class="o">=</span> <span class="n">generate_api_key</span><span class="p">(</span><span class="s2">&quot;oz_test_&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">70</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;oz_test_&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.crypto.hash_api_key">
+<span class="sig-prename descclassname"><span class="pre">utils.crypto.</span></span><span class="sig-name descname"><span class="pre">hash_api_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/crypto.html#hash_api_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.crypto.hash_api_key" title="Link to this definition">¶</a></dt>
+<dd><p>Hash an API key with a random 16-byte salt.</p>
+<p>Uses <code class="docutils literal notranslate"><span class="pre">SHA-256(salt</span> <span class="pre">||</span> <span class="pre">raw_key)</span></code> — the hash is stored in the database
+alongside the salt for verification.  The salt is regenerated on every call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>raw_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The full API key string as returned by <a class="reference internal" href="../domains/auth.html#generate_api_key" title="generate_api_key"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_api_key()</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple of <code class="docutils literal notranslate"><span class="pre">(hex_hash,</span> <span class="pre">hex_salt)</span></code>.
+- <code class="docutils literal notranslate"><span class="pre">hex_hash</span></code>: 64-character hex string (SHA-256 output).
+- <code class="docutils literal notranslate"><span class="pre">hex_salt</span></code>: 32-character hex string (16 random bytes).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)">tuple</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.crypto.verify_api_key">
+<span class="sig-prename descclassname"><span class="pre">utils.crypto.</span></span><span class="sig-name descname"><span class="pre">verify_api_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stored_hash</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">salt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/crypto.html#verify_api_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.crypto.verify_api_key" title="Link to this definition">¶</a></dt>
+<dd><p>Verify an API key against its stored salted hash.</p>
+<p>Computes <code class="docutils literal notranslate"><span class="pre">SHA-256(salt</span> <span class="pre">||</span> <span class="pre">raw_key)</span></code> and compares it to <code class="docutils literal notranslate"><span class="pre">stored_hash</span></code>.
+Constant-time comparison is <strong>not</strong> used here because the hash is not
+a password — timing attacks on API keys are impractical at network scale.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>raw_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The full API key string provided by the client.</p></li>
+<li><p><strong>stored_hash</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The 64-character hex hash stored in the database.</p></li>
+<li><p><strong>salt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The 32-character hex salt stored alongside the hash.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the key matches, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.crypto.verify_jwt_token">
+<span class="sig-prename descclassname"><span class="pre">utils.crypto.</span></span><span class="sig-name descname"><span class="pre">verify_jwt_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secret</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/crypto.html#verify_jwt_token"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.crypto.verify_jwt_token" title="Link to this definition">¶</a></dt>
+<dd><p>Verify and decode a JWT token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Encoded JWT string.</p></li>
+<li><p><strong>secret</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – HMAC secret key used for signing.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Decoded payload as a dictionary.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../domains/core.html#AuthenticationError" title="AuthenticationError"><strong>AuthenticationError</strong></a> – If the token is expired or invalid.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="utils-password-module">
-<h2>utils.password module<a class="headerlink" href="#utils-password-module" title="Link to this heading">¶</a></h2>
+<section id="module-utils.password">
+<span id="utils-password-module"></span><h2>utils.password module<a class="headerlink" href="#module-utils.password" title="Link to this heading">¶</a></h2>
+<p>Password hashing and verification using bcrypt.</p>
+<p>All dashboard user passwords are hashed with bcrypt before storage.
+The application never stores or logs plaintext passwords.</p>
+<dl>
+<dt>Usage:</dt><dd><p>from utils.password import hash_password, verify_password</p>
+<p>hashed = hash_password(“my-secure-password”)
+assert verify_password(“my-secure-password”, hashed)</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.password.hash_password">
+<span class="sig-prename descclassname"><span class="pre">utils.password.</span></span><span class="sig-name descname"><span class="pre">hash_password</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">password</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/password.html#hash_password"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.password.hash_password" title="Link to this definition">¶</a></dt>
+<dd><p>Hash a password with a randomly generated salt (bcrypt).</p>
+<p>The resulting hash is a 60-character string that includes the salt
+and algorithm metadata (<code class="docutils literal notranslate"><span class="pre">$2b$12$...</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>password</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The plaintext password to hash.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bcrypt hash string (60 characters), safe for storage.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the password is empty.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.password.verify_password">
+<span class="sig-prename descclassname"><span class="pre">utils.password.</span></span><span class="sig-name descname"><span class="pre">verify_password</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">password</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hashed</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/utils/password.html#verify_password"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.password.verify_password" title="Link to this definition">¶</a></dt>
+<dd><p>Verify a plaintext password against a bcrypt hash.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>password</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The plaintext password to check.</p></li>
+<li><p><strong>hashed</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The stored bcrypt hash string.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the password matches the hash, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -381,8 +617,22 @@
             <ul>
 <li><a class="reference internal" href="#">utils package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#utils-crypto-module">utils.crypto module</a></li>
-<li><a class="reference internal" href="#utils-password-module">utils.password module</a></li>
+<li><a class="reference internal" href="#module-utils.crypto">utils.crypto module</a><ul>
+<li><a class="reference internal" href="#utils.crypto.BASE62_ALPHABET"><code class="docutils literal notranslate"><span class="pre">BASE62_ALPHABET</span></code></a></li>
+<li><a class="reference internal" href="#utils.crypto.base62_encode"><code class="docutils literal notranslate"><span class="pre">base62_encode()</span></code></a></li>
+<li><a class="reference internal" href="#utils.crypto.compute_lookup_hash"><code class="docutils literal notranslate"><span class="pre">compute_lookup_hash()</span></code></a></li>
+<li><a class="reference internal" href="#utils.crypto.create_jwt_token"><code class="docutils literal notranslate"><span class="pre">create_jwt_token()</span></code></a></li>
+<li><a class="reference internal" href="#utils.crypto.generate_api_key"><code class="docutils literal notranslate"><span class="pre">generate_api_key()</span></code></a></li>
+<li><a class="reference internal" href="#utils.crypto.hash_api_key"><code class="docutils literal notranslate"><span class="pre">hash_api_key()</span></code></a></li>
+<li><a class="reference internal" href="#utils.crypto.verify_api_key"><code class="docutils literal notranslate"><span class="pre">verify_api_key()</span></code></a></li>
+<li><a class="reference internal" href="#utils.crypto.verify_jwt_token"><code class="docutils literal notranslate"><span class="pre">verify_jwt_token()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-utils.password">utils.password module</a><ul>
+<li><a class="reference internal" href="#utils.password.hash_password"><code class="docutils literal notranslate"><span class="pre">hash_password()</span></code></a></li>
+<li><a class="reference internal" href="#utils.password.verify_password"><code class="docutils literal notranslate"><span class="pre">verify_password()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -311,46 +311,1304 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="workers-tasks-package">
-<h1>workers.tasks package<a class="headerlink" href="#workers-tasks-package" title="Link to this heading">¶</a></h1>
+          <section id="module-workers.tasks">
+<span id="workers-tasks-package"></span><h1>workers.tasks package<a class="headerlink" href="#module-workers.tasks" title="Link to this heading">¶</a></h1>
+<p>Task definitions for the ARQ / RQ enrichment pipeline.</p>
+<p>Each module in this package exports one async function that is registered with
+the worker scheduler.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.classify_dialog">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.</span></span><span class="sig-name descname"><span class="pre">classify_dialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/classify_dialog.html#classify_dialog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.classify_dialog" title="Link to this definition">¶</a></dt>
+<dd><p>Classify a dialog turn and persist the result.</p>
+<p>This function is designed as an ARQ task — the <code class="docutils literal notranslate"><span class="pre">ctx</span></code> parameter provides
+a shared DB engine from the worker process (<code class="docutils literal notranslate"><span class="pre">ctx[&quot;db_engine&quot;]</span></code>).
+When <code class="docutils literal notranslate"><span class="pre">ctx</span></code> is absent (direct invocation), a short-lived engine is
+created as a fallback.</p>
+<dl class="simple">
+<dt>Pipeline:</dt><dd><ol class="arabic simple">
+<li><p>Create a temporary DB engine + session.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">app.org_id</span></code> for RLS compliance.</p></li>
+<li><p>Check <code class="docutils literal notranslate"><span class="pre">enrichment_status</span></code> — skip if bit 4 is already set.</p></li>
+<li><p>Fetch organization’s classification schemas (<code class="docutils literal notranslate"><span class="pre">type='classification'</span></code>).</p></li>
+<li><p>Extract label definitions from schemas (or use defaults).</p></li>
+<li><p>Resolve prompt template from DB (fall back to filesystem).</p></li>
+<li><p>Fetch custom instructions for the <code class="docutils literal notranslate"><span class="pre">classification</span></code> scope.</p></li>
+<li><p>Render the <code class="docutils literal notranslate"><span class="pre">classify_dialog_v1.jinja2</span></code> prompt (with DB
+template + custom instructions).</p></li>
+<li><p>Call the LLM backend (temperature 0.0, max_tokens 4096).</p></li>
+<li><p>Parse and validate the JSON response.</p></li>
+<li><p>Insert a <code class="docutils literal notranslate"><span class="pre">DialogClassification</span></code> row.</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">enrichment_status</span></code> bit 4.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused — required by ARQ contract).</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the source episode (string, from ARQ).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organization.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the project for project scoping.</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The message text to classify.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+<li><p><strong>session_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – UUID of the session for FK to dialog_classifications.</p></li>
+<li><p><strong>user_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – UUID of the user who sent the message.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional metadata dict forwarded from the enrichment pipeline.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><strong>Exception</strong></a> – Re-raises the last LLM or DB error after retry exhaustion.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.compute_observations">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.</span></span><span class="sig-name descname"><span class="pre">compute_observations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/compute_observations.html#compute_observations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.compute_observations" title="Link to this definition">¶</a></dt>
+<dd><p>Run graph-topology observations pass for a project.</p>
+<p>Triggered after <code class="docutils literal notranslate"><span class="pre">link_entities_to_episode</span></code> sets bit 3.  Performs
+a full project scan of graph topology data and persists observations
+to <code class="docutils literal notranslate"><span class="pre">graph_observations</span></code>.</p>
+<dl class="simple">
+<dt>Pipeline:</dt><dd><ol class="arabic simple">
+<li><p>Check bit 6 — skip if already set (idempotent).</p></li>
+<li><p>Bootstrap DB engine from worker context.</p></li>
+<li><p>Instantiate <code class="docutils literal notranslate"><span class="pre">ObservationService</span></code>.</p></li>
+<li><p>Run all detection algorithms (co-occurrence, temporal gaps,
+behavioral patterns).</p></li>
+<li><p>Optionally call LLM to generate <code class="docutils literal notranslate"><span class="pre">content</span></code> field.</p></li>
+<li><p>Persist observations via <code class="docutils literal notranslate"><span class="pre">backend.upsert_observation()</span></code>.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">episodes.enrichment_status</span></code> bit 6.</p></li>
+<li><p>Commit.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (provides <code class="docutils literal notranslate"><span class="pre">db_engine</span></code>, <code class="docutils literal notranslate"><span class="pre">redis</span></code>).</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the triggering episode.</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organization.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the project for project scoping.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><strong>Exception</strong></a> – Re-raises after retry exhaustion (<code class="docutils literal notranslate"><span class="pre">on_exhaustion=&quot;raise&quot;</span></code>).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.embed_episode">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.</span></span><span class="sig-name descname"><span class="pre">embed_episode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/embed_episode.html#embed_episode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.embed_episode" title="Link to this definition">¶</a></dt>
+<dd><p>Generate an embedding for an episode and store it in pgvector.</p>
+<p>The embedding backend, model, and dimension come exclusively from the
+per-org config (<code class="docutils literal notranslate"><span class="pre">org_cfg.embedding_backend</span></code> / <code class="docutils literal notranslate"><span class="pre">embedding_model</span></code> /
+<code class="docutils literal notranslate"><span class="pre">embedding_dim</span></code>) resolved from the <code class="docutils literal notranslate"><span class="pre">organizations.config</span></code> JSONB
+column.  There is no env-var fallback — if any required field is
+<code class="docutils literal notranslate"><span class="pre">None</span></code> the task raises <code class="docutils literal notranslate"><span class="pre">SearchLegFailedError</span></code> so ARQ retries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused — required by ARQ contract).</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the episode to embed.</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organisation (for observability / RLS).</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the project for project scoping (observability).</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Episode message text to embed.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional metadata dict forwarded from the enrichment pipeline.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="../domains/core.html#EpisodeNotFoundError" title="EpisodeNotFoundError"><strong>EpisodeNotFoundError</strong></a> – If no episode exists for <code class="docutils literal notranslate"><span class="pre">episode_id</span></code>.</p></li>
+<li><p><a class="reference internal" href="../domains/core.html#SearchLegFailedError" title="SearchLegFailedError"><strong>SearchLegFailedError</strong></a> – If org config fetch fails, org is not found,
+    or no embedding backend is configured.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the embedding dimension does not match
+    the per-org config <code class="docutils literal notranslate"><span class="pre">embedding_dim</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.embed_fact">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.</span></span><span class="sig-name descname"><span class="pre">embed_fact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fact_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/embed_fact.html#embed_fact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.embed_fact" title="Link to this definition">¶</a></dt>
+<dd><p>Generate an embedding for a fact and store it in <code class="docutils literal notranslate"><span class="pre">facts.embedding</span></code>.</p>
+<p>The embedding backend, model, and dimension come exclusively from the
+per-org config (<code class="docutils literal notranslate"><span class="pre">org_cfg.embedding_backend</span></code> / <code class="docutils literal notranslate"><span class="pre">embedding_model</span></code> /
+<code class="docutils literal notranslate"><span class="pre">embedding_dim</span></code>) resolved from the <code class="docutils literal notranslate"><span class="pre">organizations.config</span></code> JSONB
+column.  There is no env-var fallback — if any required field is
+<code class="docutils literal notranslate"><span class="pre">None</span></code> the task logs a warning and returns early.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused — required by ARQ contract).</p></li>
+<li><p><strong>fact_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the fact to embed.</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Fact text content to embed. If not provided (e.g. when
+called from <code class="docutils literal notranslate"><span class="pre">fact_service</span></code>), it will be fetched from the DB.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+<li><p><strong>**kwargs</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – Additional context (org_id, user_id) forwarded from the caller.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the embedding dimension does not match
+    the per-org config <code class="docutils literal notranslate"><span class="pre">embedding_dim</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.enrich_episode">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.</span></span><span class="sig-name descname"><span class="pre">enrich_episode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'user'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/enrich_episode.html#enrich_episode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.enrich_episode" title="Link to this definition">¶</a></dt>
+<dd><p>Single enrichment pass: classify + extract entities/facts/structured.</p>
+<dl class="simple">
+<dt>Pipeline:</dt><dd><ol class="arabic simple">
+<li><p>Open session, set RLS context.</p></li>
+<li><p>Check idempotency — skip if all 4 LLM bits already set.</p></li>
+<li><p>Resolve <code class="docutils literal notranslate"><span class="pre">user_id</span></code> from the episode record.</p></li>
+<li><p>Render the <code class="docutils literal notranslate"><span class="pre">enrich_episode_v1.jinja2</span></code> prompt with auto-injected
+context (entities, facts, schemas, history, …).</p></li>
+<li><p>Resolve LLM backend from org config.</p></li>
+<li><p>Single LLM call with <code class="docutils literal notranslate"><span class="pre">CombinedLLMOutput</span></code> as <code class="docutils literal notranslate"><span class="pre">response_model</span></code>.</p></li>
+<li><p>Process each enrichment section in an independent savepoint:
+- Classification  (bit 4)
+- Entities        (bit 0)
+- Facts           (bit 2)
+- Structured      (bit 5)</p></li>
+<li><p>Commit all successful savepoints.</p></li>
+<li><p>Raise <code class="docutils literal notranslate"><span class="pre">PartialEnrichmentError</span></code> if any section failed.</p></li>
+</ol>
+</dd>
+</dl>
+<p>Each section is independently rolled back on failure, so completed
+sections are never lost.  On <code class="docutils literal notranslate"><span class="pre">PartialEnrichmentError</span></code> the ARQ retry
+mechanism re-runs; the idempotency check at the top skips already-set
+bits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (<code class="docutils literal notranslate"><span class="pre">db_session_factory</span></code>, <code class="docutils literal notranslate"><span class="pre">redis</span></code>).</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the source episode (string, from ARQ).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organization.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the project for project scoping.</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The message text to enrich.</p></li>
+<li><p><strong>session_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – UUID of the session (for FK and context assembly).</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional metadata dict from the episode.</p></li>
+<li><p><strong>role</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Message role (default <code class="docutils literal notranslate"><span class="pre">&quot;user&quot;</span></code>; passed for compatibility
+with the memory service enqueue but not used internally).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="../domains/core.html#EpisodeNotFoundError" title="EpisodeNotFoundError"><strong>EpisodeNotFoundError</strong></a> – If the episode does not exist.</p></li>
+<li><p><strong>PartialEnrichmentError</strong> – If one or more sections failed after
+    retry exhaustion (carries <code class="docutils literal notranslate"><span class="pre">successful_bits</span></code> for partial retry).</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><strong>Exception</strong></a> – Re-raises the last unexpected error after retry exhaustion.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.extract_entities">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.</span></span><span class="sig-name descname"><span class="pre">extract_entities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/extract_entities.html#extract_entities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.extract_entities" title="Link to this definition">¶</a></dt>
+<dd><p>Extract named entities and relationships from a message and persist them.</p>
+<p>This function is designed as an ARQ task — the <code class="docutils literal notranslate"><span class="pre">ctx</span></code> parameter provides
+a shared DB engine from the worker process (<code class="docutils literal notranslate"><span class="pre">ctx[&quot;db_engine&quot;]</span></code>).
+When <code class="docutils literal notranslate"><span class="pre">ctx</span></code> is absent (direct invocation), a short-lived engine is
+created as a fallback.</p>
+<dl class="simple">
+<dt>Pipeline:</dt><dd><ol class="arabic simple">
+<li><p>Fetch organization’s entity type ontology from
+<code class="docutils literal notranslate"><span class="pre">extraction_schemas</span> <span class="pre">(type='entity_type')</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">session_id</span></code> is provided, fetch known entities from previous
+turns of this session for delta extraction (v3 prompt).</p></li>
+<li><dl class="simple">
+<dt>Render the extract prompt:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">extract_entities_v4.jinja2</span></code> when known entities exist (delta).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extract_entities_v3.jinja2</span></code> for the first extraction.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Call the LLM backend (via <code class="docutils literal notranslate"><span class="pre">resolve_backend()</span></code>, temperature 0.1).</p></li>
+<li><p>Parse the JSON response (handles markdown fence wrapping).</p></li>
+<li><p>Validate entity types against the allowed ontology (reassign
+invalid types to <code class="docutils literal notranslate"><span class="pre">&quot;Custom&quot;</span></code>).</p></li>
+<li><p>Persist entity nodes to Graphiti via <code class="docutils literal notranslate"><span class="pre">EntityRepository</span></code>.</p></li>
+<li><p>Persist relationships as facts in PostgreSQL.</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">episodes.enrichment_status</span></code> bit 0.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused — required by ARQ contract).</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the source episode (string, from ARQ).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organization.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the project for project scoping.</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The message text to extract entities from.</p></li>
+<li><p><strong>session_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – UUID of the session (passed from MemoryService).
+Used to fetch known entities for delta extraction.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional metadata dict forwarded from the enrichment pipeline.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><strong>Exception</strong></a> – Re-raises the last LLM or DB error after retry exhaustion
+    (<code class="docutils literal notranslate"><span class="pre">on_exhaustion=&quot;raise&quot;</span></code> default behaviour).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.extract_facts">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.</span></span><span class="sig-name descname"><span class="pre">extract_facts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/extract_facts.html#extract_facts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.extract_facts" title="Link to this definition">¶</a></dt>
+<dd><p>Extract zero-shot factual statements from a message and persist them.</p>
+<p>This function is designed as an ARQ task — the <code class="docutils literal notranslate"><span class="pre">ctx</span></code> parameter provides
+a shared DB engine from the worker process (<code class="docutils literal notranslate"><span class="pre">ctx[&quot;db_engine&quot;]</span></code>).
+When <code class="docutils literal notranslate"><span class="pre">ctx</span></code> is absent (direct invocation), a short-lived engine is
+created as a fallback.</p>
+<dl class="simple">
+<dt>Pipeline:</dt><dd><ol class="arabic simple" start="0">
+<li><p>Fetch known entities + recent history from session (if session_id).</p></li>
+<li><p>Render the <code class="docutils literal notranslate"><span class="pre">extract_facts_v4.jinja2</span></code> prompt with conversation,
+known entities, existing facts, and recent history (or
+<code class="docutils literal notranslate"><span class="pre">extract_facts_v3.jinja2</span></code> for first extraction when no facts exist yet).</p></li>
+<li><p>Call the LLM backend (via <code class="docutils literal notranslate"><span class="pre">resolve_backend()</span></code>, temperature 0.1).</p></li>
+<li><p>Parse the JSON response (handles markdown fence wrapping).</p></li>
+<li><p>Filter triples by confidence (&gt;= 0.3) and quality heuristics.</p></li>
+<li><p>Resolve subject/object to entity IDs from known entities.</p></li>
+<li><p>Persist valid facts via <code class="docutils literal notranslate"><span class="pre">FactRepository</span></code>.</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">episodes.enrichment_status</span></code> bit 2.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused — required by ARQ contract).</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the source episode (string, from ARQ).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organization.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the project for project scoping.</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The message text to extract facts from.</p></li>
+<li><p><strong>session_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – UUID of the session (passed from MemoryService).
+Used to fetch previously extracted entities and recent
+conversation turns for pronoun resolution.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional metadata dict forwarded from the enrichment pipeline.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><strong>Exception</strong></a> – Re-raises the last LLM or DB error after retry exhaustion
+    (<code class="docutils literal notranslate"><span class="pre">on_exhaustion=&quot;raise&quot;</span></code> default behaviour).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.extract_structured">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.</span></span><span class="sig-name descname"><span class="pre">extract_structured</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/extract_structured.html#extract_structured"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.extract_structured" title="Link to this definition">¶</a></dt>
+<dd><p>Extract structured data from a dialog turn and persist the result.</p>
+<dl class="simple">
+<dt>Pipeline:</dt><dd><ol class="arabic simple">
+<li><p>Create a temporary DB engine + session.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">app.org_id</span></code> for RLS compliance.</p></li>
+<li><p>Check <code class="docutils literal notranslate"><span class="pre">enrichment_status</span></code> — skip if bit 5 is already set.</p></li>
+<li><p>Fetch organization’s structured schemas (<code class="docutils literal notranslate"><span class="pre">type='structured'</span></code>).</p></li>
+<li><p>If no schemas configured, set the bit and return (nothing to extract).</p></li>
+<li><p>Resolve prompt template from DB (fall back to filesystem).</p></li>
+<li><p>Fetch custom instructions for the <code class="docutils literal notranslate"><span class="pre">extraction</span></code> scope.</p></li>
+<li><p>Render the <code class="docutils literal notranslate"><span class="pre">extract_structured_v1.jinja2</span></code> prompt (with DB
+template + custom instructions).</p></li>
+<li><p>Call the LLM backend (temperature 0.0, max_tokens configurable).</p></li>
+<li><p>Parse the keyed JSON response — each key is a schema name.</p></li>
+<li><p>For each matched schema, validate output against the JSON Schema.</p></li>
+<li><p>Insert one <code class="docutils literal notranslate"><span class="pre">StructuredExtraction</span></code> row per valid schema.</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">enrichment_status</span></code> bit 5.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused — required by ARQ contract).</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the source episode (string, from ARQ).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organization.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the project for project scoping.</p></li>
+<li><p><strong>session_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the session (for FK to structured_extractions).</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The message text to extract data from.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional metadata dict forwarded from the enrichment pipeline.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><strong>Exception</strong></a> – Re-raises the last LLM or DB error after retry exhaustion.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.ingest_business_data">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.</span></span><span class="sig-name descname"><span class="pre">ingest_business_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/ingest_business_data.html#ingest_business_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.ingest_business_data" title="Link to this definition">¶</a></dt>
+<dd><p>ARQ task: ingest a batch of fact triples into the database.</p>
+<p>Validates each triple, bulk-inserts valid ones, and enqueues embedding
+tasks for each inserted fact.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – ARQ worker context (unused, required by ARQ signature).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Organization UUID string.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Project UUID string for project scoping.</p></li>
+<li><p><strong>user_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – User UUID string.</p></li>
+<li><p><strong>facts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>]</em>) – List of fact dicts with keys: <code class="docutils literal notranslate"><span class="pre">subject</span></code>, <code class="docutils literal notranslate"><span class="pre">predicate</span></code>,
+<code class="docutils literal notranslate"><span class="pre">object</span></code>, <code class="docutils literal notranslate"><span class="pre">content</span></code> (optional), <code class="docutils literal notranslate"><span class="pre">confidence</span></code> (optional).</p></li>
+<li><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Unique job identifier for tracking.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dict with <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">accepted</span></code> (count), and <code class="docutils literal notranslate"><span class="pre">errors</span></code> (list).</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><strong>Exception</strong></a> – Propagates database errors for ARQ retry logic.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.link_entities_to_episode">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.</span></span><span class="sig-name descname"><span class="pre">link_entities_to_episode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/link_entities_to_episode.html#link_entities_to_episode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.link_entities_to_episode" title="Link to this definition">¶</a></dt>
+<dd><p>Link entities extracted from this episode via graph_episode_entities.</p>
+<p>PostgreSQL is the authoritative store — if this task fails, the episode
+data is not lost and can be retried.</p>
+<p>Flow:
+1. Bootstrap a temporary DB engine
+2. Get the episode row
+3. Search for entities in graph_entities by name/content match
+4. Link matching entities via INSERT INTO graph_episode_entities
+5. Set enrichment_status bit 3</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused, required by ARQ contract).</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the episode to sync.</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organization.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the project for project scoping.</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Episode message text (used for entity name matching).</p></li>
+<li><p><strong>role</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Message role (user/assistant/system/tool).</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional metadata dict forwarded from the enrichment pipeline.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.merge_duplicate_entities">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.</span></span><span class="sig-name descname"><span class="pre">merge_duplicate_entities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/merge_duplicate_entities.html#merge_duplicate_entities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.merge_duplicate_entities" title="Link to this definition">¶</a></dt>
+<dd><p>Merge duplicate entities for an organization.</p>
+<p>Can be called:
+- Without <code class="docutils literal notranslate"><span class="pre">org_id</span></code> (scheduled weekly run): processes all eligible orgs.
+- With <code class="docutils literal notranslate"><span class="pre">org_id</span></code> (manual trigger): processes a single org.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – ARQ worker context (passed to <code class="docutils literal notranslate"><span class="pre">resolve_graph_backend</span></code>).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Optional org UUID to process (processes all if <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict with <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">orgs_processed</span></code>, <code class="docutils literal notranslate"><span class="pre">orgs_failed</span></code>,
+<code class="docutils literal notranslate"><span class="pre">clusters_merged</span></code>, <code class="docutils literal notranslate"><span class="pre">entities_merged</span></code>,
+<code class="docutils literal notranslate"><span class="pre">relationships_rewired</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.summarise_community">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.</span></span><span class="sig-name descname"><span class="pre">summarise_community</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/summarise_community.html#summarise_community"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.summarise_community" title="Link to this definition">¶</a></dt>
+<dd><p>ARQ worker: run community detection and summarisation.</p>
+<p>Can be called:
+- Without <code class="docutils literal notranslate"><span class="pre">org_id</span></code> (scheduled run): processes all eligible orgs.
+- With <code class="docutils literal notranslate"><span class="pre">org_id</span></code> (manual trigger): processes a single org.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – ARQ worker context (includes <code class="docutils literal notranslate"><span class="pre">redis</span></code>, <code class="docutils literal notranslate"><span class="pre">db</span></code>).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Optional org UUID to process (processes all if <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict with <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">orgs_processed</span></code>, <code class="docutils literal notranslate"><span class="pre">orgs_failed</span></code>,
+<code class="docutils literal notranslate"><span class="pre">communities_created</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="workers-tasks-base-module">
-<h2>workers.tasks.base module<a class="headerlink" href="#workers-tasks-base-module" title="Link to this heading">¶</a></h2>
+<section id="module-workers.tasks.base">
+<span id="workers-tasks-base-module"></span><h2>workers.tasks.base module<a class="headerlink" href="#module-workers.tasks.base" title="Link to this heading">¶</a></h2>
+<p>Shared utilities, constants, and decorators for enrichment workers.</p>
+<p>All workers in <code class="docutils literal notranslate"><span class="pre">workers/tasks/</span></code> import from this module rather than
+duplicating retry logic or bitmask constants.</p>
+<p>This module also serves as the single source of truth imported by
+<a class="reference internal" href="services.worker.tasks.html#module-services.worker.tasks.base" title="services.worker.tasks.base"><code class="xref py py-mod docutils literal notranslate"><span class="pre">services.worker.tasks.base</span></code></a> (a compatibility shim).</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="workers.tasks.base.ENRICHMENT_ALL">
+<span class="sig-prename descclassname"><span class="pre">workers.tasks.base.</span></span><span class="sig-name descname"><span class="pre">ENRICHMENT_ALL</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">63</span></span><a class="headerlink" href="#workers.tasks.base.ENRICHMENT_ALL" title="Link to this definition">¶</a></dt>
+<dd><p>Bitmask with all active enrichment bits set.
+Use this to check if an episode is fully enriched.</p>
+<p>Bit 6 (<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_OBSERVATIONS</span></code>) is intentionally excluded — the
+observations pass is non-blocking and deferred.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.base.with_retry">
+<span class="sig-prename descclassname"><span class="pre">workers.tasks.base.</span></span><span class="sig-name descname"><span class="pre">with_retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_delay_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_delay_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_exhaustion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_retryable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/base.html#with_retry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.base.with_retry" title="Link to this definition">¶</a></dt>
+<dd><p>Decorator that retries an async function with exponential backoff.</p>
+<p>By default (when <code class="docutils literal notranslate"><span class="pre">is_retryable</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>) <strong>all</strong> exceptions are
+retried.  Pass a predicate to limit retries to transient errors only:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@with_retry</span><span class="p">(</span><span class="n">is_retryable</span><span class="o">=</span><span class="n">_is_retryable</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">call_external_api</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_retries</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Maximum number of retry attempts (default 3).</p></li>
+<li><p><strong>base_delay_s</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Initial delay in seconds before the first retry.</p></li>
+<li><p><strong>max_delay_s</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Maximum delay cap in seconds.</p></li>
+<li><p><strong>on_exhaustion</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – What to do when retries are exhausted.
+<code class="docutils literal notranslate"><span class="pre">&quot;raise&quot;</span></code> (default) re-raises the last exception.
+<code class="docutils literal notranslate"><span class="pre">&quot;log&quot;</span></code> logs the failure and returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>is_retryable</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><em>Exception</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>] </em><em>| </em><em>None</em>) – Optional predicate that receives the caught exception
+and returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if a retry should be attempted.  When
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (default) all exceptions are retried.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The decorated function with retry behaviour.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>The last exception if on_exhaustion=&quot;raise&quot;</strong><strong> (</strong><strong>default</strong><strong>)</strong><strong>.</strong> – </p></li>
+<li><p><strong>A non-retryable exception immediately if is_retryable is set</strong> – </p></li>
+<li><p><strong>and returns False.</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Callable[[Callable[F, T]], Callable[F, T]]</p>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@with_retry</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">base_delay_s</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_llm</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">complete</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
 </section>
-<section id="workers-tasks-classify-dialog-module">
-<h2>workers.tasks.classify_dialog module<a class="headerlink" href="#workers-tasks-classify-dialog-module" title="Link to this heading">¶</a></h2>
+<section id="module-workers.tasks.classify_dialog">
+<span id="workers-tasks-classify-dialog-module"></span><h2>workers.tasks.classify_dialog module<a class="headerlink" href="#module-workers.tasks.classify_dialog" title="Link to this heading">¶</a></h2>
+<p>Dialog classification worker — ARQ task that classifies episode content.</p>
+<p>Runs after an episode is committed to PostgreSQL.  Uses an LLM to classify a
+single conversation turn into intent, emotion, valence, and arousal labels
+based on the organization’s configured classification schemas.</p>
+<dl class="simple">
+<dt>Bitmask:</dt><dd><p>Sets <code class="docutils literal notranslate"><span class="pre">episodes.enrichment_status</span></code> bit 4 (<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_CLASSIFICATION</span></code>)
+on success or after a permanent failure.</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.classify_dialog.classify_dialog">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.classify_dialog.</span></span><span class="sig-name descname"><span class="pre">classify_dialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/classify_dialog.html#classify_dialog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.classify_dialog.classify_dialog" title="Link to this definition">¶</a></dt>
+<dd><p>Classify a dialog turn and persist the result.</p>
+<p>This function is designed as an ARQ task — the <code class="docutils literal notranslate"><span class="pre">ctx</span></code> parameter provides
+a shared DB engine from the worker process (<code class="docutils literal notranslate"><span class="pre">ctx[&quot;db_engine&quot;]</span></code>).
+When <code class="docutils literal notranslate"><span class="pre">ctx</span></code> is absent (direct invocation), a short-lived engine is
+created as a fallback.</p>
+<dl class="simple">
+<dt>Pipeline:</dt><dd><ol class="arabic simple">
+<li><p>Create a temporary DB engine + session.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">app.org_id</span></code> for RLS compliance.</p></li>
+<li><p>Check <code class="docutils literal notranslate"><span class="pre">enrichment_status</span></code> — skip if bit 4 is already set.</p></li>
+<li><p>Fetch organization’s classification schemas (<code class="docutils literal notranslate"><span class="pre">type='classification'</span></code>).</p></li>
+<li><p>Extract label definitions from schemas (or use defaults).</p></li>
+<li><p>Resolve prompt template from DB (fall back to filesystem).</p></li>
+<li><p>Fetch custom instructions for the <code class="docutils literal notranslate"><span class="pre">classification</span></code> scope.</p></li>
+<li><p>Render the <code class="docutils literal notranslate"><span class="pre">classify_dialog_v1.jinja2</span></code> prompt (with DB
+template + custom instructions).</p></li>
+<li><p>Call the LLM backend (temperature 0.0, max_tokens 4096).</p></li>
+<li><p>Parse and validate the JSON response.</p></li>
+<li><p>Insert a <code class="docutils literal notranslate"><span class="pre">DialogClassification</span></code> row.</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">enrichment_status</span></code> bit 4.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused — required by ARQ contract).</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the source episode (string, from ARQ).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organization.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the project for project scoping.</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The message text to classify.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+<li><p><strong>session_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – UUID of the session for FK to dialog_classifications.</p></li>
+<li><p><strong>user_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – UUID of the user who sent the message.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional metadata dict forwarded from the enrichment pipeline.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><strong>Exception</strong></a> – Re-raises the last LLM or DB error after retry exhaustion.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.classify_dialog.process_classification_output">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.classify_dialog.</span></span><span class="sig-name descname"><span class="pre">process_classification_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_sets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_repo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/classify_dialog.html#process_classification_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.classify_dialog.process_classification_output" title="Link to this definition">¶</a></dt>
+<dd><p>Validate and persist classification output from LLM.</p>
+<p>This function is called by both the standalone <code class="docutils literal notranslate"><span class="pre">classify_dialog</span></code> task
+and the combined <code class="docutils literal notranslate"><span class="pre">enrich_episode</span></code> worker.  It does <strong>not</strong> manage
+transactions — the caller is responsible for commit/rollback.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>AsyncSession</em>) – Database session (caller manages transaction).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Organization UUID string.</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Episode UUID string.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Project UUID string.</p></li>
+<li><p><strong>parsed</strong> (<a class="reference internal" href="schemas.html#schemas.llm_outputs.ClassificationOutput" title="schemas.llm_outputs.ClassificationOutput"><em>ClassificationOutput</em></a>) – The validated <code class="docutils literal notranslate"><span class="pre">ClassificationOutput</span></code> from the LLM.</p></li>
+<li><p><strong>validation_sets</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.14)"><em>set</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em><em>] </em><em>| </em><em>None</em>) – Optional pre-fetched label validation sets.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, fetches from DB.  Cache-friendly for callers
+that already have this data.</p></li>
+<li><p><strong>episode_repo</strong> (<a class="reference internal" href="repositories.html#repositories.EpisodeRepository" title="repositories.EpisodeRepository"><em>EpisodeRepository</em></a><em> | </em><em>None</em>) – Optional repository for setting enrichment bits.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, enrichment bits are not set (caller manages this).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Various DB errors on insert failure.</strong> – </p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="workers-tasks-embed-episode-module">
-<h2>workers.tasks.embed_episode module<a class="headerlink" href="#workers-tasks-embed-episode-module" title="Link to this heading">¶</a></h2>
+<section id="module-workers.tasks.embed_episode">
+<span id="workers-tasks-embed-episode-module"></span><h2>workers.tasks.embed_episode module<a class="headerlink" href="#module-workers.tasks.embed_episode" title="Link to this heading">¶</a></h2>
+<p>Embedding worker — generates pgvector embeddings for episode content.</p>
+<p>Runs after entity extraction (enrichment_status bit 0 must be set).
+Generates embeddings via the configured BYOK LLM backend and stores
+them in the <code class="docutils literal notranslate"><span class="pre">episodes.embedding</span></code> column.</p>
+<p>Queue: high-priority (real-time ingestion).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.embed_episode.embed_episode">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.embed_episode.</span></span><span class="sig-name descname"><span class="pre">embed_episode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/embed_episode.html#embed_episode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.embed_episode.embed_episode" title="Link to this definition">¶</a></dt>
+<dd><p>Generate an embedding for an episode and store it in pgvector.</p>
+<p>The embedding backend, model, and dimension come exclusively from the
+per-org config (<code class="docutils literal notranslate"><span class="pre">org_cfg.embedding_backend</span></code> / <code class="docutils literal notranslate"><span class="pre">embedding_model</span></code> /
+<code class="docutils literal notranslate"><span class="pre">embedding_dim</span></code>) resolved from the <code class="docutils literal notranslate"><span class="pre">organizations.config</span></code> JSONB
+column.  There is no env-var fallback — if any required field is
+<code class="docutils literal notranslate"><span class="pre">None</span></code> the task raises <code class="docutils literal notranslate"><span class="pre">SearchLegFailedError</span></code> so ARQ retries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused — required by ARQ contract).</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the episode to embed.</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organisation (for observability / RLS).</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the project for project scoping (observability).</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Episode message text to embed.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional metadata dict forwarded from the enrichment pipeline.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="../domains/core.html#EpisodeNotFoundError" title="EpisodeNotFoundError"><strong>EpisodeNotFoundError</strong></a> – If no episode exists for <code class="docutils literal notranslate"><span class="pre">episode_id</span></code>.</p></li>
+<li><p><a class="reference internal" href="../domains/core.html#SearchLegFailedError" title="SearchLegFailedError"><strong>SearchLegFailedError</strong></a> – If org config fetch fails, org is not found,
+    or no embedding backend is configured.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the embedding dimension does not match
+    the per-org config <code class="docutils literal notranslate"><span class="pre">embedding_dim</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="workers-tasks-embed-fact-module">
-<h2>workers.tasks.embed_fact module<a class="headerlink" href="#workers-tasks-embed-fact-module" title="Link to this heading">¶</a></h2>
+<section id="module-workers.tasks.embed_fact">
+<span id="workers-tasks-embed-fact-module"></span><h2>workers.tasks.embed_fact module<a class="headerlink" href="#module-workers.tasks.embed_fact" title="Link to this heading">¶</a></h2>
+<p>Embedding worker for facts — generates pgvector embeddings for extracted facts.</p>
+<p>Runs after facts are extracted from episodes.  Generates embeddings via
+the configured BYOK LLM backend and stores them in <code class="docutils literal notranslate"><span class="pre">facts.embedding</span></code>.</p>
+<p>Queue: high-priority (real-time ingestion).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.embed_fact.embed_fact">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.embed_fact.</span></span><span class="sig-name descname"><span class="pre">embed_fact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fact_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/embed_fact.html#embed_fact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.embed_fact.embed_fact" title="Link to this definition">¶</a></dt>
+<dd><p>Generate an embedding for a fact and store it in <code class="docutils literal notranslate"><span class="pre">facts.embedding</span></code>.</p>
+<p>The embedding backend, model, and dimension come exclusively from the
+per-org config (<code class="docutils literal notranslate"><span class="pre">org_cfg.embedding_backend</span></code> / <code class="docutils literal notranslate"><span class="pre">embedding_model</span></code> /
+<code class="docutils literal notranslate"><span class="pre">embedding_dim</span></code>) resolved from the <code class="docutils literal notranslate"><span class="pre">organizations.config</span></code> JSONB
+column.  There is no env-var fallback — if any required field is
+<code class="docutils literal notranslate"><span class="pre">None</span></code> the task logs a warning and returns early.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused — required by ARQ contract).</p></li>
+<li><p><strong>fact_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the fact to embed.</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Fact text content to embed. If not provided (e.g. when
+called from <code class="docutils literal notranslate"><span class="pre">fact_service</span></code>), it will be fetched from the DB.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+<li><p><strong>**kwargs</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – Additional context (org_id, user_id) forwarded from the caller.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the embedding dimension does not match
+    the per-org config <code class="docutils literal notranslate"><span class="pre">embedding_dim</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="workers-tasks-extract-entities-module">
-<h2>workers.tasks.extract_entities module<a class="headerlink" href="#workers-tasks-extract-entities-module" title="Link to this heading">¶</a></h2>
+<section id="module-workers.tasks.extract_entities">
+<span id="workers-tasks-extract-entities-module"></span><h2>workers.tasks.extract_entities module<a class="headerlink" href="#module-workers.tasks.extract_entities" title="Link to this heading">¶</a></h2>
+<p>Entity extraction worker — ARQ task that extracts entities from messages.</p>
+<p>Runs after an episode is committed to PostgreSQL.  Uses an LLM to extract
+named entities (people, organisations, products, locations, etc.) and the
+relationships between them from a single conversation turn.  Persists
+entities to the knowledge graph (if available) and relationships
+to the <code class="docutils literal notranslate"><span class="pre">facts</span></code> table in PostgreSQL.</p>
+<dl class="simple">
+<dt>Bitmask:</dt><dd><p>Sets <code class="docutils literal notranslate"><span class="pre">episodes.enrichment_status</span></code> bit 0 (<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_ENTITIES</span></code>)
+on success.</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.extract_entities.extract_entities">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.extract_entities.</span></span><span class="sig-name descname"><span class="pre">extract_entities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/extract_entities.html#extract_entities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.extract_entities.extract_entities" title="Link to this definition">¶</a></dt>
+<dd><p>Extract named entities and relationships from a message and persist them.</p>
+<p>This function is designed as an ARQ task — the <code class="docutils literal notranslate"><span class="pre">ctx</span></code> parameter provides
+a shared DB engine from the worker process (<code class="docutils literal notranslate"><span class="pre">ctx[&quot;db_engine&quot;]</span></code>).
+When <code class="docutils literal notranslate"><span class="pre">ctx</span></code> is absent (direct invocation), a short-lived engine is
+created as a fallback.</p>
+<dl class="simple">
+<dt>Pipeline:</dt><dd><ol class="arabic simple">
+<li><p>Fetch organization’s entity type ontology from
+<code class="docutils literal notranslate"><span class="pre">extraction_schemas</span> <span class="pre">(type='entity_type')</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">session_id</span></code> is provided, fetch known entities from previous
+turns of this session for delta extraction (v3 prompt).</p></li>
+<li><dl class="simple">
+<dt>Render the extract prompt:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">extract_entities_v4.jinja2</span></code> when known entities exist (delta).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extract_entities_v3.jinja2</span></code> for the first extraction.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Call the LLM backend (via <code class="docutils literal notranslate"><span class="pre">resolve_backend()</span></code>, temperature 0.1).</p></li>
+<li><p>Parse the JSON response (handles markdown fence wrapping).</p></li>
+<li><p>Validate entity types against the allowed ontology (reassign
+invalid types to <code class="docutils literal notranslate"><span class="pre">&quot;Custom&quot;</span></code>).</p></li>
+<li><p>Persist entity nodes to Graphiti via <code class="docutils literal notranslate"><span class="pre">EntityRepository</span></code>.</p></li>
+<li><p>Persist relationships as facts in PostgreSQL.</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">episodes.enrichment_status</span></code> bit 0.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused — required by ARQ contract).</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the source episode (string, from ARQ).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organization.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the project for project scoping.</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The message text to extract entities from.</p></li>
+<li><p><strong>session_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – UUID of the session (passed from MemoryService).
+Used to fetch known entities for delta extraction.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional metadata dict forwarded from the enrichment pipeline.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><strong>Exception</strong></a> – Re-raises the last LLM or DB error after retry exhaustion
+    (<code class="docutils literal notranslate"><span class="pre">on_exhaustion=&quot;raise&quot;</span></code> default behaviour).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.extract_entities.process_entities_output">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.extract_entities.</span></span><span class="sig-name descname"><span class="pre">process_entities_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_repo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_repo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_types</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/extract_entities.html#process_entities_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.extract_entities.process_entities_output" title="Link to this definition">¶</a></dt>
+<dd><p>Process and persist entity extraction output from LLM.</p>
+<p>Filters pronouns, validates entity types, upserts entities and
+relationships in the graph backend, and links entities to the episode.
+Does NOT manage transactions — caller is responsible for commit/rollback.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>AsyncSession</em>) – Active database session.</p></li>
+<li><p><strong>graph_backend</strong> (<a class="reference internal" href="packages.graph_backend.html#packages.graph_backend.GraphBackend" title="packages.graph_backend.GraphBackend"><em>GraphBackend</em></a>) – Resolved graph backend for entity/relationship CRUD.</p></li>
+<li><p><strong>entity_repo</strong> (<a class="reference internal" href="repositories.html#repositories.entity_repository.EntityRepository" title="repositories.entity_repository.EntityRepository"><em>EntityRepository</em></a>) – Entity repository for upsert operations.</p></li>
+<li><p><strong>episode_repo</strong> (<a class="reference internal" href="repositories.html#repositories.EpisodeRepository" title="repositories.EpisodeRepository"><em>EpisodeRepository</em></a><em> | </em><em>None</em>) – Optional episode repository for setting enrichment bits.
+If None, bits are not set (caller manages this).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Organization UUID string.</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Episode UUID string.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Project UUID string.</p></li>
+<li><p><strong>parsed</strong> (<a class="reference internal" href="schemas.html#schemas.llm_outputs.EntityExtractionOutput" title="schemas.llm_outputs.EntityExtractionOutput"><em>EntityExtractionOutput</em></a>) – The validated EntityExtractionOutput from the LLM.</p></li>
+<li><p><strong>entity_types</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – List of allowed entity type strings from org config.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dict mapping entity names to their UUID strings, for use by
+downstream fact processing.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Various DB/graph errors on persistence failure.</strong> – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="workers-tasks-extract-facts-module">
-<h2>workers.tasks.extract_facts module<a class="headerlink" href="#workers-tasks-extract-facts-module" title="Link to this heading">¶</a></h2>
+<section id="module-workers.tasks.extract_facts">
+<span id="workers-tasks-extract-facts-module"></span><h2>workers.tasks.extract_facts module<a class="headerlink" href="#module-workers.tasks.extract_facts" title="Link to this heading">¶</a></h2>
+<p>Fact extraction worker — zero-shot fact extraction from conversation turns.</p>
+<p>Runs as an ARQ background task after an episode has been committed to
+PostgreSQL.  Uses an LLM to extract subject-predicate-object triples,
+filters them by confidence and quality heuristics, resolves pronouns
+against previously extracted entities, and persists the results in the
+<code class="docutils literal notranslate"><span class="pre">facts</span></code> table.</p>
+<p>Key improvement over v1: receives <code class="docutils literal notranslate"><span class="pre">session_id</span></code> to fetch:
+- Previously extracted entities for pronoun resolution.
+- Recent conversation turns for coreference context.</p>
+<dl class="simple">
+<dt>Bitmask:</dt><dd><p>Sets <code class="docutils literal notranslate"><span class="pre">episodes.enrichment_status</span></code> bit 2 (<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_FACTS</span></code>)
+on success.</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.extract_facts.extract_facts">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.extract_facts.</span></span><span class="sig-name descname"><span class="pre">extract_facts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/extract_facts.html#extract_facts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.extract_facts.extract_facts" title="Link to this definition">¶</a></dt>
+<dd><p>Extract zero-shot factual statements from a message and persist them.</p>
+<p>This function is designed as an ARQ task — the <code class="docutils literal notranslate"><span class="pre">ctx</span></code> parameter provides
+a shared DB engine from the worker process (<code class="docutils literal notranslate"><span class="pre">ctx[&quot;db_engine&quot;]</span></code>).
+When <code class="docutils literal notranslate"><span class="pre">ctx</span></code> is absent (direct invocation), a short-lived engine is
+created as a fallback.</p>
+<dl class="simple">
+<dt>Pipeline:</dt><dd><ol class="arabic simple" start="0">
+<li><p>Fetch known entities + recent history from session (if session_id).</p></li>
+<li><p>Render the <code class="docutils literal notranslate"><span class="pre">extract_facts_v4.jinja2</span></code> prompt with conversation,
+known entities, existing facts, and recent history (or
+<code class="docutils literal notranslate"><span class="pre">extract_facts_v3.jinja2</span></code> for first extraction when no facts exist yet).</p></li>
+<li><p>Call the LLM backend (via <code class="docutils literal notranslate"><span class="pre">resolve_backend()</span></code>, temperature 0.1).</p></li>
+<li><p>Parse the JSON response (handles markdown fence wrapping).</p></li>
+<li><p>Filter triples by confidence (&gt;= 0.3) and quality heuristics.</p></li>
+<li><p>Resolve subject/object to entity IDs from known entities.</p></li>
+<li><p>Persist valid facts via <code class="docutils literal notranslate"><span class="pre">FactRepository</span></code>.</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">episodes.enrichment_status</span></code> bit 2.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused — required by ARQ contract).</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the source episode (string, from ARQ).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organization.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the project for project scoping.</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The message text to extract facts from.</p></li>
+<li><p><strong>session_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – UUID of the session (passed from MemoryService).
+Used to fetch previously extracted entities and recent
+conversation turns for pronoun resolution.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional metadata dict forwarded from the enrichment pipeline.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><strong>Exception</strong></a> – Re-raises the last LLM or DB error after retry exhaustion
+    (<code class="docutils literal notranslate"><span class="pre">on_exhaustion=&quot;raise&quot;</span></code> default behaviour).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.extract_facts.process_facts_output">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.extract_facts.</span></span><span class="sig-name descname"><span class="pre">process_facts_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph_backend</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_repo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fact_repo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_repo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">known_entities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">existing_facts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arq_redis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/extract_facts.html#process_facts_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.extract_facts.process_facts_output" title="Link to this definition">¶</a></dt>
+<dd><p>Process and persist fact extraction output from LLM.</p>
+<p>Filters by confidence, resolves entity references, deduplicates
+against existing facts, persists new facts, applies enrichment bits,
+and optionally chains embed_fact jobs.</p>
+<p>Does NOT manage transactions — caller is responsible for commit/rollback
+of <em>db</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>AsyncSession</em>) – Active database session (caller manages commit/rollback).</p></li>
+<li><p><strong>graph_backend</strong> (<a class="reference internal" href="packages.graph_backend.html#packages.graph_backend.GraphBackend" title="packages.graph_backend.GraphBackend"><em>GraphBackend</em></a><em> | </em><em>None</em>) – Resolved graph backend for relationship upsert.
+Can be None; graph operations are skipped in that case.</p></li>
+<li><p><strong>entity_repo</strong> (<a class="reference internal" href="repositories.html#repositories.entity_repository.EntityRepository" title="repositories.entity_repository.EntityRepository"><em>EntityRepository</em></a><em> | </em><em>None</em>) – Entity repository for live entity lookup fallback
+and graph relationship upsert.  Can be None; graph operations
+are skipped in that case.</p></li>
+<li><p><strong>fact_repo</strong> (<a class="reference internal" href="repositories.html#repositories.FactRepository" title="repositories.FactRepository"><em>FactRepository</em></a>) – Fact repository for batch_create_or_skip.</p></li>
+<li><p><strong>episode_repo</strong> (<a class="reference internal" href="repositories.html#repositories.EpisodeRepository" title="repositories.EpisodeRepository"><em>EpisodeRepository</em></a><em> | </em><em>None</em>) – Optional episode repository.  If provided, sets
+<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_FACTS</span></code> bit on the episode inside the transaction.</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Organization UUID string.</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Episode UUID string.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Project UUID string.</p></li>
+<li><p><strong>session_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Session UUID string.</p></li>
+<li><p><strong>user_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – User UUID string (owner of the extracted facts).</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Trace/job ID string for log correlation.</p></li>
+<li><p><strong>parsed</strong> (<a class="reference internal" href="schemas.html#schemas.llm_outputs.FactExtractionOutput" title="schemas.llm_outputs.FactExtractionOutput"><em>FactExtractionOutput</em></a>) – The validated <code class="docutils literal notranslate"><span class="pre">FactExtractionOutput</span></code> from the LLM.</p></li>
+<li><p><strong>known_entities</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>]</em>) – List of known entity dicts for entity resolution.</p></li>
+<li><p><strong>existing_facts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>]</em>) – List of existing fact dicts for deduplication.</p></li>
+<li><p><strong>arq_redis</strong> (<em>ArqRedis</em><em> | </em><em>None</em>) – Optional ARQ Redis client.  If provided, chains an
+<code class="docutils literal notranslate"><span class="pre">embed_fact</span></code> job per persisted fact (non-blocking — failures
+are logged as warnings and do not propagate).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of persisted fact UUID strings (empty if nothing was persisted).</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Various DB errors on persistence failure.</strong> – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="workers-tasks-extract-structured-module">
-<h2>workers.tasks.extract_structured module<a class="headerlink" href="#workers-tasks-extract-structured-module" title="Link to this heading">¶</a></h2>
+<section id="module-workers.tasks.extract_structured">
+<span id="workers-tasks-extract-structured-module"></span><h2>workers.tasks.extract_structured module<a class="headerlink" href="#module-workers.tasks.extract_structured" title="Link to this heading">¶</a></h2>
+<p>Structured extraction worker — ARQ task that extracts structured data from episodes.</p>
+<p>Runs after an episode is committed to PostgreSQL.  Uses an LLM to extract
+structured data conforming to the organization’s configured JSON Schemas
+(<code class="docutils literal notranslate"><span class="pre">extraction_schemas</span></code> where <code class="docutils literal notranslate"><span class="pre">type='structured'</span></code>).</p>
+<dl class="simple">
+<dt>Bitmask:</dt><dd><p>Sets <code class="docutils literal notranslate"><span class="pre">episodes.enrichment_status</span></code> bit 5 (<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_STRUCTURED_EXTRACTION</span></code>)
+on success or after a permanent failure.</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.extract_structured.extract_structured">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.extract_structured.</span></span><span class="sig-name descname"><span class="pre">extract_structured</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/extract_structured.html#extract_structured"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.extract_structured.extract_structured" title="Link to this definition">¶</a></dt>
+<dd><p>Extract structured data from a dialog turn and persist the result.</p>
+<dl class="simple">
+<dt>Pipeline:</dt><dd><ol class="arabic simple">
+<li><p>Create a temporary DB engine + session.</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">app.org_id</span></code> for RLS compliance.</p></li>
+<li><p>Check <code class="docutils literal notranslate"><span class="pre">enrichment_status</span></code> — skip if bit 5 is already set.</p></li>
+<li><p>Fetch organization’s structured schemas (<code class="docutils literal notranslate"><span class="pre">type='structured'</span></code>).</p></li>
+<li><p>If no schemas configured, set the bit and return (nothing to extract).</p></li>
+<li><p>Resolve prompt template from DB (fall back to filesystem).</p></li>
+<li><p>Fetch custom instructions for the <code class="docutils literal notranslate"><span class="pre">extraction</span></code> scope.</p></li>
+<li><p>Render the <code class="docutils literal notranslate"><span class="pre">extract_structured_v1.jinja2</span></code> prompt (with DB
+template + custom instructions).</p></li>
+<li><p>Call the LLM backend (temperature 0.0, max_tokens configurable).</p></li>
+<li><p>Parse the keyed JSON response — each key is a schema name.</p></li>
+<li><p>For each matched schema, validate output against the JSON Schema.</p></li>
+<li><p>Insert one <code class="docutils literal notranslate"><span class="pre">StructuredExtraction</span></code> row per valid schema.</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">enrichment_status</span></code> bit 5.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused — required by ARQ contract).</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the source episode (string, from ARQ).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organization.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the project for project scoping.</p></li>
+<li><p><strong>session_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the session (for FK to structured_extractions).</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The message text to extract data from.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional metadata dict forwarded from the enrichment pipeline.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><strong>Exception</strong></a> – Re-raises the last LLM or DB error after retry exhaustion.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.extract_structured.process_structured_output">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.extract_structured.</span></span><span class="sig-name descname"><span class="pre">process_structured_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parsed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_repo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/extract_structured.html#process_structured_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.extract_structured.process_structured_output" title="Link to this definition">¶</a></dt>
+<dd><p>Validate and persist structured extraction output from LLM.</p>
+<p>Validates extracted data against org-defined JSON schemas and
+upserts structured_extractions rows. Does NOT manage transactions
+— caller is responsible for commit/rollback.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> (<em>AsyncSession</em>) – Active database session.</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Organization UUID string.</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Episode UUID string.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Project UUID string.</p></li>
+<li><p><strong>session_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Session UUID string.</p></li>
+<li><p><strong>parsed</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>Any</em><em>]</em>) – The raw dict from the LLM (StructuredExtractionOutput
+accepts extra keys so its model_dump() is a dict).</p></li>
+<li><p><strong>schemas</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>]</em>) – List of active extraction schema dicts from org config.
+If empty, the function returns immediately doing nothing.</p></li>
+<li><p><strong>episode_repo</strong> (<a class="reference internal" href="repositories.html#repositories.EpisodeRepository" title="repositories.EpisodeRepository"><em>EpisodeRepository</em></a><em> | </em><em>None</em>) – Optional episode repository for setting enrichment bits.
+If None, bits are not set (caller manages this).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Various DB errors on persistence failure.</strong> – </p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="workers-tasks-generate-user-summary-module">
-<h2>workers.tasks.generate_user_summary module<a class="headerlink" href="#workers-tasks-generate-user-summary-module" title="Link to this heading">¶</a></h2>
+<section id="module-workers.tasks.generate_user_summary">
+<span id="workers-tasks-generate-user-summary-module"></span><h2>workers.tasks.generate_user_summary module<a class="headerlink" href="#module-workers.tasks.generate_user_summary" title="Link to this heading">¶</a></h2>
+<p>User summary generation worker — LLM-driven profiling from conversation history.</p>
+<p>Runs as an ARQ background task after enough new conversation data has
+accumulated.  Fetches the user’s episodic history, extracted facts, graph
+entities, and dialog classifications, then renders a <code class="docutils literal notranslate"><span class="pre">summarise_user_v1</span></code>
+prompt and calls the LLM to produce or refresh the user profile summary.</p>
+<dl class="simple">
+<dt>Pipeline:</dt><dd><ol class="arabic simple">
+<li><p>Fetch the user’s last 100 conversation episodes (chronological).</p></li>
+<li><p>Fetch extracted facts (subject-predicate-object triples).</p></li>
+<li><p>Fetch graph entities linked to the user’s sessions.</p></li>
+<li><p>Fetch aggregate dialog classifications (top intents / emotions).</p></li>
+<li><p>Fetch custom instructions for the <code class="docutils literal notranslate"><span class="pre">user_summary</span></code> scope.</p></li>
+<li><p>Resolve prompt template from DB (filesystem fallback).</p></li>
+<li><p>Render the Jinja2 prompt with all gathered context.</p></li>
+<li><p>Call the LLM backend (temperature 0.3).</p></li>
+<li><p>Persist the generated summary on the User model.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.generate_user_summary.generate_user_summary">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.generate_user_summary.</span></span><span class="sig-name descname"><span class="pre">generate_user_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/generate_user_summary.html#generate_user_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.generate_user_summary.generate_user_summary" title="Link to this definition">¶</a></dt>
+<dd><p>Generate or refresh a user profile summary from conversation history.</p>
+<p>Designed as an ARQ task — the <code class="docutils literal notranslate"><span class="pre">ctx</span></code> parameter provides a shared DB
+engine from the worker process (<code class="docutils literal notranslate"><span class="pre">ctx[&quot;db_engine&quot;]</span></code>).  When <code class="docutils literal notranslate"><span class="pre">ctx</span></code>
+is absent (direct invocation), a short-lived engine is created as a
+fallback.</p>
+<dl class="simple">
+<dt>Pipeline:</dt><dd><ol class="arabic simple">
+<li><p>Fetch last 100 episodes, facts, entities, and classifications.</p></li>
+<li><p>Fetch custom instructions + resolve prompt template.</p></li>
+<li><p>Render <code class="docutils literal notranslate"><span class="pre">summarise_user_v1</span></code> Jinja2 prompt.</p></li>
+<li><p>Call LLM (temperature 0.3).</p></li>
+<li><p>Persist the summary on the User model via <code class="docutils literal notranslate"><span class="pre">UserRepository.update_summary</span></code>.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused — required by ARQ contract).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organization (string, from ARQ).</p></li>
+<li><p><strong>user_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the user to summarise.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Optional project UUID to scope data fetching.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><strong>Exception</strong></a> – Re-raises the last LLM or DB error after retry exhaustion
+    (<code class="docutils literal notranslate"><span class="pre">on_exhaustion=&quot;raise&quot;</span></code> default behaviour).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="workers-tasks-ingest-business-data-module">
-<h2>workers.tasks.ingest_business_data module<a class="headerlink" href="#workers-tasks-ingest-business-data-module" title="Link to this heading">¶</a></h2>
+<section id="module-workers.tasks.ingest_business_data">
+<span id="workers-tasks-ingest-business-data-module"></span><h2>workers.tasks.ingest_business_data module<a class="headerlink" href="#module-workers.tasks.ingest_business_data" title="Link to this heading">¶</a></h2>
+<p>ARQ task for batch fact ingestion.</p>
+<p>This task handles the background processing for business data fact ingestion:
+validates triples, persists them to the facts table, and enqueues embedding
+tasks.  Idempotent via content-hash check before processing.</p>
+<p>Intended to be called from the fact ingestion API endpoint or from a
+scheduled reconciliation job.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="workers.tasks.ingest_business_data.ARQ_QUEUE">
+<span class="sig-prename descclassname"><span class="pre">workers.tasks.ingest_business_data.</span></span><span class="sig-name descname"><span class="pre">ARQ_QUEUE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'low'</span></span><a class="headerlink" href="#workers.tasks.ingest_business_data.ARQ_QUEUE" title="Link to this definition">¶</a></dt>
+<dd><p>Queue name for batch fact ingestion tasks.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.ingest_business_data.ingest_business_data">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.ingest_business_data.</span></span><span class="sig-name descname"><span class="pre">ingest_business_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/ingest_business_data.html#ingest_business_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.ingest_business_data.ingest_business_data" title="Link to this definition">¶</a></dt>
+<dd><p>ARQ task: ingest a batch of fact triples into the database.</p>
+<p>Validates each triple, bulk-inserts valid ones, and enqueues embedding
+tasks for each inserted fact.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – ARQ worker context (unused, required by ARQ signature).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Organization UUID string.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Project UUID string for project scoping.</p></li>
+<li><p><strong>user_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – User UUID string.</p></li>
+<li><p><strong>facts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>]</em>) – List of fact dicts with keys: <code class="docutils literal notranslate"><span class="pre">subject</span></code>, <code class="docutils literal notranslate"><span class="pre">predicate</span></code>,
+<code class="docutils literal notranslate"><span class="pre">object</span></code>, <code class="docutils literal notranslate"><span class="pre">content</span></code> (optional), <code class="docutils literal notranslate"><span class="pre">confidence</span></code> (optional).</p></li>
+<li><p><strong>job_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Unique job identifier for tracking.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dict with <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">accepted</span></code> (count), and <code class="docutils literal notranslate"><span class="pre">errors</span></code> (list).</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><strong>Exception</strong></a> – Propagates database errors for ARQ retry logic.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="workers-tasks-link-entities-to-episode-module">
-<h2>workers.tasks.link_entities_to_episode module<a class="headerlink" href="#workers-tasks-link-entities-to-episode-module" title="Link to this heading">¶</a></h2>
+<section id="module-workers.tasks.link_entities_to_episode">
+<span id="workers-tasks-link-entities-to-episode-module"></span><h2>workers.tasks.link_entities_to_episode module<a class="headerlink" href="#module-workers.tasks.link_entities_to_episode" title="Link to this heading">¶</a></h2>
+<p>Link entities to episode via graph_episode_entities join table.</p>
+<p>Runs after entity extraction is complete (or alongside it).  Reads the
+extracted entities from the graph backend and links them to this episode
+in the <code class="docutils literal notranslate"><span class="pre">graph_episode_entities</span></code> join table.</p>
+<p>Previously this worker created a Graphiti <code class="docutils literal notranslate"><span class="pre">EpisodicNode</span></code> for each
+episode.  That pattern is replaced by storing entity–episode links in
+PostgreSQL, eliminating the need for a separate graph database.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.link_entities_to_episode.link_entities_to_episode">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.link_entities_to_episode.</span></span><span class="sig-name descname"><span class="pre">link_entities_to_episode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/link_entities_to_episode.html#link_entities_to_episode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.link_entities_to_episode.link_entities_to_episode" title="Link to this definition">¶</a></dt>
+<dd><p>Link entities extracted from this episode via graph_episode_entities.</p>
+<p>PostgreSQL is the authoritative store — if this task fails, the episode
+data is not lost and can be retried.</p>
+<p>Flow:
+1. Bootstrap a temporary DB engine
+2. Get the episode row
+3. Search for entities in graph_entities by name/content match
+4. Link matching entities via INSERT INTO graph_episode_entities
+5. Set enrichment_status bit 3</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference internal" href="models.html#id202" title="models.fact.Fact.object"><em>object</em></a>) – ARQ worker context (unused, required by ARQ contract).</p></li>
+<li><p><strong>episode_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the episode to sync.</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the owning organization.</p></li>
+<li><p><strong>project_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – UUID of the project for project scoping.</p></li>
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Episode message text (used for entity name matching).</p></li>
+<li><p><strong>role</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Message role (user/assistant/system/tool).</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional metadata dict forwarded from the enrichment pipeline.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="workers-tasks-merge-duplicate-entities-module">
-<h2>workers.tasks.merge_duplicate_entities module<a class="headerlink" href="#workers-tasks-merge-duplicate-entities-module" title="Link to this heading">¶</a></h2>
+<section id="module-workers.tasks.merge_duplicate_entities">
+<span id="workers-tasks-merge-duplicate-entities-module"></span><h2>workers.tasks.merge_duplicate_entities module<a class="headerlink" href="#module-workers.tasks.merge_duplicate_entities" title="Link to this heading">¶</a></h2>
+<p>Entity merge dedup worker — ARQ task for weekly scheduled entity deduplication.</p>
+<p>Detects and merges duplicate entities within an organization’s knowledge graph
+using exact name matching and backend fuzzy string similarity.</p>
+<dl>
+<dt>Pipeline:</dt><dd><ol class="arabic">
+<li><p>Query all non-merged entities for a project via the graph backend.</p></li>
+<li><p>Exact match: group by <code class="docutils literal notranslate"><span class="pre">LOWER(name)</span></code> — detect entities with identical
+names (case-insensitive).</p></li>
+<li><p>Fuzzy match: <code class="docutils literal notranslate"><span class="pre">backend.bulk_search_entities()</span></code> — delegate fuzzy search
+to the graph backend (pg_trgm for PostgreSQL, etc.).</p></li>
+<li><p>For each duplicate cluster:
+a. Select canonical entity (most recently created).
+b. <code class="docutils literal notranslate"><span class="pre">backend.merge_entities()</span></code> — ONE atomic call per cluster that</p>
+<blockquote>
+<div><p>rewires relationships, deletes duplicates, and marks merged
+entities.</p>
+</div></blockquote>
+<ol class="loweralpha simple" start="3">
+<li><p>Write an <code class="docutils literal notranslate"><span class="pre">audit_log</span></code> entry with before/after snapshot.</p></li>
+</ol>
+</li>
+<li><p>7-day recovery window: soft-delete via <code class="docutils literal notranslate"><span class="pre">is_merged</span></code> flag, not hard
+delete.</p></li>
+</ol>
+</dd>
+</dl>
+<p>All raw SQL has been removed — every graph operation goes through the
+<code class="docutils literal notranslate"><span class="pre">GraphBackend</span></code> ABC.  See Wave 3c of the migration.</p>
+<dl class="simple">
+<dt>Bitmask:</dt><dd><p>Does NOT set an enrichment bit — this is a data maintenance task, not
+an episode enrichment step.</p>
+</dd>
+</dl>
+<dl class="py data">
+<dt class="sig sig-object py" id="workers.tasks.merge_duplicate_entities.FUZZY_SIMILARITY_THRESHOLD">
+<span class="sig-prename descclassname"><span class="pre">workers.tasks.merge_duplicate_entities.</span></span><span class="sig-name descname"><span class="pre">FUZZY_SIMILARITY_THRESHOLD</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.85</span></span><a class="headerlink" href="#workers.tasks.merge_duplicate_entities.FUZZY_SIMILARITY_THRESHOLD" title="Link to this definition">¶</a></dt>
+<dd><p>Minimum similarity score for fuzzy duplicate detection.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="workers.tasks.merge_duplicate_entities.MERGE_BATCH_SIZE">
+<span class="sig-prename descclassname"><span class="pre">workers.tasks.merge_duplicate_entities.</span></span><span class="sig-name descname"><span class="pre">MERGE_BATCH_SIZE</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></span><a class="headerlink" href="#workers.tasks.merge_duplicate_entities.MERGE_BATCH_SIZE" title="Link to this definition">¶</a></dt>
+<dd><p>Number of entity clusters to process in a single DB transaction.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.merge_duplicate_entities.merge_duplicate_entities">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.merge_duplicate_entities.</span></span><span class="sig-name descname"><span class="pre">merge_duplicate_entities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/merge_duplicate_entities.html#merge_duplicate_entities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.merge_duplicate_entities.merge_duplicate_entities" title="Link to this definition">¶</a></dt>
+<dd><p>Merge duplicate entities for an organization.</p>
+<p>Can be called:
+- Without <code class="docutils literal notranslate"><span class="pre">org_id</span></code> (scheduled weekly run): processes all eligible orgs.
+- With <code class="docutils literal notranslate"><span class="pre">org_id</span></code> (manual trigger): processes a single org.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – ARQ worker context (passed to <code class="docutils literal notranslate"><span class="pre">resolve_graph_backend</span></code>).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Optional org UUID to process (processes all if <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict with <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">orgs_processed</span></code>, <code class="docutils literal notranslate"><span class="pre">orgs_failed</span></code>,
+<code class="docutils literal notranslate"><span class="pre">clusters_merged</span></code>, <code class="docutils literal notranslate"><span class="pre">entities_merged</span></code>,
+<code class="docutils literal notranslate"><span class="pre">relationships_rewired</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="workers-tasks-summarise-community-module">
-<h2>workers.tasks.summarise_community module<a class="headerlink" href="#workers-tasks-summarise-community-module" title="Link to this heading">¶</a></h2>
+<section id="module-workers.tasks.summarise_community">
+<span id="workers-tasks-summarise-community-module"></span><h2>workers.tasks.summarise_community module<a class="headerlink" href="#module-workers.tasks.summarise_community" title="Link to this heading">¶</a></h2>
+<p>ARQ worker for community summarisation — scheduled nightly.</p>
+<p>Pipeline:
+1. Find orgs with graph data via the ORM
+2. Resolve per-org graph backend (surfaces SurrealDB or FalkorDB if configured)
+3. Per project within each org:</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>Fetch all entities + relationships via the graph backend</p></li>
+<li><p>Build a NetworkX graph</p></li>
+<li><p>Run Label Propagation community detection</p></li>
+<li><p>For each community with &gt;= 2 entities, generate an LLM summary</p></li>
+<li><p>Store community entities + MEMBER_OF edges via the graph backend</p></li>
+</ol>
+</div></blockquote>
+<p>All raw SQL has been removed — every graph operation goes through the
+<code class="docutils literal notranslate"><span class="pre">GraphBackend</span></code> ABC.  See Wave 3c of the migration.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="workers.tasks.summarise_community.COMMUNITY_MIN_ENTITY_COUNT">
+<span class="sig-prename descclassname"><span class="pre">workers.tasks.summarise_community.</span></span><span class="sig-name descname"><span class="pre">COMMUNITY_MIN_ENTITY_COUNT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></span><a class="headerlink" href="#workers.tasks.summarise_community.COMMUNITY_MIN_ENTITY_COUNT" title="Link to this definition">¶</a></dt>
+<dd><p>Minimum entities required for community detection to run for a project.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="workers.tasks.summarise_community.PROMPT_NAME">
+<span class="sig-prename descclassname"><span class="pre">workers.tasks.summarise_community.</span></span><span class="sig-name descname"><span class="pre">PROMPT_NAME</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'summarise_community_v1'</span></span><a class="headerlink" href="#workers.tasks.summarise_community.PROMPT_NAME" title="Link to this definition">¶</a></dt>
+<dd><p>Name of the Jinja2 prompt template for community summarisation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="workers.tasks.summarise_community.summarise_community">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">workers.tasks.summarise_community.</span></span><span class="sig-name descname"><span class="pre">summarise_community</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/summarise_community.html#summarise_community"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#workers.tasks.summarise_community.summarise_community" title="Link to this definition">¶</a></dt>
+<dd><p>ARQ worker: run community detection and summarisation.</p>
+<p>Can be called:
+- Without <code class="docutils literal notranslate"><span class="pre">org_id</span></code> (scheduled run): processes all eligible orgs.
+- With <code class="docutils literal notranslate"><span class="pre">org_id</span></code> (manual trigger): processes a single org.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – ARQ worker context (includes <code class="docutils literal notranslate"><span class="pre">redis</span></code>, <code class="docutils literal notranslate"><span class="pre">db</span></code>).</p></li>
+<li><p><strong>org_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Optional org UUID to process (processes all if <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict with <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">orgs_processed</span></code>, <code class="docutils literal notranslate"><span class="pre">orgs_failed</span></code>,
+<code class="docutils literal notranslate"><span class="pre">communities_created</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -410,19 +1668,77 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">workers.tasks package</a><ul>
+<li><a class="reference internal" href="#workers.tasks.classify_dialog"><code class="docutils literal notranslate"><span class="pre">classify_dialog()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.compute_observations"><code class="docutils literal notranslate"><span class="pre">compute_observations()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.embed_episode"><code class="docutils literal notranslate"><span class="pre">embed_episode()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.embed_fact"><code class="docutils literal notranslate"><span class="pre">embed_fact()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.enrich_episode"><code class="docutils literal notranslate"><span class="pre">enrich_episode()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.extract_entities"><code class="docutils literal notranslate"><span class="pre">extract_entities()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.extract_facts"><code class="docutils literal notranslate"><span class="pre">extract_facts()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.extract_structured"><code class="docutils literal notranslate"><span class="pre">extract_structured()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.ingest_business_data"><code class="docutils literal notranslate"><span class="pre">ingest_business_data()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.link_entities_to_episode"><code class="docutils literal notranslate"><span class="pre">link_entities_to_episode()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.merge_duplicate_entities"><code class="docutils literal notranslate"><span class="pre">merge_duplicate_entities()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.summarise_community"><code class="docutils literal notranslate"><span class="pre">summarise_community()</span></code></a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#workers-tasks-base-module">workers.tasks.base module</a></li>
-<li><a class="reference internal" href="#workers-tasks-classify-dialog-module">workers.tasks.classify_dialog module</a></li>
-<li><a class="reference internal" href="#workers-tasks-embed-episode-module">workers.tasks.embed_episode module</a></li>
-<li><a class="reference internal" href="#workers-tasks-embed-fact-module">workers.tasks.embed_fact module</a></li>
-<li><a class="reference internal" href="#workers-tasks-extract-entities-module">workers.tasks.extract_entities module</a></li>
-<li><a class="reference internal" href="#workers-tasks-extract-facts-module">workers.tasks.extract_facts module</a></li>
-<li><a class="reference internal" href="#workers-tasks-extract-structured-module">workers.tasks.extract_structured module</a></li>
-<li><a class="reference internal" href="#workers-tasks-generate-user-summary-module">workers.tasks.generate_user_summary module</a></li>
-<li><a class="reference internal" href="#workers-tasks-ingest-business-data-module">workers.tasks.ingest_business_data module</a></li>
-<li><a class="reference internal" href="#workers-tasks-link-entities-to-episode-module">workers.tasks.link_entities_to_episode module</a></li>
-<li><a class="reference internal" href="#workers-tasks-merge-duplicate-entities-module">workers.tasks.merge_duplicate_entities module</a></li>
-<li><a class="reference internal" href="#workers-tasks-summarise-community-module">workers.tasks.summarise_community module</a></li>
+<li><a class="reference internal" href="#module-workers.tasks.base">workers.tasks.base module</a><ul>
+<li><a class="reference internal" href="#workers.tasks.base.ENRICHMENT_ALL"><code class="docutils literal notranslate"><span class="pre">ENRICHMENT_ALL</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.base.with_retry"><code class="docutils literal notranslate"><span class="pre">with_retry()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-workers.tasks.classify_dialog">workers.tasks.classify_dialog module</a><ul>
+<li><a class="reference internal" href="#workers.tasks.classify_dialog.classify_dialog"><code class="docutils literal notranslate"><span class="pre">classify_dialog()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.classify_dialog.process_classification_output"><code class="docutils literal notranslate"><span class="pre">process_classification_output()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-workers.tasks.embed_episode">workers.tasks.embed_episode module</a><ul>
+<li><a class="reference internal" href="#workers.tasks.embed_episode.embed_episode"><code class="docutils literal notranslate"><span class="pre">embed_episode()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-workers.tasks.embed_fact">workers.tasks.embed_fact module</a><ul>
+<li><a class="reference internal" href="#workers.tasks.embed_fact.embed_fact"><code class="docutils literal notranslate"><span class="pre">embed_fact()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-workers.tasks.extract_entities">workers.tasks.extract_entities module</a><ul>
+<li><a class="reference internal" href="#workers.tasks.extract_entities.extract_entities"><code class="docutils literal notranslate"><span class="pre">extract_entities()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.extract_entities.process_entities_output"><code class="docutils literal notranslate"><span class="pre">process_entities_output()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-workers.tasks.extract_facts">workers.tasks.extract_facts module</a><ul>
+<li><a class="reference internal" href="#workers.tasks.extract_facts.extract_facts"><code class="docutils literal notranslate"><span class="pre">extract_facts()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.extract_facts.process_facts_output"><code class="docutils literal notranslate"><span class="pre">process_facts_output()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-workers.tasks.extract_structured">workers.tasks.extract_structured module</a><ul>
+<li><a class="reference internal" href="#workers.tasks.extract_structured.extract_structured"><code class="docutils literal notranslate"><span class="pre">extract_structured()</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.extract_structured.process_structured_output"><code class="docutils literal notranslate"><span class="pre">process_structured_output()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-workers.tasks.generate_user_summary">workers.tasks.generate_user_summary module</a><ul>
+<li><a class="reference internal" href="#workers.tasks.generate_user_summary.generate_user_summary"><code class="docutils literal notranslate"><span class="pre">generate_user_summary()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-workers.tasks.ingest_business_data">workers.tasks.ingest_business_data module</a><ul>
+<li><a class="reference internal" href="#workers.tasks.ingest_business_data.ARQ_QUEUE"><code class="docutils literal notranslate"><span class="pre">ARQ_QUEUE</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.ingest_business_data.ingest_business_data"><code class="docutils literal notranslate"><span class="pre">ingest_business_data()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-workers.tasks.link_entities_to_episode">workers.tasks.link_entities_to_episode module</a><ul>
+<li><a class="reference internal" href="#workers.tasks.link_entities_to_episode.link_entities_to_episode"><code class="docutils literal notranslate"><span class="pre">link_entities_to_episode()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-workers.tasks.merge_duplicate_entities">workers.tasks.merge_duplicate_entities module</a><ul>
+<li><a class="reference internal" href="#workers.tasks.merge_duplicate_entities.FUZZY_SIMILARITY_THRESHOLD"><code class="docutils literal notranslate"><span class="pre">FUZZY_SIMILARITY_THRESHOLD</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.merge_duplicate_entities.MERGE_BATCH_SIZE"><code class="docutils literal notranslate"><span class="pre">MERGE_BATCH_SIZE</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.merge_duplicate_entities.merge_duplicate_entities"><code class="docutils literal notranslate"><span class="pre">merge_duplicate_entities()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-workers.tasks.summarise_community">workers.tasks.summarise_community module</a><ul>
+<li><a class="reference internal" href="#workers.tasks.summarise_community.COMMUNITY_MIN_ENTITY_COUNT"><code class="docutils literal notranslate"><span class="pre">COMMUNITY_MIN_ENTITY_COUNT</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.summarise_community.PROMPT_NAME"><code class="docutils literal notranslate"><span class="pre">PROMPT_NAME</span></code></a></li>
+<li><a class="reference internal" href="#workers.tasks.summarise_community.summarise_community"><code class="docutils literal notranslate"><span class="pre">summarise_community()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

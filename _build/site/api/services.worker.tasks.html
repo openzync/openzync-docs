@@ -311,19 +311,197 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="services-worker-tasks-package">
-<h1>services.worker.tasks package<a class="headerlink" href="#services-worker-tasks-package" title="Link to this heading">¶</a></h1>
+          <section id="module-services.worker.tasks">
+<span id="services-worker-tasks-package"></span><h1>services.worker.tasks package<a class="headerlink" href="#module-services.worker.tasks" title="Link to this heading">¶</a></h1>
+<p>ARQ task definitions — registered in WorkerSettings.functions.</p>
+<p>Task modules are imported into this package and exposed to the ARQ worker
+via the <code class="docutils literal notranslate"><span class="pre">HIGH_QUEUE_TASKS</span></code> and <code class="docutils literal notranslate"><span class="pre">LOW_QUEUE_TASKS</span></code> lists defined below.</p>
+<p>The worker entrypoint (<code class="docutils literal notranslate"><span class="pre">services.worker.worker</span></code>) reads these lists when
+constructing the ARQ <code class="docutils literal notranslate"><span class="pre">Worker</span></code> instances.</p>
+<p>Usage in <code class="docutils literal notranslate"><span class="pre">services/worker/worker.py</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">services.worker.tasks</span><span class="w"> </span><span class="kn">import</span> <span class="n">HIGH_QUEUE_TASKS</span><span class="p">,</span> <span class="n">LOW_QUEUE_TASKS</span>
+
+<span class="n">high_worker</span> <span class="o">=</span> <span class="n">create_arq_worker</span><span class="p">(</span>
+    <span class="n">queue_name</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span>
+    <span class="n">functions</span><span class="o">=</span><span class="n">HIGH_QUEUE_TASKS</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<section id="task-signature-convention">
+<h2>Task signature convention<a class="headerlink" href="#task-signature-convention" title="Link to this heading">¶</a></h2>
+<p>Every ARQ task is an <code class="docutils literal notranslate"><span class="pre">async</span></code> function whose first argument is the ARQ
+<code class="docutils literal notranslate"><span class="pre">ctx</span></code> dict (contains <code class="docutils literal notranslate"><span class="pre">redis</span></code>, <code class="docutils literal notranslate"><span class="pre">job_id</span></code>, <code class="docutils literal notranslate"><span class="pre">job_try</span></code>, and other
+ARQ-provided fields).  Additional keyword arguments are deserialised from
+whatever was passed to <code class="docutils literal notranslate"><span class="pre">enqueue_job()</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_task</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">episode_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">org_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<dl class="py data">
+<dt class="sig sig-object py" id="services.worker.tasks.TASKS_HIGH">
+<span class="sig-prename descclassname"><span class="pre">services.worker.tasks.</span></span><span class="sig-name descname"><span class="pre">TASKS_HIGH</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.14)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></span><a class="headerlink" href="#services.worker.tasks.TASKS_HIGH" title="Link to this definition">¶</a></dt>
+<dd><p>Tasks registered with the <strong>high-priority</strong> ARQ queue.</p>
+<p>These tasks run immediately after an episode is ingested.  They are
+latency-sensitive (should complete within seconds).  High-priority tasks
+share the episode’s <code class="docutils literal notranslate"><span class="pre">(org_id,</span> <span class="pre">user_id,</span> <span class="pre">session_id)</span></code> context.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="services.worker.tasks.TASKS_LOW">
+<span class="sig-prename descclassname"><span class="pre">services.worker.tasks.</span></span><span class="sig-name descname"><span class="pre">TASKS_LOW</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.14)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;function</span> <span class="pre">write_audit_log&gt;]</span></span><a class="headerlink" href="#services.worker.tasks.TASKS_LOW" title="Link to this definition">¶</a></dt>
+<dd><p>Tasks registered with the <strong>low-priority</strong> ARQ queue.</p>
+<p>These tasks run on a schedule or when queue pressure permits.  They are
+not latency-sensitive.  Examples: community summarisation, entity merging,
+data ingestion for business data, GDPR purges.</p>
+</dd></dl>
+
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="services-worker-tasks-audit-log-module">
-<h2>services.worker.tasks.audit_log module<a class="headerlink" href="#services-worker-tasks-audit-log-module" title="Link to this heading">¶</a></h2>
+<section id="module-services.worker.tasks.audit_log">
+<span id="services-worker-tasks-audit-log-module"></span><h2>services.worker.tasks.audit_log module<a class="headerlink" href="#module-services.worker.tasks.audit_log" title="Link to this heading">¶</a></h2>
+<p>ARQ task for writing audit log entries.</p>
+<p>Enqueued by <code class="docutils literal notranslate"><span class="pre">AuditMiddleware</span></code> after every request completes.
+Runs on the low-priority queue — audit is non-urgent and must not
+block data-processing tasks.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.tasks.audit_log.write_audit_log">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">services.worker.tasks.audit_log.</span></span><span class="sig-name descname"><span class="pre">write_audit_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">organization_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">details</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip_address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/tasks/audit_log.html#write_audit_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.tasks.audit_log.write_audit_log" title="Link to this definition">¶</a></dt>
+<dd><p>ARQ task — writes a single audit log entry.</p>
+<p>Creates its own DB session (does not rely on <code class="docutils literal notranslate"><span class="pre">ctx</span></code> for one)
+so that audit jobs are self-contained and survive worker restarts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>) – ARQ context (contains <code class="docutils literal notranslate"><span class="pre">redis</span></code>, <code class="docutils literal notranslate"><span class="pre">job_id</span></code>, etc.).</p></li>
+<li><p><strong>organization_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Organization UUID as string (nullable).</p></li>
+<li><p><strong>actor_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Identifier of the acting entity.</p></li>
+<li><p><strong>actor_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – <code class="docutils literal notranslate"><span class="pre">user</span></code>, <code class="docutils literal notranslate"><span class="pre">api_key</span></code>, or <code class="docutils literal notranslate"><span class="pre">system</span></code>.</p></li>
+<li><p><strong>action</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The action performed (e.g. <code class="docutils literal notranslate"><span class="pre">session.create</span></code>).</p></li>
+<li><p><strong>resource_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Type of resource affected.</p></li>
+<li><p><strong>resource_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Identifier of the affected resource.</p></li>
+<li><p><strong>details</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – JSON-encoded string of action-specific context.</p></li>
+<li><p><strong>ip_address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Source IP address.</p></li>
+<li><p><strong>trace_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Request trace ID for end-to-end correlation across ARQ tasks.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
-<section id="services-worker-tasks-base-module">
-<h2>services.worker.tasks.base module<a class="headerlink" href="#services-worker-tasks-base-module" title="Link to this heading">¶</a></h2>
+<section id="module-services.worker.tasks.base">
+<span id="services-worker-tasks-base-module"></span><h2>services.worker.tasks.base module<a class="headerlink" href="#module-services.worker.tasks.base" title="Link to this heading">¶</a></h2>
+<p>Compatibility shim — imports from the single source of truth.</p>
+<p>All shared utilities (<code class="docutils literal notranslate"><span class="pre">with_retry</span></code>, <code class="docutils literal notranslate"><span class="pre">ENRICHMENT_*</span></code> constant) have been
+consolidated into <a class="reference internal" href="workers.tasks.html#module-workers.tasks.base" title="workers.tasks.base"><code class="xref py py-mod docutils literal notranslate"><span class="pre">workers.tasks.base</span></code></a>.</p>
+<p>This module re-exports those names for backward compatibility and keeps
+<code class="xref py py-func docutils literal notranslate"><span class="pre">_is_retryable()</span></code> (HTTP-specific predicate used by service workers).</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">services.worker.tasks.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">with_retry</span><span class="p">,</span> <span class="n">ENRICHMENT_ENTITIES</span>
+<span class="c1"># is equivalent to</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">workers.tasks.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">with_retry</span><span class="p">,</span> <span class="n">ENRICHMENT_ENTITIES</span>
+</pre></div>
+</div>
+<p>New code should import directly from <code class="docutils literal notranslate"><span class="pre">workers.tasks.base</span></code>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.tasks.base.with_retry">
+<span class="sig-prename descclassname"><span class="pre">services.worker.tasks.base.</span></span><span class="sig-name descname"><span class="pre">with_retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_delay_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_delay_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_exhaustion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_retryable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/workers/tasks/base.html#with_retry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.tasks.base.with_retry" title="Link to this definition">¶</a></dt>
+<dd><p>Decorator that retries an async function with exponential backoff.</p>
+<p>By default (when <code class="docutils literal notranslate"><span class="pre">is_retryable</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>) <strong>all</strong> exceptions are
+retried.  Pass a predicate to limit retries to transient errors only:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@with_retry</span><span class="p">(</span><span class="n">is_retryable</span><span class="o">=</span><span class="n">_is_retryable</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">call_external_api</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_retries</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Maximum number of retry attempts (default 3).</p></li>
+<li><p><strong>base_delay_s</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Initial delay in seconds before the first retry.</p></li>
+<li><p><strong>max_delay_s</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Maximum delay cap in seconds.</p></li>
+<li><p><strong>on_exhaustion</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – What to do when retries are exhausted.
+<code class="docutils literal notranslate"><span class="pre">&quot;raise&quot;</span></code> (default) re-raises the last exception.
+<code class="docutils literal notranslate"><span class="pre">&quot;log&quot;</span></code> logs the failure and returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>is_retryable</strong> (<em>Callable</em><em>[</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><em>Exception</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>] </em><em>| </em><em>None</em>) – Optional predicate that receives the caught exception
+and returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if a retry should be attempted.  When
+<code class="docutils literal notranslate"><span class="pre">None</span></code> (default) all exceptions are retried.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The decorated function with retry behaviour.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>The last exception if on_exhaustion=&quot;raise&quot;</strong><strong> (</strong><strong>default</strong><strong>)</strong><strong>.</strong> – </p></li>
+<li><p><strong>A non-retryable exception immediately if is_retryable is set</strong> – </p></li>
+<li><p><strong>and returns False.</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Callable[[Callable[F, T]], Callable[F, T]]</p>
+</dd>
+</dl>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@with_retry</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">base_delay_s</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">fetch_llm</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">complete</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
 </section>
-<section id="services-worker-tasks-deliver-webhook-module">
-<h2>services.worker.tasks.deliver_webhook module<a class="headerlink" href="#services-worker-tasks-deliver-webhook-module" title="Link to this heading">¶</a></h2>
+<section id="module-services.worker.tasks.deliver_webhook">
+<span id="services-worker-tasks-deliver-webhook-module"></span><h2>services.worker.tasks.deliver_webhook module<a class="headerlink" href="#module-services.worker.tasks.deliver_webhook" title="Link to this heading">¶</a></h2>
+<p>ARQ task for delivering webhooks to external endpoints.</p>
+<p>Enqueued by <code class="docutils literal notranslate"><span class="pre">WebhookService.emit()</span></code> for each subscribed endpoint.
+Runs on the low-priority queue — webhook delivery must never block
+real-time ingestion tasks.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="services.worker.tasks.deliver_webhook.HTTP_TIMEOUT">
+<span class="sig-prename descclassname"><span class="pre">services.worker.tasks.deliver_webhook.</span></span><span class="sig-name descname"><span class="pre">HTTP_TIMEOUT</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15.0</span></span><a class="headerlink" href="#services.worker.tasks.deliver_webhook.HTTP_TIMEOUT" title="Link to this definition">¶</a></dt>
+<dd><p>Seconds to wait for a consumer to respond with a 2xx status.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="services.worker.tasks.deliver_webhook.MAX_ATTEMPTS">
+<span class="sig-prename descclassname"><span class="pre">services.worker.tasks.deliver_webhook.</span></span><span class="sig-name descname"><span class="pre">MAX_ATTEMPTS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></span><a class="headerlink" href="#services.worker.tasks.deliver_webhook.MAX_ATTEMPTS" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum number of delivery attempts before giving up.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.worker.tasks.deliver_webhook.deliver_webhook">
+<span class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">services.worker.tasks.deliver_webhook.</span></span><span class="sig-name descname"><span class="pre">deliver_webhook</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endpoint_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attempt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/services/worker/tasks/deliver_webhook.html#deliver_webhook"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#services.worker.tasks.deliver_webhook.deliver_webhook" title="Link to this definition">¶</a></dt>
+<dd><p>Deliver a signed webhook payload to an external endpoint.</p>
+<p>Retries up to <code class="docutils literal notranslate"><span class="pre">MAX_ATTEMPTS</span></code> with exponential backoff on 5xx or
+network errors.  4xx responses are <strong>not</strong> retried (the consumer is
+rejecting the payload, retrying won’t help).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><em>Any</em></a><em>]</em>) – ARQ worker context.</p></li>
+<li><p><strong>endpoint_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Webhook endpoint UUID string.</p></li>
+<li><p><strong>endpoint_url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Target URL for the POST request.</p></li>
+<li><p><strong>body</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Raw JSON payload string.</p></li>
+<li><p><strong>event_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Event type string (e.g. <code class="docutils literal notranslate"><span class="pre">session.created</span></code>).</p></li>
+<li><p><strong>signature</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – <code class="docutils literal notranslate"><span class="pre">X-Webhook-Signature</span></code> header value (pre-signed).</p></li>
+<li><p><strong>attempt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Zero-indexed attempt counter (passed explicitly since
+ARQ does not expose a built-in retry count).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -383,10 +561,24 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">services.worker.tasks package</a><ul>
+<li><a class="reference internal" href="#task-signature-convention">Task signature convention</a></li>
+<li><a class="reference internal" href="#services.worker.tasks.TASKS_HIGH"><code class="docutils literal notranslate"><span class="pre">TASKS_HIGH</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.tasks.TASKS_LOW"><code class="docutils literal notranslate"><span class="pre">TASKS_LOW</span></code></a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#services-worker-tasks-audit-log-module">services.worker.tasks.audit_log module</a></li>
-<li><a class="reference internal" href="#services-worker-tasks-base-module">services.worker.tasks.base module</a></li>
-<li><a class="reference internal" href="#services-worker-tasks-deliver-webhook-module">services.worker.tasks.deliver_webhook module</a></li>
+<li><a class="reference internal" href="#module-services.worker.tasks.audit_log">services.worker.tasks.audit_log module</a><ul>
+<li><a class="reference internal" href="#services.worker.tasks.audit_log.write_audit_log"><code class="docutils literal notranslate"><span class="pre">write_audit_log()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-services.worker.tasks.base">services.worker.tasks.base module</a><ul>
+<li><a class="reference internal" href="#services.worker.tasks.base.with_retry"><code class="docutils literal notranslate"><span class="pre">with_retry()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-services.worker.tasks.deliver_webhook">services.worker.tasks.deliver_webhook module</a><ul>
+<li><a class="reference internal" href="#services.worker.tasks.deliver_webhook.HTTP_TIMEOUT"><code class="docutils literal notranslate"><span class="pre">HTTP_TIMEOUT</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.tasks.deliver_webhook.MAX_ATTEMPTS"><code class="docutils literal notranslate"><span class="pre">MAX_ATTEMPTS</span></code></a></li>
+<li><a class="reference internal" href="#services.worker.tasks.deliver_webhook.deliver_webhook"><code class="docutils literal notranslate"><span class="pre">deliver_webhook()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

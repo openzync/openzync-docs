@@ -11,9 +11,12 @@ import os
 import sys
 
 # ── Path setup ────────────────────────────────────────────────────────────────
-# Insert the project root so that flat-layout packages are importable.
-# Same approach used by services/api/asgi.py.
-_src_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+# Insert the openzync-core project root so that flat-layout packages
+# (``core/``, ``routers/``, ``models/``, etc.) are importable at doc-build time.
+# openzync-docs/ is a sibling of openzync-core/, not inside it.
+_src_dir = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "openzync-core")
+)
 sys.path.insert(0, _src_dir)
 
 # ── Project information ───────────────────────────────────────────────────────
@@ -30,7 +33,10 @@ version = "0.1.0"
 # Mock imports that are unavailable at doc-build time (e.g., SDK package
 # dependencies that aren't installed in the docs environment).
 autodoc_mock_imports = [
-    "openzync",  # MCP server depends on the SDK — not guaranteed at doc-build
+    "openzync",  # SDK — not guaranteed at doc-build
+    "services.mcp",  # exists as a separate repo (openzync-mcp), not in the monolith
+    "services.api.asgi",  # runs asyncio.run(_bootstrap()) at module level — needs env vars
+    "services.api.main",  # calls create_app() at module level — needs runtime config
 ]
 
 extensions = [
