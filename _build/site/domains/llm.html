@@ -1,0 +1,2271 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Graph Backend Abstraction" href="graph_backends.html"><link rel="prev" title="Core Infrastructure" href="core.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>LLM Backend Abstraction - OpenZync Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">OpenZync Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">OpenZync Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/contributing.html">Contributing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core Infrastructure</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Infrastructure</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">LLM Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph_backends.html">Graph Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reranker.html">Re-ranking &amp; Community Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reranker.html#community-detection">Community Detection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Domain Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="auth.html">Authentication &amp; Authorization Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_context.html">Memory &amp; Context Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="admin_webhooks.html">Admin &amp; Webhooks Domain</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API &amp; Workers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_layer.html">API Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workers.html">Worker System — ARQ Background Job Processing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SDK, MCP &amp; Frontend</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sdk_python.html">Python SDK (openzync)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcp_server.html">MCP Server (FastMCP)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="frontend.html">OpenZync Frontend</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Infra</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="infrastructure.html">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</a><input aria-label="Toggle navigation of Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture Decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference (Auto-generated)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/core.html">core package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/routers.html">routers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/models.html">models package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/schemas.html">schemas package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/services.html">services package</a><input aria-label="Toggle navigation of services package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/services.api.html">services.api package</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/services.mcp.html">services.mcp package</a><input aria-label="Toggle navigation of services.mcp package" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.mcp.tools.html">services.mcp.tools package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.mcp.transport.html">services.mcp.transport package</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/services.worker.html">services.worker package</a><input aria-label="Toggle navigation of services.worker package" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.worker.prompts.html">services.worker.prompts package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.worker.tasks.html">services.worker.tasks package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/repositories.html">repositories package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/middleware.html">middleware package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/dependencies.html">dependencies package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/workers.html">workers package</a><input aria-label="Toggle navigation of workers package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/workers.tasks.html">workers.tasks package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/utils.html">utils package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/packages.html">packages package</a><input aria-label="Toggle navigation of packages package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/packages.community.html">packages.community package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/packages.graph_backend.html">packages.graph_backend package</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/blob/main/docs/domains/llm.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/edit/main/docs/domains/llm.rst" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="llm-backend-abstraction">
+<h1>LLM Backend Abstraction<a class="headerlink" href="#llm-backend-abstraction" title="Link to this heading">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This document covers the LLM abstraction layer in
+<code class="docutils literal notranslate"><span class="pre">openzync-core/core/llm.py</span></code> and <code class="docutils literal notranslate"><span class="pre">openzync-core/core/llm_backends.py</span></code>.
+Code examples assume the package is importable as <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">core</span> <span class="pre">import</span> <span class="pre">...</span></code>
+from the monolith’s Python path.</p>
+<p>The abstraction follows a <strong>strategy / registry</strong> pattern:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">core/llm.py</span></code> defines the abstract interface (<a class="reference internal" href="#LLMBackend" title="LLMBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMBackend</span></code></a>),
+standardised response types, a registry
+(<a class="reference internal" href="#LLMBackendRegistry" title="LLMBackendRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMBackendRegistry</span></code></a>), and a factory function
+(<a class="reference internal" href="#resolve_backend" title="resolve_backend"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a>) that wires org-level configuration to the
+correct provider.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">core/llm_backends.py</span></code> contains concrete implementations — one class
+per provider — each registering itself with the registry at module load
+time.</p></li>
+</ul>
+<p><strong>Design principle</strong>: every backend is self-contained; there is no shared
+base class beyond <a class="reference internal" href="#LLMBackend" title="LLMBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMBackend</span></code></a>.  Each provider owns its SDK client,
+retry logic, caching semantics, and error handling.</p>
+</div>
+<nav class="contents this-will-duplicate-information-and-it-is-still-useful-here local" id="sections">
+<p class="topic-title">Sections</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#abstract-interface-core-llm" id="id1">Abstract Interface — <code class="docutils literal notranslate"><span class="pre">core.llm</span></code></a></p>
+<ul>
+<li><p><a class="reference internal" href="#data-types" id="id2">Data Types</a></p></li>
+<li><p><a class="reference internal" href="#helper-functions" id="id3">Helper Functions</a></p></li>
+<li><p><a class="reference internal" href="#internal-helpers" id="id4">Internal Helpers</a></p></li>
+<li><p><a class="reference internal" href="#abstract-backend-llmbackend" id="id5">Abstract Backend — <a class="reference internal" href="#LLMBackend" title="LLMBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMBackend</span></code></a></a></p></li>
+<li><p><a class="reference internal" href="#backend-registry-llmbackendregistry" id="id6">Backend Registry — <a class="reference internal" href="#LLMBackendRegistry" title="LLMBackendRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMBackendRegistry</span></code></a></a></p></li>
+<li><p><a class="reference internal" href="#resolution-resolve-backend" id="id7">Resolution — <a class="reference internal" href="#resolve_backend" title="resolve_backend"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#concrete-implementations-core-llm-backends" id="id8">Concrete Implementations — <code class="docutils literal notranslate"><span class="pre">core.llm_backends</span></code></a></p>
+<ul>
+<li><p><a class="reference internal" href="#ollamabackend" id="id9">OllamaBackend</a></p></li>
+<li><p><a class="reference internal" href="#openaibackend" id="id10">OpenAIBackend</a></p></li>
+<li><p><a class="reference internal" href="#azurebackend" id="id11">AzureBackend</a></p></li>
+<li><p><a class="reference internal" href="#anthropicbackend" id="id12">AnthropicBackend</a></p></li>
+<li><p><a class="reference internal" href="#openrouterbackend" id="id13">OpenRouterBackend</a></p></li>
+<li><p><a class="reference internal" href="#auto-registration" id="id14">Auto-Registration</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#design-patterns-architecture" id="id15">Design Patterns &amp; Architecture</a></p>
+<ul>
+<li><p><a class="reference internal" href="#strategy-registry-pattern" id="id16">Strategy / Registry Pattern</a></p></li>
+<li><p><a class="reference internal" href="#backend-selection-flow" id="id17">Backend Selection Flow</a></p></li>
+<li><p><a class="reference internal" href="#api-key-resolution" id="id18">API Key Resolution</a></p></li>
+<li><p><a class="reference internal" href="#prompt-caching-architecture" id="id19">Prompt Caching Architecture</a></p></li>
+<li><p><a class="reference internal" href="#connection-management" id="id20">Connection Management</a></p></li>
+<li><p><a class="reference internal" href="#exception-handling" id="id21">Exception Handling</a></p></li>
+<li><p><a class="reference internal" href="#dependency-groups" id="id22">Dependency Groups</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#adding-a-new-provider" id="id23">Adding a New Provider</a></p></li>
+</ul>
+</nav>
+<section id="abstract-interface-core-llm">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Abstract Interface — <code class="docutils literal notranslate"><span class="pre">core.llm</span></code></a><a class="headerlink" href="#abstract-interface-core-llm" title="Link to this heading">¶</a></h2>
+<p>Module: <code class="docutils literal notranslate"><span class="pre">core.llm</span></code></p>
+<section id="data-types">
+<h3><a class="toc-backref" href="#id2" role="doc-backlink">Data Types</a><a class="headerlink" href="#data-types" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="LLMProvider">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">LLMProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LLMProvider" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Metaclass<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+</dd>
+<dt class="field-even">Members<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<p>Supported LLM provider identifiers.  Used throughout the system to
+reference providers by a short string name.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="LLMProvider.OLLAMA">
+<span class="sig-name descname"><span class="pre">OLLAMA</span></span><a class="headerlink" href="#LLMProvider.OLLAMA" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Value<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">&quot;ollama&quot;</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="LLMProvider.OPENAI">
+<span class="sig-name descname"><span class="pre">OPENAI</span></span><a class="headerlink" href="#LLMProvider.OPENAI" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Value<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">&quot;openai&quot;</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="LLMProvider.AZURE">
+<span class="sig-name descname"><span class="pre">AZURE</span></span><a class="headerlink" href="#LLMProvider.AZURE" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Value<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">&quot;azure&quot;</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="LLMProvider.ANTHROPIC">
+<span class="sig-name descname"><span class="pre">ANTHROPIC</span></span><a class="headerlink" href="#LLMProvider.ANTHROPIC" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Value<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">&quot;anthropic&quot;</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Note that <code class="docutils literal notranslate"><span class="pre">&quot;openrouter&quot;</span></code> is <strong>not</strong> in this enum — it is registered
+directly with <a class="reference internal" href="#LLMBackendRegistry" title="LLMBackendRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMBackendRegistry</span></code></a> under the name <code class="docutils literal notranslate"><span class="pre">&quot;openrouter&quot;</span></code>
+without a corresponding enum member.  This is a
+TODO: needs author clarification — either add the enum member or document
+the intentional divergence.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="TokenUsage">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">TokenUsage</span></span><a class="headerlink" href="#TokenUsage" title="Link to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dataclass</span></code></p>
+<p>Token consumption report for a single LLM call.  Captures both standard
+token counts and provider-specific cache metrics.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="TokenUsage.prompt_tokens">
+<span class="sig-name descname"><span class="pre">prompt_tokens</span></span><a class="headerlink" href="#TokenUsage.prompt_tokens" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+<p>Number of tokens in the prompt (input).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="TokenUsage.completion_tokens">
+<span class="sig-name descname"><span class="pre">completion_tokens</span></span><a class="headerlink" href="#TokenUsage.completion_tokens" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+<p>Number of tokens in the completion (output).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="TokenUsage.cache_read_input_tokens">
+<span class="sig-name descname"><span class="pre">cache_read_input_tokens</span></span><a class="headerlink" href="#TokenUsage.cache_read_input_tokens" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+<p>Tokens served from provider cache (cache hit).  Populated by
+OpenAI/Azure (<code class="docutils literal notranslate"><span class="pre">prompt_tokens_details.cached_tokens</span></code>) and Anthropic
+(<code class="docutils literal notranslate"><span class="pre">cache_read_input_tokens</span></code>).  Always 0 for Ollama.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="TokenUsage.cache_creation_input_tokens">
+<span class="sig-name descname"><span class="pre">cache_creation_input_tokens</span></span><a class="headerlink" href="#TokenUsage.cache_creation_input_tokens" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p>
+</dd>
+</dl>
+<p>Tokens written to provider cache (cache miss).  Populated by
+OpenAI/Azure (<code class="docutils literal notranslate"><span class="pre">prompt_tokens_details.cache_write_tokens</span></code>) and
+Anthropic (<code class="docutils literal notranslate"><span class="pre">cache_creation_input_tokens</span></code>).  Always 0 for Ollama.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="TokenUsage.total_tokens">
+<span class="sig-name descname"><span class="pre">total_tokens</span></span><a class="headerlink" href="#TokenUsage.total_tokens" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+<dt class="field-even">Property<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<p>Convenience property returning <code class="docutils literal notranslate"><span class="pre">prompt_tokens</span> <span class="pre">+</span> <span class="pre">completion_tokens</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="TokenUsage.total_cache_tokens">
+<span class="sig-name descname"><span class="pre">total_cache_tokens</span></span><a class="headerlink" href="#TokenUsage.total_cache_tokens" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+<dt class="field-even">Property<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<p>Convenience property returning
+<code class="docutils literal notranslate"><span class="pre">cache_read_input_tokens</span> <span class="pre">+</span> <span class="pre">cache_creation_input_tokens</span></code>.</p>
+</dd></dl>
+
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span> <span class="o">=</span> <span class="n">TokenUsage</span><span class="p">(</span>
+    <span class="n">prompt_tokens</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+    <span class="n">completion_tokens</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+    <span class="n">cache_read_input_tokens</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>
+    <span class="n">cache_creation_input_tokens</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">usage</span><span class="o">.</span><span class="n">total_tokens</span><span class="p">)</span>       <span class="c1"># → 192</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">usage</span><span class="o">.</span><span class="n">total_cache_tokens</span><span class="p">)</span>  <span class="c1"># → 128</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PromptCachingConfig">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">PromptCachingConfig</span></span><a class="headerlink" href="#PromptCachingConfig" title="Link to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dataclass</span></code></p>
+<p>Per-call configuration for provider-side prompt caching.  Each backend
+interprets the fields relevant to its provider; unsupported fields are
+silently ignored.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PromptCachingConfig.enabled">
+<span class="sig-name descname"><span class="pre">enabled</span></span><a class="headerlink" href="#PromptCachingConfig.enabled" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)">bool</a></p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+<p>Master switch for this call.  When <code class="docutils literal notranslate"><span class="pre">False</span></code>, no caching headers or
+markers are emitted for any provider.  When <code class="docutils literal notranslate"><span class="pre">True</span></code>, caching is
+attempted according to each provider’s mechanism.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PromptCachingConfig.anthropic_min_tokens">
+<span class="sig-name descname"><span class="pre">anthropic_min_tokens</span></span><a class="headerlink" href="#PromptCachingConfig.anthropic_min_tokens" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">1024</span></code></p>
+</dd>
+</dl>
+<p>Minimum estimated token count for a system prompt block before
+<code class="docutils literal notranslate"><span class="pre">cache_control</span></code> markers are applied to Anthropic calls.  The
+estimate is calculated as <code class="docutils literal notranslate"><span class="pre">len(system_text)</span> <span class="pre">//</span> <span class="pre">4</span></code>.  Models vary:
+1024 covers Claude Sonnet 4.6, 4096 covers Claude Opus 4.6.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PromptCachingConfig.anthropic_cache_ttl">
+<span class="sig-name descname"><span class="pre">anthropic_cache_ttl</span></span><a class="headerlink" href="#PromptCachingConfig.anthropic_cache_ttl" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">&quot;5m&quot;</span></code></p>
+</dd>
+</dl>
+<p>Anthropic cache TTL.  <code class="docutils literal notranslate"><span class="pre">&quot;5m&quot;</span></code> (1.25× write cost, default) or
+<code class="docutils literal notranslate"><span class="pre">&quot;1h&quot;</span></code> (2× write cost).  Cache reads are always 0.1× regardless
+of write TTL.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PromptCachingConfig.session_id">
+<span class="sig-name descname"><span class="pre">session_id</span></span><a class="headerlink" href="#PromptCachingConfig.session_id" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a> | None</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+<p>Session identifier for OpenRouter sticky routing.  When set, the
+<code class="docutils literal notranslate"><span class="pre">session_id</span></code> is included in the request body, encouraging
+OpenRouter to route to the same upstream provider across calls,
+improving cache hit rates.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ChatResponse">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ChatResponse</span></span><a class="headerlink" href="#ChatResponse" title="Link to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dataclass</span></code></p>
+<p>Uniform response from any LLM chat backend.  Designed so that callers
+never need provider-specific response parsing.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">response_model</span></code> was passed to <a class="reference internal" href="#LLMBackend.chat" title="LLMBackend.chat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LLMBackend.chat()</span></code></a> and
+validation succeeded, <a class="reference internal" href="#ChatResponse.validated_data" title="ChatResponse.validated_data"><code class="xref py py-attr docutils literal notranslate"><span class="pre">validated_data</span></code></a> holds the parsed Pydantic
+model instance — callers can access typed fields directly instead of
+re-parsing <code class="docutils literal notranslate"><span class="pre">content</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ChatResponse.content">
+<span class="sig-name descname"><span class="pre">content</span></span><a class="headerlink" href="#ChatResponse.content" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+<p>The generated text content.  When the LLM returns tool calls (OpenAI /
+Azure / OpenRouter), the function arguments are extracted and returned
+here so the caller sees a single string regardless of transport.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ChatResponse.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#ChatResponse.model" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+<p>The model identifier that produced this response
+(e.g. <code class="docutils literal notranslate"><span class="pre">&quot;gpt-4o-mini&quot;</span></code>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ChatResponse.usage">
+<span class="sig-name descname"><span class="pre">usage</span></span><a class="headerlink" href="#ChatResponse.usage" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#TokenUsage" title="TokenUsage">TokenUsage</a></p>
+</dd>
+</dl>
+<p>Token consumption report for this call.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ChatResponse.validated_data">
+<span class="sig-name descname"><span class="pre">validated_data</span></span><a class="headerlink" href="#ChatResponse.validated_data" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BaseModel | None</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+<p>When a Pydantic <code class="docutils literal notranslate"><span class="pre">response_model</span></code> was supplied and validation
+succeeded, this field holds the parsed model instance.  <code class="docutils literal notranslate"><span class="pre">None</span></code> when
+no <code class="docutils literal notranslate"><span class="pre">response_model</span></code> was requested, or when the response is
+returned before the validation loop completes (the outer caller
+should not rely on this being set on every return path; see
+<a class="reference internal" href="#LLMBackend.chat" title="LLMBackend.chat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LLMBackend.chat()</span></code></a> for details).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="EmbeddingResponse">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">EmbeddingResponse</span></span><a class="headerlink" href="#EmbeddingResponse" title="Link to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dataclass</span></code></p>
+<p>Uniform response from any embedding backend.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="EmbeddingResponse.embeddings">
+<span class="sig-name descname"><span class="pre">embeddings</span></span><a class="headerlink" href="#EmbeddingResponse.embeddings" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a>]]</p>
+</dd>
+</dl>
+<p>The embedding vectors.  One vector per input text, in the same order.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="EmbeddingResponse.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#EmbeddingResponse.model" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+<p>The model identifier that produced these embeddings.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="EmbeddingResponse.dim">
+<span class="sig-name descname"><span class="pre">dim</span></span><a class="headerlink" href="#EmbeddingResponse.dim" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+</dl>
+<p>Dimensionality of each embedding vector (e.g. 768 for
+<code class="docutils literal notranslate"><span class="pre">nomic-embed-text</span></code>, 1536 for <code class="docutils literal notranslate"><span class="pre">text-embedding-3-small</span></code>).</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="helper-functions">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Helper Functions</a><a class="headerlink" href="#helper-functions" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="build_cache_config">
+<span class="sig-name descname"><span class="pre">build_cache_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">org_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#build_cache_config" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>org_config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional per-org LLM config dict (from the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">OrgConfigBase</span></code> JSONB column).  May contain a
+<code class="docutils literal notranslate"><span class="pre">&quot;prompt_caching&quot;</span></code> key with <code class="docutils literal notranslate"><span class="pre">enabled</span></code>, <code class="docutils literal notranslate"><span class="pre">anthropic_min_tokens</span></code>,
+<code class="docutils literal notranslate"><span class="pre">anthropic_cache_ttl</span></code>.</p></li>
+<li><p><strong>session_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Optional session ID for OpenRouter sticky routing.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#PromptCachingConfig" title="PromptCachingConfig">PromptCachingConfig</a></p>
+</dd>
+</dl>
+<p>Build a <a class="reference internal" href="#PromptCachingConfig" title="PromptCachingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">PromptCachingConfig</span></code></a> from per-org settings, falling back
+to global defaults from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Settings</span></code> singleton.</p>
+<p>Resolution order:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">settings.PROMPT_CACHING_ENABLED</span></code> — hard kill switch.  If
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, returns <code class="docutils literal notranslate"><span class="pre">PromptCachingConfig(enabled=False)</span></code> immediately
+with no further lookup.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">org_config.get(&quot;prompt_caching&quot;)</span></code> dict — per-org overrides for
+<code class="docutils literal notranslate"><span class="pre">anthropic_min_tokens</span></code> and <code class="docutils literal notranslate"><span class="pre">anthropic_cache_ttl</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">settings.PROMPT_CACHING_ANTHROPIC_MIN_TOKENS</span></code> and
+<code class="docutils literal notranslate"><span class="pre">settings.PROMPT_CACHING_ANTHROPIC_TTL</span></code> — global defaults.</p></li>
+</ol>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">core.llm</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_cache_config</span>
+
+<span class="c1"># Within a request with per-org config</span>
+<span class="n">org_cfg</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_org_config</span><span class="p">(</span><span class="n">org_id</span><span class="p">)</span>
+<span class="n">cache_cfg</span> <span class="o">=</span> <span class="n">build_cache_config</span><span class="p">(</span>
+    <span class="n">org_config</span><span class="o">=</span><span class="n">org_cfg</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">org_cfg</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">session_id</span><span class="o">=</span><span class="s2">&quot;my-session-42&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># cache_cfg.enabled is True unless OZ_PROMPT_CACHING_ENABLED=False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="internal-helpers">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Internal Helpers</a><a class="headerlink" href="#internal-helpers" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="last_validation_error">
+<span class="sig-name descname"><span class="pre">_last_validation_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#last_validation_error" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The raw LLM response content string.</p></li>
+<li><p><strong>model</strong> (<a class="reference internal" href="admin_webhooks.html#models.extraction_schema.ExtractionSchema.type" title="models.extraction_schema.ExtractionSchema.type"><em>type</em></a><em>[</em><em>BaseModel</em><em>]</em>) – The Pydantic model to validate against.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+<p>Return a short diagnostic message when a structured-output validation
+fails.  First attempts JSON parsing via <code class="docutils literal notranslate"><span class="pre">orjson.loads</span></code>; if that fails
+the error message indicates invalid JSON.  Otherwise attempts
+<code class="docutils literal notranslate"><span class="pre">model.model_validate(parsed)</span></code> and returns the validation error string.
+This is an internal helper used by <a class="reference internal" href="#LLMBackend.chat" title="LLMBackend.chat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LLMBackend.chat()</span></code></a> when
+constructing <a class="reference internal" href="core.html#LLMStructuredOutputError" title="LLMStructuredOutputError"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMStructuredOutputError</span></code></a> detail — callers should
+not need to invoke it directly.</p>
+</dd></dl>
+
+</section>
+<section id="abstract-backend-llmbackend">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Abstract Backend — <a class="reference internal" href="#LLMBackend" title="LLMBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMBackend</span></code></a></a><a class="headerlink" href="#abstract-backend-llmbackend" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="LLMBackend">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">LLMBackend</span></span><a class="headerlink" href="#LLMBackend" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Metaclass<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
+</dd>
+</dl>
+<p>Abstract base class for all LLM providers.  Subclasses implement
+<a class="reference internal" href="#LLMBackend._chat" title="LLMBackend._chat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_chat()</span></code></a> and <a class="reference internal" href="#LLMBackend.embed" title="LLMBackend.embed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">embed()</span></code></a> using the provider’s SDK or HTTP API.
+Every backend reports which model it is using (<a class="reference internal" href="#LLMBackend.model_name" title="LLMBackend.model_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">model_name</span></code></a>) and
+the embedding dimensionality (<a class="reference internal" href="#LLMBackend.embedding_dim" title="LLMBackend.embedding_dim"><code class="xref py py-attr docutils literal notranslate"><span class="pre">embedding_dim</span></code></a>).</p>
+<p>The public <a class="reference internal" href="#LLMBackend.chat" title="LLMBackend.chat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">chat()</span></code></a> method adds optional structured-output
+validation on top of the raw provider call.</p>
+<p class="rubric">Class Data</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="LLMBackend.VALIDATION_RETRIES">
+<span class="sig-name descname"><span class="pre">VALIDATION_RETRIES</span></span><a class="headerlink" href="#LLMBackend.VALIDATION_RETRIES" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">2</span></code></p>
+</dd>
+</dl>
+<p>Number of validation retries when a Pydantic <code class="docutils literal notranslate"><span class="pre">response_model</span></code> is
+provided but the LLM output fails to parse into it.  Can be
+overridden per-call via the <code class="docutils literal notranslate"><span class="pre">validation_retries</span></code> parameter.</p>
+</dd></dl>
+
+<p class="rubric">Public Methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="LLMBackend.chat">
+<span class="sig-name descname"><span class="pre">chat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LLMBackend.chat" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>messages</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>]</em>) – List of message dicts with <code class="docutils literal notranslate"><span class="pre">role</span></code> and
+<code class="docutils literal notranslate"><span class="pre">content</span></code> keys, following the OpenAI message format.</p></li>
+<li><p><strong>response_model</strong> (<a class="reference internal" href="admin_webhooks.html#models.extraction_schema.ExtractionSchema.type" title="models.extraction_schema.ExtractionSchema.type"><em>type</em></a><em>[</em><em>BaseModel</em><em>] </em><em>| </em><em>None</em>) – Optional Pydantic model to validate the
+output content against.  When provided, the LLM is instructed to
+emit JSON matching the model’s schema via a system instruction
+injection.</p></li>
+<li><p><strong>validation_retries</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a><em> | </em><em>None</em>) – Override for the number of validation
+retry attempts.  Defaults to <a class="reference internal" href="#LLMBackend.VALIDATION_RETRIES" title="LLMBackend.VALIDATION_RETRIES"><code class="xref py py-attr docutils literal notranslate"><span class="pre">VALIDATION_RETRIES</span></code></a>.</p></li>
+<li><p><strong>cache_config</strong> (<a class="reference internal" href="#PromptCachingConfig" title="PromptCachingConfig"><em>PromptCachingConfig</em></a><em> | </em><em>None</em>) – Optional prompt caching configuration.  Passed
+through to the backend’s <a class="reference internal" href="#LLMBackend._chat" title="LLMBackend._chat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_chat()</span></code></a>.</p></li>
+<li><p><strong>\**kwargs</strong> – Additional provider-specific parameters
+(<code class="docutils literal notranslate"><span class="pre">temperature</span></code>, <code class="docutils literal notranslate"><span class="pre">max_tokens</span></code>, <code class="docutils literal notranslate"><span class="pre">top_p</span></code>, etc.).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#ChatResponse" title="ChatResponse">ChatResponse</a></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="core.html#LLMStructuredOutputError" title="LLMStructuredOutputError"><strong>LLMStructuredOutputError</strong></a> – If the output cannot be validated
+against <em>response_model</em> after exhausting retries.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – In the internal validation loop if the
+uncreachable branch is hit (<code class="docutils literal notranslate"><span class="pre">pragma:</span> <span class="pre">no</span> <span class="pre">cover</span></code> — should never
+occur in practice).</p></li>
+</ul>
+</dd>
+</dl>
+<p>Send a chat completion, optionally validating against a Pydantic model.</p>
+<p><strong>Fast path</strong> (no validation):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">backend</span><span class="o">.</span><span class="n">chat</span><span class="p">([</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello!&quot;</span><span class="p">},</span>
+<span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Structured output</strong> path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Quote</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">price</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">currency</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;USD&quot;</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">backend</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span>
+    <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;What is AAPL at?&quot;</span><span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">response_model</span><span class="o">=</span><span class="n">Quote</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># response.validated_data is a Quote instance</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">validated_data</span><span class="o">.</span><span class="n">symbol</span><span class="p">)</span>  <span class="c1"># → &quot;AAPL&quot;</span>
+</pre></div>
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">response_model</span></code> is provided, the flow is:</p>
+<ol class="arabic simple">
+<li><p>A system instruction with the model’s JSON schema is injected into
+<em>messages</em> so the LLM knows the expected output shape.</p></li>
+<li><p>The provider is called via <a class="reference internal" href="#LLMBackend._chat" title="LLMBackend._chat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_chat()</span></code></a>.</p></li>
+<li><p>The response is parsed and validated against <em>response_model</em> via
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">model_validate_json()</span></code>.</p></li>
+<li><p>On success the <a class="reference internal" href="#ChatResponse" title="ChatResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChatResponse</span></code></a> is returned with
+<a class="reference internal" href="#ChatResponse.validated_data" title="ChatResponse.validated_data"><code class="xref py py-attr docutils literal notranslate"><span class="pre">validated_data</span></code></a> set.</p></li>
+<li><p>On JSON parse failure, a fallback stripping pass is attempted
+via <a class="reference internal" href="#LLMBackend._extract_json" title="LLMBackend._extract_json"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_extract_json()</span></code></a> to handle markdown fences and thinking
+blocks.</p></li>
+<li><p>On validation failure the conversation history is amended with
+the bad output and a retry prompt explaining <em>why</em> it failed,
+then the provider is called again.</p></li>
+<li><p>After exhausting <code class="docutils literal notranslate"><span class="pre">validation_retries</span></code> attempts a
+<a class="reference internal" href="core.html#LLMStructuredOutputError" title="LLMStructuredOutputError"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMStructuredOutputError</span></code></a> is raised.</p></li>
+</ol>
+</dd></dl>
+
+<p class="rubric">Abstract Methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="LLMBackend._chat">
+<span class="sig-name descname"><span class="pre">_chat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LLMBackend._chat" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>messages</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>]</em>) – List of message dicts following OpenAI
+format.</p></li>
+<li><p><strong>cache_config</strong> (<a class="reference internal" href="#PromptCachingConfig" title="PromptCachingConfig"><em>PromptCachingConfig</em></a><em> | </em><em>None</em>) – Optional prompt caching configuration.  Each
+backend interprets this according to its provider’s caching
+capabilities.</p></li>
+<li><p><strong>\**kwargs</strong> – Provider-specific parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#ChatResponse" title="ChatResponse">ChatResponse</a></p>
+</dd>
+</dl>
+<p>Provider-specific chat implementation.  Override this in each
+backend.  The public <a class="reference internal" href="#LLMBackend.chat" title="LLMBackend.chat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">chat()</span></code></a> wraps this with validation, retry,
+and structured-output logic.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LLMBackend.embed">
+<span class="sig-name descname"><span class="pre">embed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">texts</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LLMBackend.embed" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>texts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>]</em>) – List of input strings to embed.</p></li>
+<li><p><strong>\**kwargs</strong> – Additional provider-specific parameters
+(e.g. <code class="docutils literal notranslate"><span class="pre">model</span></code> to override the embedding model).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#EmbeddingResponse" title="EmbeddingResponse">EmbeddingResponse</a></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><strong>NotImplementedError</strong></a> – If the provider does not support
+embeddings (Anthropic, OpenRouter).</p>
+</dd>
+</dl>
+<p>Generate embeddings for one or more text strings.  Returns a
+standardised <a class="reference internal" href="#EmbeddingResponse" title="EmbeddingResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmbeddingResponse</span></code></a> containing vectors and
+dimensionality.</p>
+</dd></dl>
+
+<p class="rubric">Abstract Properties</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="LLMBackend.model_name">
+<span class="sig-name descname"><span class="pre">model_name</span></span><a class="headerlink" href="#LLMBackend.model_name" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+<dt class="field-even">Property<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<p>The model identifier currently in use (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;gpt-4o&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;claude-sonnet-4-20250514&quot;</span></code>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="LLMBackend.embedding_dim">
+<span class="sig-name descname"><span class="pre">embedding_dim</span></span><a class="headerlink" href="#LLMBackend.embedding_dim" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a></p>
+</dd>
+<dt class="field-even">Property<span class="colon">:</span></dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+<p>Dimensionality of the embedding vectors produced by this backend.
+Returns <code class="docutils literal notranslate"><span class="pre">0</span></code> if the backend does not support embeddings.</p>
+</dd></dl>
+
+<p class="rubric">Static / Internal Helpers</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="LLMBackend._inject_schema_instr">
+<span class="sig-name descname"><span class="pre">_inject_schema_instr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LLMBackend._inject_schema_instr" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>messages</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>]</em>) – The current message list.</p></li>
+<li><p><strong>model</strong> (<a class="reference internal" href="admin_webhooks.html#models.extraction_schema.ExtractionSchema.type" title="models.extraction_schema.ExtractionSchema.type"><em>type</em></a><em>[</em><em>BaseModel</em><em>]</em>) – The Pydantic model to generate a
+schema instruction for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>]</p>
+</dd>
+</dl>
+<p>Prepend (or append to an existing system message) a schema directive
+telling the LLM to output valid JSON matching the model’s schema.
+If the first message already has <code class="docutils literal notranslate"><span class="pre">role</span> <span class="pre">==</span> <span class="pre">&quot;system&quot;</span></code>, the schema
+instruction is appended to its content.  Otherwise a new system
+message is prepended.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LLMBackend._build_retry_messages">
+<span class="sig-name descname"><span class="pre">_build_retry_messages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">messages</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bad_content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LLMBackend._build_retry_messages" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>messages</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em>]</em>) – The current (good) message history.</p></li>
+<li><p><strong>bad_content</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – The failed LLM output.</p></li>
+<li><p><strong>model</strong> (<a class="reference internal" href="admin_webhooks.html#models.extraction_schema.ExtractionSchema.type" title="models.extraction_schema.ExtractionSchema.type"><em>type</em></a><em>[</em><em>BaseModel</em><em>]</em>) – The Pydantic model that was used for
+validation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>]</p>
+</dd>
+</dl>
+<p>Append assistant error + user retry prompt after a validation
+failure.  Adds the failed output as an <code class="docutils literal notranslate"><span class="pre">assistant</span></code> message and
+follows it with a <code class="docutils literal notranslate"><span class="pre">user</span></code> message explaining the failure and
+repeating the expected schema.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LLMBackend._extract_json">
+<span class="sig-name descname"><span class="pre">_extract_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LLMBackend._extract_json" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Raw text that may contain JSON wrapped in markdown
+fences, thinking blocks, or other non-JSON wrappers.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any | None</p>
+</dd>
+</dl>
+<p>Strip markdown fences (`` <code class="docutils literal notranslate"><span class="pre">`json</span> <span class="pre">``</span> <span class="pre">/</span> <span class="pre">``</span> <span class="pre">`</span></code> <code class="docutils literal notranslate"><span class="pre">)</span> <span class="pre">and</span> <span class="pre">other</span> <span class="pre">wrappers,</span>
+<span class="pre">then</span> <span class="pre">attempt</span> <span class="pre">to</span> <span class="pre">parse</span> <span class="pre">JSON</span> <span class="pre">via</span> <span class="pre">``orjson.loads</span></code>.  Returns the parsed
+Python value on success, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if no valid JSON could be
+extracted.  Used by <a class="reference internal" href="#LLMBackend.chat" title="LLMBackend.chat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">chat()</span></code></a> as a fallback when
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">model_validate_json()</span></code> fails on the raw content.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="backend-registry-llmbackendregistry">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Backend Registry — <a class="reference internal" href="#LLMBackendRegistry" title="LLMBackendRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMBackendRegistry</span></code></a></a><a class="headerlink" href="#backend-registry-llmbackendregistry" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="LLMBackendRegistry">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">LLMBackendRegistry</span></span><a class="headerlink" href="#LLMBackendRegistry" title="Link to this definition">¶</a></dt>
+<dd><p>Registry of available LLM backend <em>classes</em> (not instances).  Backends
+register themselves at import time (see the auto-registration block at
+the bottom of <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.llm_backends</span></code>).  The registry is used by
+<a class="reference internal" href="#resolve_backend" title="resolve_backend"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a> to look up the correct class by name.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="LLMBackendRegistry._backends">
+<span class="sig-name descname"><span class="pre">_backends</span></span><a class="headerlink" href="#LLMBackendRegistry._backends" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, <a class="reference internal" href="admin_webhooks.html#models.extraction_schema.ExtractionSchema.type" title="models.extraction_schema.ExtractionSchema.type">type</a>[<a class="reference internal" href="#LLMBackend" title="LLMBackend">LLMBackend</a>]]]</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">{}</span></code></p>
+</dd>
+</dl>
+<p>Internal mapping of provider name → backend class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LLMBackendRegistry.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend_cls</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LLMBackendRegistry.register" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Provider name (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;openai&quot;</span></code>).  Must match
+the provider identifier used by <a class="reference internal" href="#resolve_backend" title="resolve_backend"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a>.</p></li>
+<li><p><strong>backend_cls</strong> (<a class="reference internal" href="admin_webhooks.html#models.extraction_schema.ExtractionSchema.type" title="models.extraction_schema.ExtractionSchema.type"><em>type</em></a><em>[</em><a class="reference internal" href="#LLMBackend" title="LLMBackend"><em>LLMBackend</em></a><em>]</em>) – The class to instantiate when
+this provider is selected.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If a backend with the same name is already
+registered.</p>
+</dd>
+</dl>
+<p>Register a backend class under a provider name.  Typically called at
+module load time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LLMBackendRegistry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my_provider&quot;</span><span class="p">,</span> <span class="n">MyBackend</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LLMBackendRegistry.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#LLMBackendRegistry.get" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Provider name.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="admin_webhooks.html#models.extraction_schema.ExtractionSchema.type" title="models.extraction_schema.ExtractionSchema.type">type</a>[<a class="reference internal" href="#LLMBackend" title="LLMBackend">LLMBackend</a>]</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the provider name is not registered.</p>
+</dd>
+</dl>
+<p>Look up a registered backend class:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="bp">cls</span> <span class="o">=</span> <span class="n">LLMBackendRegistry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;openai&quot;</span><span class="p">)</span>
+<span class="n">backend</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;sk-...&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-4o&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="LLMBackendRegistry.list_available">
+<span class="sig-name descname"><span class="pre">list_available</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#LLMBackendRegistry.list_available" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+</dl>
+<p>List all registered provider names:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">providers</span> <span class="o">=</span> <span class="n">LLMBackendRegistry</span><span class="o">.</span><span class="n">list_available</span><span class="p">()</span>
+<span class="c1"># → [&quot;ollama&quot;, &quot;openai&quot;, &quot;azure&quot;, &quot;anthropic&quot;, &quot;openrouter&quot;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="resolution-resolve-backend">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Resolution — <a class="reference internal" href="#resolve_backend" title="resolve_backend"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a></a><a class="headerlink" href="#resolution-resolve-backend" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="resolve_backend">
+<span class="sig-name descname"><span class="pre">resolve_backend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#resolve_backend" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>provider</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Explicit override.  If provided, org config is skipped.</p></li>
+<li><p><strong>org_config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional dict with per-organisation LLM settings.
+Supported keys include <code class="docutils literal notranslate"><span class="pre">llm_backend</span></code>, <code class="docutils literal notranslate"><span class="pre">ollama_base_url</span></code>,
+<code class="docutils literal notranslate"><span class="pre">openai_api_key</span></code>, <code class="docutils literal notranslate"><span class="pre">openai_model</span></code>, <code class="docutils literal notranslate"><span class="pre">azure_endpoint</span></code>,
+<code class="docutils literal notranslate"><span class="pre">azure_api_key</span></code>, <code class="docutils literal notranslate"><span class="pre">azure_deployment</span></code>, <code class="docutils literal notranslate"><span class="pre">anthropic_api_key</span></code>,
+<code class="docutils literal notranslate"><span class="pre">anthropic_model</span></code>, <code class="docutils literal notranslate"><span class="pre">api_key</span></code>, <code class="docutils literal notranslate"><span class="pre">model</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#LLMBackend" title="LLMBackend">LLMBackend</a></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="core.html#LLMConfigurationError" title="LLMConfigurationError"><strong>LLMConfigurationError</strong></a> – If no backend could be resolved.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the resolved provider name is unknown.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Resolve the appropriate LLM backend via org config, explicit argument,
+or environment variable.</p>
+<p><strong>Resolution order</strong>:</p>
+<ol class="arabic simple">
+<li><p><strong>Org-level config</strong> — If <code class="docutils literal notranslate"><span class="pre">provider</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> and
+<code class="docutils literal notranslate"><span class="pre">org_config.get(&quot;llm_backend&quot;)</span></code> is set, that value is used.</p></li>
+<li><p><strong>Explicit argument</strong> — the <code class="docutils literal notranslate"><span class="pre">provider</span></code> parameter.</p></li>
+<li><p><strong>Error</strong> — raises <a class="reference internal" href="core.html#LLMConfigurationError" title="LLMConfigurationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMConfigurationError</span></code></a>.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.llm</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_backend</span>
+
+<span class="c1"># Via explicit argument</span>
+<span class="n">backend</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resolve_backend</span><span class="p">(</span><span class="n">provider</span><span class="o">=</span><span class="s2">&quot;openai&quot;</span><span class="p">)</span>
+
+<span class="c1"># Via per-org config</span>
+<span class="n">org_cfg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;llm_backend&quot;</span><span class="p">:</span> <span class="s2">&quot;anthropic&quot;</span><span class="p">,</span> <span class="s2">&quot;anthropic_api_key&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="s2">&quot;anthropic_model&quot;</span><span class="p">:</span> <span class="s2">&quot;claude-sonnet-4-20250514&quot;</span><span class="p">}</span>
+<span class="n">backend</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resolve_backend</span><span class="p">(</span><span class="n">org_config</span><span class="o">=</span><span class="n">org_cfg</span><span class="p">)</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">backend</span><span class="o">.</span><span class="n">chat</span><span class="p">([{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello!&quot;</span><span class="p">}])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="create_backend">
+<span class="sig-name descname"><span class="pre">_create_backend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#create_backend" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>provider</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – One of <code class="docutils literal notranslate"><span class="pre">&quot;ollama&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;openai&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;azure&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;anthropic&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;openrouter&quot;</span></code>.</p></li>
+<li><p><strong>config</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a><em> | </em><em>None</em>) – Optional dict with provider-specific overrides.
+Required fields vary by provider (see individual backend docs).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#LLMBackend" title="LLMBackend">LLMBackend</a></p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="core.html#LLMConfigurationError" title="LLMConfigurationError"><strong>LLMConfigurationError</strong></a> – If a required config field is missing or
+empty.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <em>provider</em> is not recognised.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Internal helper that instantiates an LLM backend for <em>provider</em>,
+extracting the necessary values from the config dict for each provider
+type.  All provider-specific values come <strong>exclusively</strong> from <em>config</em>
+— there is no env-var fallback and no hardcoded default at this layer.</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Provider</p></th>
+<th class="head"><p>Required config keys</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;ollama&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ollama_base_url</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;openai&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">openai_api_key</span></code> (<code class="docutils literal notranslate"><span class="pre">openai_model</span></code> optional)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;azure&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">azure_endpoint</span></code>, <code class="docutils literal notranslate"><span class="pre">azure_api_key</span></code>,
+<code class="docutils literal notranslate"><span class="pre">azure_deployment</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;anthropic&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">anthropic_api_key</span></code> (<code class="docutils literal notranslate"><span class="pre">anthropic_model</span></code> optional)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;openrouter&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">api_key</span></code>, <code class="docutils literal notranslate"><span class="pre">model</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</dd></dl>
+
+</section>
+</section>
+<section id="concrete-implementations-core-llm-backends">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Concrete Implementations — <code class="docutils literal notranslate"><span class="pre">core.llm_backends</span></code></a><a class="headerlink" href="#concrete-implementations-core-llm-backends" title="Link to this heading">¶</a></h2>
+<p>Module: <code class="docutils literal notranslate"><span class="pre">core.llm_backends</span></code></p>
+<p>All backends register themselves with <a class="reference internal" href="#LLMBackendRegistry" title="LLMBackendRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMBackendRegistry</span></code></a> at the
+bottom of the module via <a class="reference internal" href="#LLMBackendRegistry.register" title="LLMBackendRegistry.register"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LLMBackendRegistry.register()</span></code></a>.  This makes
+them discoverable by <a class="reference internal" href="#resolve_backend" title="resolve_backend"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a> without explicit imports.</p>
+<section id="ollamabackend">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">OllamaBackend</a><a class="headerlink" href="#ollamabackend" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="OllamaBackend">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">OllamaBackend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'http://localhost:11434'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OllamaBackend" title="Link to this definition">¶</a></dt>
+<dd><p>LLM backend powered by a local Ollama instance.  Requires no API key.
+Connects to the Ollama REST API at the configured base URL.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="OllamaBackend.DEFAULT_CHAT_MODEL">
+<span class="sig-name descname"><span class="pre">DEFAULT_CHAT_MODEL</span></span><a class="headerlink" href="#OllamaBackend.DEFAULT_CHAT_MODEL" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">&quot;llama3.2:3b&quot;</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="OllamaBackend.DEFAULT_EMBED_MODEL">
+<span class="sig-name descname"><span class="pre">DEFAULT_EMBED_MODEL</span></span><a class="headerlink" href="#OllamaBackend.DEFAULT_EMBED_MODEL" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">&quot;nomic-embed-text&quot;</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="OllamaBackend.DEFAULT_EMBED_DIM">
+<span class="sig-name descname"><span class="pre">DEFAULT_EMBED_DIM</span></span><a class="headerlink" href="#OllamaBackend.DEFAULT_EMBED_DIM" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>]</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">768</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Constructor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>base_url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Ollama server URL (default <code class="docutils literal notranslate"><span class="pre">http://localhost:11434</span></code>).
+The system does <strong>not</strong> read this from an environment variable;
+it must be provided via per-org config or explicitly.</p>
+</dd>
+</dl>
+<p>Model defaults are class constants — there is no env-var fallback.</p>
+<p class="rubric">Provider Overrides</p>
+<p><code class="docutils literal notranslate"><span class="pre">_chat</span></code> supported kwargs:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> — override the chat model (default: <code class="docutils literal notranslate"><span class="pre">DEFAULT_CHAT_MODEL</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">top_p</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_tokens</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stream</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">embed</span></code> supported kwargs:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> — override the embedding model (default:
+<code class="docutils literal notranslate"><span class="pre">DEFAULT_EMBED_MODEL</span></code>).</p></li>
+</ul>
+<p class="rubric">Caching</p>
+<p>Prompt caching is <strong>not supported</strong> by the Ollama API.  If
+<code class="docutils literal notranslate"><span class="pre">cache_config.enabled</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, a debug-level log message is
+emitted and the request proceeds without caching headers.</p>
+<p class="rubric">Endpoints Called</p>
+<ul class="simple">
+<li><p>Chat: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">{base_url}/api/chat</span></code></p></li>
+<li><p>Embed: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">{base_url}/api/embeddings</span></code> (also handles the plural
+<code class="docutils literal notranslate"><span class="pre">/api/embed</span></code> response format transparently)</p></li>
+</ul>
+<p class="rubric">HTTP Client</p>
+<p>Uses an ephemeral <code class="xref py py-class docutils literal notranslate"><span class="pre">httpx.AsyncClient</span></code> with a 120-second timeout
+for each request.  Error handling covers HTTP status errors and timeout
+exceptions, both logged with structured context.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">backend</span> <span class="o">=</span> <span class="n">OllamaBackend</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;http://localhost:11434&quot;</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">backend</span><span class="o">.</span><span class="n">chat</span><span class="p">([</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello from Ollama!&quot;</span><span class="p">},</span>
+<span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+
+<span class="n">embed_response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">backend</span><span class="o">.</span><span class="n">embed</span><span class="p">([</span><span class="s2">&quot;Hello world&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">embed_response</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>  <span class="c1"># → 768</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="openaibackend">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">OpenAIBackend</a><a class="headerlink" href="#openaibackend" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="OpenAIBackend">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">OpenAIBackend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OpenAIBackend" title="Link to this definition">¶</a></dt>
+<dd><p>LLM backend for the OpenAI API.  Uses the official <code class="docutils literal notranslate"><span class="pre">openai</span></code> library
+with <code class="xref py py-class docutils literal notranslate"><span class="pre">openai.AsyncOpenAI</span></code>.</p>
+<p>Supports GPT-4o, GPT-4o-mini, GPT-4-turbo, and all OpenAI chat models.
+Embeddings use <code class="docutils literal notranslate"><span class="pre">text-embedding-3-small</span></code> by default.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="OpenAIBackend.DEFAULT_MODEL">
+<span class="sig-name descname"><span class="pre">DEFAULT_MODEL</span></span><a class="headerlink" href="#OpenAIBackend.DEFAULT_MODEL" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">&quot;gpt-4o-mini&quot;</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="OpenAIBackend.DEFAULT_EMBED_MODEL">
+<span class="sig-name descname"><span class="pre">DEFAULT_EMBED_MODEL</span></span><a class="headerlink" href="#OpenAIBackend.DEFAULT_EMBED_MODEL" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">&quot;text-embedding-3-small&quot;</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="OpenAIBackend.DEFAULT_EMBED_DIM">
+<span class="sig-name descname"><span class="pre">DEFAULT_EMBED_DIM</span></span><a class="headerlink" href="#OpenAIBackend.DEFAULT_EMBED_DIM" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>]</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">1536</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="OpenAIBackend.MAX_RETRIES">
+<span class="sig-name descname"><span class="pre">MAX_RETRIES</span></span><a class="headerlink" href="#OpenAIBackend.MAX_RETRIES" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>]</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">3</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Constructor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – OpenAI API key (required).  Can be obtained from
+per-org config (<code class="docutils literal notranslate"><span class="pre">openai_api_key</span></code>) or provided directly.  Raises
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a> if empty.</p></li>
+<li><p><strong>model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – OpenAI model name.  Falls back to <a class="reference internal" href="#OpenAIBackend.DEFAULT_MODEL" title="OpenAIBackend.DEFAULT_MODEL"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DEFAULT_MODEL</span></code></a>
+if <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Provider Overrides</p>
+<p><code class="docutils literal notranslate"><span class="pre">_chat</span></code> supported kwargs:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> — override the chat model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature</span></code> (default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_tokens</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">top_p</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">frequency_penalty</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">presence_penalty</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stop</span></code></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">embed</span></code> supported kwargs:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> — override the embedding model.</p></li>
+</ul>
+<p class="rubric">Rate Limiting &amp; Retries</p>
+<p>Handles HTTP 429 (rate limit) and 5xx server errors with exponential
+backoff (<code class="docutils literal notranslate"><span class="pre">wait</span> <span class="pre">=</span> <span class="pre">2^attempt</span></code> seconds — 2s, 4s, 8s).  Maximum 3
+retries set by <a class="reference internal" href="#OpenAIBackend.MAX_RETRIES" title="OpenAIBackend.MAX_RETRIES"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MAX_RETRIES</span></code></a>.  Non-retryable errors (client
+errors other than 429, auth failures) are raised immediately.</p>
+<p>All retry and error events are logged with structured context
+(attempt number, status code, wait time, model).</p>
+<p class="rubric">Tool Call Extraction</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">response.choices[0].message.content</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> but tool calls
+are present, the first tool call’s <code class="docutils literal notranslate"><span class="pre">function.arguments</span></code> (JSON string)
+is returned as the content.  This allows structured-output callers to
+receive function-call arguments without additional parsing.  A log
+event <code class="docutils literal notranslate"><span class="pre">llm.tool_call_extracted</span></code> is emitted with the function name and
+argument length.</p>
+<p class="rubric">Caching</p>
+<p>OpenAI supports automatic prompt prefix caching — no explicit headers
+are needed.  The backend reads <code class="docutils literal notranslate"><span class="pre">prompt_tokens_details.cached_tokens</span></code>
+and <code class="docutils literal notranslate"><span class="pre">prompt_tokens_details.cache_write_tokens</span></code> from the API response
+and surfaces them in the <a class="reference internal" href="#TokenUsage" title="TokenUsage"><code class="xref py py-class docutils literal notranslate"><span class="pre">TokenUsage</span></code></a>.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">backend</span> <span class="o">=</span> <span class="n">OpenAIBackend</span><span class="p">(</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;sk-...&quot;</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">backend</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span>
+    <span class="n">messages</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello!&quot;</span><span class="p">}],</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">usage</span><span class="o">.</span><span class="n">total_tokens</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="azurebackend">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">AzureBackend</a><a class="headerlink" href="#azurebackend" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="AzureBackend">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">AzureBackend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">endpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deployment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AzureBackend" title="Link to this definition">¶</a></dt>
+<dd><p>LLM backend for Azure OpenAI Service.  Uses the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">openai.AsyncAzureOpenAI</span></code> client from the <code class="docutils literal notranslate"><span class="pre">openai</span></code> library.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AzureBackend.DEFAULT_EMBED_DIM">
+<span class="sig-name descname"><span class="pre">DEFAULT_EMBED_DIM</span></span><a class="headerlink" href="#AzureBackend.DEFAULT_EMBED_DIM" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>]</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">1536</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AzureBackend.MAX_RETRIES">
+<span class="sig-name descname"><span class="pre">MAX_RETRIES</span></span><a class="headerlink" href="#AzureBackend.MAX_RETRIES" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>]</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">3</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Constructor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>endpoint</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Azure OpenAI endpoint URL (e.g.
+<code class="docutils literal notranslate"><span class="pre">https://my-resource.openai.azure.com</span></code>).  Required.</p></li>
+<li><p><strong>api_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Azure OpenAI API key.  Required.</p></li>
+<li><p><strong>deployment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Azure OpenAI deployment name.  Required.  This
+is the name of the deployed model in the Azure AI Studio portal,
+and is used as both the chat model identifier and the embedding
+model identifier.</p></li>
+</ul>
+</dd>
+</dl>
+<p>All three parameters raise <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a> if empty.</p>
+<p>The API version is hardcoded to <code class="docutils literal notranslate"><span class="pre">&quot;2024-08-01-preview&quot;</span></code>.  This is the
+API version that supports prompt token detail reporting.</p>
+<p class="rubric">Provider Overrides</p>
+<p><code class="docutils literal notranslate"><span class="pre">_chat</span></code> supported kwargs: <code class="docutils literal notranslate"><span class="pre">temperature</span></code> (default <code class="docutils literal notranslate"><span class="pre">0.0</span></code>),
+<code class="docutils literal notranslate"><span class="pre">max_tokens</span></code>, <code class="docutils literal notranslate"><span class="pre">top_p</span></code>, etc.  The <code class="docutils literal notranslate"><span class="pre">model</span></code> kwarg overrides the
+deployment name (defaults to the deployment passed at construction).</p>
+<p><code class="docutils literal notranslate"><span class="pre">embed</span></code> supported kwargs: <code class="docutils literal notranslate"><span class="pre">model</span></code> — override the deployment name
+for embeddings (defaults to the same deployment as chat).</p>
+<p class="rubric">Differences from OpenAIBackend</p>
+<ul class="simple">
+<li><p>Uses <code class="xref py py-class docutils literal notranslate"><span class="pre">openai.AsyncAzureOpenAI</span></code> instead of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">openai.AsyncOpenAI</span></code>.</p></li>
+<li><p>The API key and endpoint are passed as separate parameters instead of
+a single base URL.</p></li>
+<li><p>The deployment name is the model identifier — Azure does not accept
+standard OpenAI model names like <code class="docutils literal notranslate"><span class="pre">&quot;gpt-4o&quot;</span></code> without a deployment
+mapping.</p></li>
+<li><p>Same retry, caching, and tool-call extraction logic as
+<a class="reference internal" href="#OpenAIBackend" title="OpenAIBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAIBackend</span></code></a>.</p></li>
+</ul>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">backend</span> <span class="o">=</span> <span class="n">AzureBackend</span><span class="p">(</span>
+    <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;https://my-resource.openai.azure.com&quot;</span><span class="p">,</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+    <span class="n">deployment</span><span class="o">=</span><span class="s2">&quot;gpt-4o-deployment&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">backend</span><span class="o">.</span><span class="n">chat</span><span class="p">([</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello from Azure!&quot;</span><span class="p">},</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="anthropicbackend">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">AnthropicBackend</a><a class="headerlink" href="#anthropicbackend" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="AnthropicBackend">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">AnthropicBackend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AnthropicBackend" title="Link to this definition">¶</a></dt>
+<dd><p>LLM backend for the Anthropic API (Claude models).</p>
+<p>Uses the official <code class="docutils literal notranslate"><span class="pre">anthropic</span></code> library with
+<code class="xref py py-class docutils literal notranslate"><span class="pre">anthropic.AsyncAnthropic</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Embeddings are <strong>not supported</strong> — calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">embed()</span></code> raises
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotImplementedError</span></code></a>.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AnthropicBackend.DEFAULT_MODEL">
+<span class="sig-name descname"><span class="pre">DEFAULT_MODEL</span></span><a class="headerlink" href="#AnthropicBackend.DEFAULT_MODEL" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">&quot;claude-sonnet-4-20250514&quot;</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="AnthropicBackend.MAX_RETRIES">
+<span class="sig-name descname"><span class="pre">MAX_RETRIES</span></span><a class="headerlink" href="#AnthropicBackend.MAX_RETRIES" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>]</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">3</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Constructor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Anthropic API key (required).  Raises
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a> if empty.</p></li>
+<li><p><strong>model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Anthropic model name.  Falls back to
+<a class="reference internal" href="#AnthropicBackend.DEFAULT_MODEL" title="AnthropicBackend.DEFAULT_MODEL"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DEFAULT_MODEL</span></code></a> if <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">System Message Handling</p>
+<p>Anthropic requires a separate <code class="docutils literal notranslate"><span class="pre">system</span></code> parameter distinct from the
+messages array.  The backend handles this transparently:</p>
+<ol class="arabic simple">
+<li><p>If the first message has <code class="docutils literal notranslate"><span class="pre">role</span> <span class="pre">==</span> <span class="pre">&quot;system&quot;</span></code>, it is extracted and
+passed as the <code class="docutils literal notranslate"><span class="pre">system</span></code> parameter to the API.</p></li>
+<li><p>The system message is removed from the messages array sent to
+Anthropic.</p></li>
+<li><p>If caching is enabled (see below), the system content is wrapped in a
+list-of-blocks format with <code class="docutils literal notranslate"><span class="pre">cache_control</span></code> markers.</p></li>
+</ol>
+<p class="rubric">Provider Overrides</p>
+<p><code class="docutils literal notranslate"><span class="pre">_chat</span></code> supported kwargs:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> — override the model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_tokens</span></code> (default: <code class="docutils literal notranslate"><span class="pre">4096</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature</span></code> (default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">top_p</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">top_k</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stop_sequences</span></code></p></li>
+</ul>
+<p class="rubric">Prompt Caching (Anthropic-specific)</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">cache_config.enabled</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> <strong>and</strong> the system text is
+long enough (estimated via <code class="docutils literal notranslate"><span class="pre">len(text)</span> <span class="pre">//</span> <span class="pre">4</span> <span class="pre">&gt;=</span> <span class="pre">anthropic_min_tokens</span></code>),
+the system block is sent with a <code class="docutils literal notranslate"><span class="pre">cache_control</span></code> marker:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">{&quot;type&quot;:</span> <span class="pre">&quot;ephemeral&quot;}</span></code> — standard caching (default).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{&quot;cache_control&quot;:</span> <span class="pre">{&quot;type&quot;:</span> <span class="pre">&quot;ephemeral&quot;,</span> <span class="pre">&quot;ttl&quot;:</span> <span class="pre">&quot;1h&quot;}}</span></code> — extended
+TTL when <code class="docutils literal notranslate"><span class="pre">anthropic_cache_ttl</span> <span class="pre">==</span> <span class="pre">&quot;1h&quot;</span></code>.</p></li>
+</ul>
+<p>Proxy requests to remaining message content blocks for cache_control
+markers are <strong>not</strong> implemented — only the system block receives
+caching.  TODO: needs author clarification — is this intentional, or
+should message-level cache_control be added?</p>
+<p class="rubric">Retries</p>
+<p>Rate limits (429) and server errors (5xx) are retried with exponential
+backoff (<code class="docutils literal notranslate"><span class="pre">2^attempt</span></code> seconds).  The SDK’s
+<code class="docutils literal notranslate"><span class="pre">anthropic.RateLimitError</span></code> and <code class="docutils literal notranslate"><span class="pre">anthropic.APIStatusError</span></code> are
+both handled.  Non-retryable errors are raised immediately.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">backend</span> <span class="o">=</span> <span class="n">AnthropicBackend</span><span class="p">(</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;sk-ant-...&quot;</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;claude-sonnet-4-20250514&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">backend</span><span class="o">.</span><span class="n">chat</span><span class="p">([</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;You are a helpful assistant.&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello Claude!&quot;</span><span class="p">},</span>
+<span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">usage</span><span class="o">.</span><span class="n">cache_read_input_tokens</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="openrouterbackend">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">OpenRouterBackend</a><a class="headerlink" href="#openrouterbackend" title="Link to this heading">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="OpenRouterBackend">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">OpenRouterBackend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#OpenRouterBackend" title="Link to this definition">¶</a></dt>
+<dd><p>LLM backend powered by <a class="reference external" href="https://openrouter.ai/">OpenRouter</a>’s unified
+API.  Uses an OpenAI-compatible client pointed at
+<code class="docutils literal notranslate"><span class="pre">https://openrouter.ai/api/v1</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Embeddings are <strong>not supported</strong> — calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">embed()</span></code> raises
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotImplementedError</span></code></a> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">embedding_dim</span></code> raises
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotImplementedError</span></code></a>.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="OpenRouterBackend.BASE_URL">
+<span class="sig-name descname"><span class="pre">BASE_URL</span></span><a class="headerlink" href="#OpenRouterBackend.BASE_URL" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>]</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">&quot;https://openrouter.ai/api/v1&quot;</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="OpenRouterBackend.MAX_RETRIES">
+<span class="sig-name descname"><span class="pre">MAX_RETRIES</span></span><a class="headerlink" href="#OpenRouterBackend.MAX_RETRIES" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassVar[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)">int</a>]</p>
+</dd>
+<dt class="field-even">Value<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">3</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Constructor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>api_key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – OpenRouter API key (required).  Raises
+<a class="reference internal" href="core.html#LLMConfigurationError" title="LLMConfigurationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMConfigurationError</span></code></a> if empty.</p></li>
+<li><p><strong>model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – OpenRouter model identifier (required).  Examples:
+<code class="docutils literal notranslate"><span class="pre">&quot;openai/gpt-4o&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;anthropic/claude-sonnet-4&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;google/gemini-1.5-pro&quot;</span></code>.  Raises <a class="reference internal" href="core.html#LLMConfigurationError" title="LLMConfigurationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMConfigurationError</span></code></a>
+if <code class="docutils literal notranslate"><span class="pre">None</span></code> or empty.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Unlike the other backends, both parameters <strong>must</strong> be provided —
+there is no default model and no env-var fallback.</p>
+<p>The client includes HTTP headers identifying the app to OpenRouter:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">HTTP-Referer</span></code> → <code class="docutils literal notranslate"><span class="pre">&quot;https://github.com/rohnsha0/openzync&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">X-OpenRouter-Title</span></code> → <code class="docutils literal notranslate"><span class="pre">&quot;OpenZync</span> <span class="pre">-</span> <span class="pre">Agent</span> <span class="pre">Memory</span> <span class="pre">Platform&quot;</span></code></p></li>
+</ul>
+<p class="rubric">Provider Overrides</p>
+<p><code class="docutils literal notranslate"><span class="pre">_chat</span></code> supported kwargs:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> — override the model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature</span></code> (default: <code class="docutils literal notranslate"><span class="pre">0.1</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_tokens</span></code> (default: <code class="docutils literal notranslate"><span class="pre">4096</span></code>)</p></li>
+</ul>
+<p class="rubric">Session Stickiness</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">cache_config.enabled</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">cache_config.session_id</span></code>
+is set, a <code class="docutils literal notranslate"><span class="pre">session_id</span></code> field is included in the request body
+(via <code class="docutils literal notranslate"><span class="pre">extra_body</span></code>).  This encourages OpenRouter to route consecutive
+requests to the same upstream provider, improving cache hit rates.</p>
+<p class="rubric">Empty Response Handling</p>
+<p>When the response content is <code class="docutils literal notranslate"><span class="pre">None</span></code>:</p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">finish_reason</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;content_filter&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;length&quot;</span></code>, a
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a> is raised immediately — these are deterministic
+failures.</p></li>
+<li><p>Otherwise, the request is retried with exponential backoff.  If all
+retries are exhausted, a final <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a> is stored as
+<code class="docutils literal notranslate"><span class="pre">last_exception</span></code>.</p></li>
+</ul>
+<p class="rubric">Retries</p>
+<p>In addition to HTTP 429/5xx retries (same pattern as
+<a class="reference internal" href="#OpenAIBackend" title="OpenAIBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAIBackend</span></code></a>), the backend also retries on:</p>
+<ul class="simple">
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">openai.APITimeoutError</span></code> — network-level timeout.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">openai.APIConnectionError</span></code> — connection refused, DNS
+resolution failure.</p></li>
+<li><p>OpenAI error objects that carry a <code class="docutils literal notranslate"><span class="pre">code</span></code> attribute.</p></li>
+</ul>
+<p class="rubric">Cache Discount Tracking</p>
+<p>OpenRouter may return a <code class="docutils literal notranslate"><span class="pre">cache_discount</span></code> field in the response
+(accessed via <code class="docutils literal notranslate"><span class="pre">model_extra</span></code> since the OpenAI SDK strips unknown
+fields).  This is logged but not surfaced in <a class="reference internal" href="#TokenUsage" title="TokenUsage"><code class="xref py py-class docutils literal notranslate"><span class="pre">TokenUsage</span></code></a>.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">backend</span> <span class="o">=</span> <span class="n">OpenRouterBackend</span><span class="p">(</span>
+    <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;sk-or-...&quot;</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;openai/gpt-4o&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">backend</span><span class="o">.</span><span class="n">chat</span><span class="p">([</span>
+    <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello via OpenRouter!&quot;</span><span class="p">},</span>
+<span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="auto-registration">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Auto-Registration</a><a class="headerlink" href="#auto-registration" title="Link to this heading">¶</a></h3>
+<p>The following registrations occur at the bottom of
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">core.llm_backends</span></code> (module load time):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LLMBackendRegistry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;ollama&quot;</span><span class="p">,</span> <span class="n">OllamaBackend</span><span class="p">)</span>
+<span class="n">LLMBackendRegistry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;openai&quot;</span><span class="p">,</span> <span class="n">OpenAIBackend</span><span class="p">)</span>
+<span class="n">LLMBackendRegistry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;azure&quot;</span><span class="p">,</span> <span class="n">AzureBackend</span><span class="p">)</span>
+<span class="n">LLMBackendRegistry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;anthropic&quot;</span><span class="p">,</span> <span class="n">AnthropicBackend</span><span class="p">)</span>
+<span class="n">LLMBackendRegistry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;openrouter&quot;</span><span class="p">,</span> <span class="n">OpenRouterBackend</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The import chain is deliberately lazy:</p>
+<ol class="arabic simple">
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">core.llm</span></code> imports <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.llm_backends</span></code> via
+<code class="docutils literal notranslate"><span class="pre">importlib.import_module(&quot;core.llm_backends&quot;)</span></code> (line 533).</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">core.llm_backends</span></code> imports names from <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.llm</span></code> at the top
+of the file.</p></li>
+<li><p>The lazy import avoids a circular import deadlock — by the time
+<code class="docutils literal notranslate"><span class="pre">importlib</span></code> has finished importing <code class="docutils literal notranslate"><span class="pre">llm_backends</span></code>, the <code class="docutils literal notranslate"><span class="pre">LLMBackend</span></code>
+class and registry are available because Python has already created the
+module object (albeit with some names still being populated).</p></li>
+</ol>
+</section>
+</section>
+<section id="design-patterns-architecture">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Design Patterns &amp; Architecture</a><a class="headerlink" href="#design-patterns-architecture" title="Link to this heading">¶</a></h2>
+<section id="strategy-registry-pattern">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Strategy / Registry Pattern</a><a class="headerlink" href="#strategy-registry-pattern" title="Link to this heading">¶</a></h3>
+<p>The LLM abstraction is a textbook <strong>strategy pattern</strong> with a <strong>registry</strong>
+for provider discovery:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#LLMBackend" title="LLMBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMBackend</span></code></a> defines the strategy interface (<code class="docutils literal notranslate"><span class="pre">chat</span></code>, <code class="docutils literal notranslate"><span class="pre">embed</span></code>,
+<code class="docutils literal notranslate"><span class="pre">model_name</span></code>, <code class="docutils literal notranslate"><span class="pre">embedding_dim</span></code>).</p></li>
+<li><p>Each concrete class in <code class="xref py py-mod docutils literal notranslate"><span class="pre">core.llm_backends</span></code> implements the strategy.</p></li>
+<li><p><a class="reference internal" href="#LLMBackendRegistry" title="LLMBackendRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMBackendRegistry</span></code></a> acts as the provider registry, mapping string
+names to backend classes.</p></li>
+<li><p><a class="reference internal" href="#resolve_backend" title="resolve_backend"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a> is the factory that selects a strategy based on
+configuration.</p></li>
+</ul>
+<p>This design means:</p>
+<ul class="simple">
+<li><p>Adding a new provider requires no changes to existing backends.</p></li>
+<li><p>The resolution logic (config → provider) is fully decoupled from provider
+implementation.</p></li>
+<li><p>Callers depend only on the abstract interface, not on any specific
+provider.</p></li>
+</ul>
+</section>
+<section id="backend-selection-flow">
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">Backend Selection Flow</a><a class="headerlink" href="#backend-selection-flow" title="Link to this heading">¶</a></h3>
+<p>The full backend selection flow at runtime is:</p>
+<ol class="arabic simple">
+<li><p>Caller (typically a service layer) calls
+<code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_backend(org_config=...)()</span></code>.</p></li>
+<li><p><a class="reference internal" href="#resolve_backend" title="resolve_backend"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a> reads <code class="docutils literal notranslate"><span class="pre">org_config.get(&quot;llm_backend&quot;)</span></code> to
+determine the provider name (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;openai&quot;</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_create_backend</span></code> looks up the class via
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">LLMBackendRegistry.get(provider)()</span></code>.</p></li>
+<li><p>The class is instantiated with provider-specific parameters extracted
+from the org config (API keys, model names, endpoints).</p></li>
+<li><p>The caller uses the returned <a class="reference internal" href="#LLMBackend" title="LLMBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMBackend</span></code></a> instance polymorphically.</p></li>
+</ol>
+<p>For callers that already know the provider at coding time, the explicit
+parameter form can be used:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">backend</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resolve_backend</span><span class="p">(</span><span class="n">provider</span><span class="o">=</span><span class="s2">&quot;openai&quot;</span><span class="p">,</span> <span class="n">org_config</span><span class="o">=</span><span class="n">org_cfg</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This skips the org-level <code class="docutils literal notranslate"><span class="pre">llm_backend</span></code> key lookup and goes straight to
+backend instantiation.</p>
+</section>
+<section id="api-key-resolution">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">API Key Resolution</a><a class="headerlink" href="#api-key-resolution" title="Link to this heading">¶</a></h3>
+<p>API keys are resolved <strong>exclusively</strong> from per-org configuration, <strong>not</strong>
+from environment variables.  The per-org config dict is stored in OpenBao
+under each organisation’s namespace and fetched at runtime via
+<code class="xref py py-func docutils literal notranslate"><span class="pre">core.org_config.get_org_config()</span></code>.</p>
+<p>The mapping of config keys to provider constructors is:</p>
+<p>Ollama is the exception — it requires no API key; only a <code class="docutils literal notranslate"><span class="pre">base_url</span></code>
+pointing to the local instance.</p>
+<p>There is <strong>no</strong> env-var fallback anywhere in the LLM backend construction
+pipeline.  If a required key is missing from the config,
+<a class="reference internal" href="core.html#LLMConfigurationError" title="LLMConfigurationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMConfigurationError</span></code></a> is raised with a message directing the
+operator to <code class="docutils literal notranslate"><span class="pre">PATCH</span> <span class="pre">/admin/org/config</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The actual storage of these API keys in OpenBao is encrypted using the
+Transit engine (see <code class="xref py py-class docutils literal notranslate"><span class="pre">core.transit.TransitManager</span></code>).  The
+<code class="xref py py-func docutils literal notranslate"><span class="pre">core.org_config.get_org_config()</span></code> function returns decrypted values
+at runtime, so the LLM backends always receive plaintext API keys.</p>
+</div>
+</section>
+<section id="prompt-caching-architecture">
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">Prompt Caching Architecture</a><a class="headerlink" href="#prompt-caching-architecture" title="Link to this heading">¶</a></h3>
+<p>Prompt caching is controlled at three levels:</p>
+<p><strong>Level 1 — Global kill switch</strong> (<code class="docutils literal notranslate"><span class="pre">OZ_PROMPT_CACHING_ENABLED</span></code>)</p>
+<blockquote>
+<div><p>Set via <code class="xref py py-class docutils literal notranslate"><span class="pre">PROMPT_CACHING_ENABLED</span></code>.  When
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, <a class="reference internal" href="#build_cache_config" title="build_cache_config"><code class="xref py py-func docutils literal notranslate"><span class="pre">build_cache_config()</span></code></a> immediately returns
+<code class="docutils literal notranslate"><span class="pre">PromptCachingConfig(enabled=False)</span></code> regardless of per-org settings.
+This allows operators to disable caching globally without touching every
+org’s configuration.</p>
+</div></blockquote>
+<p><strong>Level 2 — Per-org overrides</strong></p>
+<blockquote>
+<div><p>Each organisation can set <code class="docutils literal notranslate"><span class="pre">prompt_caching.enabled</span></code>,
+<code class="docutils literal notranslate"><span class="pre">prompt_caching.anthropic_min_tokens</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">prompt_caching.anthropic_cache_ttl</span></code> in its org config.  These
+override the global defaults.</p>
+</div></blockquote>
+<p><strong>Level 3 — Per-call configuration</strong></p>
+<blockquote>
+<div><p>Callers can pass a <a class="reference internal" href="#PromptCachingConfig" title="PromptCachingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">PromptCachingConfig</span></code></a> instance to
+<a class="reference internal" href="#LLMBackend.chat" title="LLMBackend.chat"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LLMBackend.chat()</span></code></a> for fine-grained control per request.</p>
+</div></blockquote>
+<p>Provider-specific caching behaviour:</p>
+<ul class="simple">
+<li><p><strong>OpenAI / Azure</strong>: Automatic prompt prefix caching — no request headers
+needed.  Cache metrics are read from <code class="docutils literal notranslate"><span class="pre">prompt_tokens_details</span></code> in the
+response.</p></li>
+<li><p><strong>Anthropic</strong>: Explicit <code class="docutils literal notranslate"><span class="pre">cache_control</span></code> markers on system blocks.
+Only the system prompt is cached; conversation messages are not.  Cache
+metrics are read from <code class="docutils literal notranslate"><span class="pre">cache_read_input_tokens</span></code> and
+<code class="docutils literal notranslate"><span class="pre">cache_creation_input_tokens</span></code>.</p></li>
+<li><p><strong>OpenRouter</strong>: Session stickiness (<code class="docutils literal notranslate"><span class="pre">session_id</span></code> in
+<code class="docutils literal notranslate"><span class="pre">extra_body</span></code>) so subsequent requests hit the same upstream cache.
+Cache metrics are passed through from the underlying provider.</p></li>
+<li><p><strong>Ollama</strong>: No caching support.  Requests proceed normally with a debug
+log message indicating caching was ignored.</p></li>
+</ul>
+</section>
+<section id="connection-management">
+<h3><a class="toc-backref" href="#id20" role="doc-backlink">Connection Management</a><a class="headerlink" href="#connection-management" title="Link to this heading">¶</a></h3>
+<p>Each backend manages its own connection:</p>
+<p>The ephemeral <code class="docutils literal notranslate"><span class="pre">httpx.AsyncClient</span></code> in <a class="reference internal" href="#OllamaBackend" title="OllamaBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">OllamaBackend</span></code></a> is a
+potential performance concern — a new client (including TCP connection) is
+created for every <code class="docutils literal notranslate"><span class="pre">_chat</span></code> and <code class="docutils literal notranslate"><span class="pre">embed</span></code> call.  TODO: needs author
+clarification — was this intentional to keep the backend stateless, or
+should a persistent client be used?</p>
+<p>All backends share a common retry pattern for HTTP 429 (rate limit) and
+5xx (server error) responses:</p>
+<ul class="simple">
+<li><p><strong>Exponential backoff</strong>: <code class="docutils literal notranslate"><span class="pre">wait</span> <span class="pre">=</span> <span class="pre">2^attempt</span></code> seconds (2s, 4s, 8s).</p></li>
+<li><p><strong>Maximum retries</strong>: 3 (set via <code class="docutils literal notranslate"><span class="pre">MAX_RETRIES</span></code> class variable).</p></li>
+<li><p><strong>Non-retryable errors</strong>: Client errors (4xx except 429) are raised
+immediately.</p></li>
+<li><p><strong>Logging</strong>: Every retry and failure is logged with structured context
+(attempt number, status code, wait time, model).</p></li>
+</ul>
+</section>
+<section id="exception-handling">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">Exception Handling</a><a class="headerlink" href="#exception-handling" title="Link to this heading">¶</a></h3>
+<p>Exceptions raised by the LLM abstraction layer are part of the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">core.exceptions.AppError</span></code> hierarchy — see
+<span class="xref std std-ref">core.rst</span> for the full list.</p>
+<p>All infrastructure failures (connection refused, DNS failure, timeout)
+propagate as the relevant Python exception (<code class="docutils literal notranslate"><span class="pre">httpx.HTTPStatusError</span></code>,
+<code class="docutils literal notranslate"><span class="pre">openai.APIConnectionError</span></code>, etc.) and are logged with structured
+context for observability.  There is <strong>no</strong> silent degradation — if a
+provider is unreachable, the error propagates and the caller sees it.</p>
+</section>
+<section id="dependency-groups">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">Dependency Groups</a><a class="headerlink" href="#dependency-groups" title="Link to this heading">¶</a></h3>
+<p>The LLM backends have optional dependency requirements:</p>
+<ul>
+<li><p><strong>OpenAI / Azure / OpenRouter</strong>: Depend on <code class="docutils literal notranslate"><span class="pre">openai</span></code> library — bundled
+with the base <code class="docutils literal notranslate"><span class="pre">openzync</span></code> package.</p></li>
+<li><p><strong>Anthropic</strong>: Requires the <code class="docutils literal notranslate"><span class="pre">anthropic</span></code> library.  Install via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">openzync</span><span class="p">[</span><span class="n">llm</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Or explicitly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">anthropic</span><span class="o">&gt;=</span><span class="mf">0.45.0</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Ollama</strong>: Uses <code class="docutils literal notranslate"><span class="pre">httpx</span></code> (already a core dependency) — no additional
+install required.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">AnthropicBackend</span></code> module does not fail at import time if the
+<code class="docutils literal notranslate"><span class="pre">anthropic</span></code> library is missing — the import is inside the constructor,
+so the error only surfaces when the class is instantiated.  This means
+the registry can still list <code class="docutils literal notranslate"><span class="pre">&quot;anthropic&quot;</span></code> as an available provider even
+when the SDK is not installed.  TODO: needs author clarification — should
+this be guarded with a more informative error message?</p>
+</section>
+</section>
+<section id="adding-a-new-provider">
+<h2><a class="toc-backref" href="#id23" role="doc-backlink">Adding a New Provider</a><a class="headerlink" href="#adding-a-new-provider" title="Link to this heading">¶</a></h2>
+<p>To add a new LLM provider (e.g. Google Gemini, Cohere, Mistral AI):</p>
+<ol class="arabic">
+<li><p><strong>Create the backend class</strong> in
+<code class="docutils literal notranslate"><span class="pre">openzync-core/core/llm_backends.py</span></code> (or a new file imported by it):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">GeminiBackend</span><span class="p">(</span><span class="n">LLMBackend</span><span class="p">):</span>
+    \<span class="s2">&quot;</span><span class="se">\&quot;\&quot;</span><span class="s2">LLM backend for Google Gemini.</span><span class="se">\&quot;\&quot;\&quot;</span>
+
+    <span class="n">DEFAULT_MODEL</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;gemini-1.5-pro&quot;</span>
+    <span class="n">MAX_RETRIES</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Gemini API key is required&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="o">=</span> <span class="n">api_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chat_model</span> <span class="o">=</span> <span class="n">model</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_MODEL</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chat_model</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">embedding_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>  <span class="c1"># or 768 if embeddings are supported</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_chat</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+        <span class="n">cache_config</span><span class="p">:</span> <span class="n">PromptCachingConfig</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChatResponse</span><span class="p">:</span>
+        <span class="c1"># Provider-specific implementation</span>
+        <span class="o">...</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">embed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbeddingResponse</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Register the backend</strong> in the auto-registration block at the bottom
+of <code class="docutils literal notranslate"><span class="pre">llm_backends.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LLMBackendRegistry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;gemini&quot;</span><span class="p">,</span> <span class="n">GeminiBackend</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Add config key support</strong> in <code class="docutils literal notranslate"><span class="pre">_create_backend</span></code> in <code class="docutils literal notranslate"><span class="pre">core/llm.py</span></code>.
+Add a new <code class="docutils literal notranslate"><span class="pre">elif</span> <span class="pre">provider</span> <span class="pre">==</span> <span class="pre">&quot;gemini&quot;:</span></code> block that extracts the
+required parameters from the config dict:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">elif</span> <span class="n">provider</span> <span class="o">==</span> <span class="s2">&quot;gemini&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gemini_api_key&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">LLMConfigurationError</span><span class="p">(</span>
+            <span class="s2">&quot;Gemini backend requires gemini_api_key in per-org &quot;</span>
+            <span class="s2">&quot;configuration.  Set it via PATCH /admin/org/config.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">api_key</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;gemini_api_key&quot;</span><span class="p">]</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gemini_model&quot;</span><span class="p">)</span>
+    <span class="n">instance</span> <span class="o">=</span> <span class="n">backend_cls</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Add the enum member</strong> (optional) to <a class="reference internal" href="#LLMProvider" title="LLMProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMProvider</span></code></a> in
+<code class="docutils literal notranslate"><span class="pre">core/llm.py</span></code> if you want the new provider to be represented in the
+enum for referential integrity:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">LLMProvider</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+    <span class="n">OLLAMA</span> <span class="o">=</span> <span class="s2">&quot;ollama&quot;</span>
+    <span class="n">OPENAI</span> <span class="o">=</span> <span class="s2">&quot;openai&quot;</span>
+    <span class="n">AZURE</span> <span class="o">=</span> <span class="s2">&quot;azure&quot;</span>
+    <span class="n">ANTHROPIC</span> <span class="o">=</span> <span class="s2">&quot;anthropic&quot;</span>
+    <span class="n">GEMINI</span> <span class="o">=</span> <span class="s2">&quot;gemini&quot;</span>  <span class="c1"># new</span>
+</pre></div>
+</div>
+<p>If you skip this step, the provider will still work via the registry but
+will not have an enum member — this is the current state of OpenRouter.</p>
+</li>
+<li><p><strong>Check optional dependencies</strong> — if the new provider requires a
+third-party SDK, make sure the import is inside the constructor
+(lazy), not at the top of the module, so the registry loads
+successfully even when the SDK is not installed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">GeminiBackend</span><span class="p">(</span><span class="n">LLMBackend</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Gemini API key is required&quot;</span><span class="p">)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">google.genai</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncClient</span>  <span class="c1"># lazy import</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span> <span class="o">=</span> <span class="n">AsyncClient</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Test the new backend</strong> by running at least:</p>
+<ul class="simple">
+<li><p>Unit tests for the constructor (valid/invalid API keys).</p></li>
+<li><p>Unit tests for <code class="docutils literal notranslate"><span class="pre">_chat</span></code> (mock the SDK client).</p></li>
+<li><p>Integration test with <a class="reference internal" href="#resolve_backend" title="resolve_backend"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a> and the registry.</p></li>
+<li><p>End-to-end test with the actual provider (requires credentials).</p></li>
+</ul>
+</li>
+</ol>
+<p>The backend will then be selectable via per-org config by setting
+<code class="docutils literal notranslate"><span class="pre">llm_backend</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;gemini&quot;</span></code> and providing the required config keys.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="graph_backends.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Graph Backend Abstraction</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="core.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Core Infrastructure</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Rohan Shaw
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">LLM Backend Abstraction</a><ul>
+<li><a class="reference internal" href="#abstract-interface-core-llm">Abstract Interface — <code class="docutils literal notranslate"><span class="pre">core.llm</span></code></a><ul>
+<li><a class="reference internal" href="#data-types">Data Types</a><ul>
+<li><a class="reference internal" href="#LLMProvider"><code class="docutils literal notranslate"><span class="pre">LLMProvider</span></code></a><ul>
+<li><a class="reference internal" href="#LLMProvider.OLLAMA"><code class="docutils literal notranslate"><span class="pre">LLMProvider.OLLAMA</span></code></a></li>
+<li><a class="reference internal" href="#LLMProvider.OPENAI"><code class="docutils literal notranslate"><span class="pre">LLMProvider.OPENAI</span></code></a></li>
+<li><a class="reference internal" href="#LLMProvider.AZURE"><code class="docutils literal notranslate"><span class="pre">LLMProvider.AZURE</span></code></a></li>
+<li><a class="reference internal" href="#LLMProvider.ANTHROPIC"><code class="docutils literal notranslate"><span class="pre">LLMProvider.ANTHROPIC</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#TokenUsage"><code class="docutils literal notranslate"><span class="pre">TokenUsage</span></code></a><ul>
+<li><a class="reference internal" href="#TokenUsage.prompt_tokens"><code class="docutils literal notranslate"><span class="pre">TokenUsage.prompt_tokens</span></code></a></li>
+<li><a class="reference internal" href="#TokenUsage.completion_tokens"><code class="docutils literal notranslate"><span class="pre">TokenUsage.completion_tokens</span></code></a></li>
+<li><a class="reference internal" href="#TokenUsage.cache_read_input_tokens"><code class="docutils literal notranslate"><span class="pre">TokenUsage.cache_read_input_tokens</span></code></a></li>
+<li><a class="reference internal" href="#TokenUsage.cache_creation_input_tokens"><code class="docutils literal notranslate"><span class="pre">TokenUsage.cache_creation_input_tokens</span></code></a></li>
+<li><a class="reference internal" href="#TokenUsage.total_tokens"><code class="docutils literal notranslate"><span class="pre">TokenUsage.total_tokens</span></code></a></li>
+<li><a class="reference internal" href="#TokenUsage.total_cache_tokens"><code class="docutils literal notranslate"><span class="pre">TokenUsage.total_cache_tokens</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#PromptCachingConfig"><code class="docutils literal notranslate"><span class="pre">PromptCachingConfig</span></code></a><ul>
+<li><a class="reference internal" href="#PromptCachingConfig.enabled"><code class="docutils literal notranslate"><span class="pre">PromptCachingConfig.enabled</span></code></a></li>
+<li><a class="reference internal" href="#PromptCachingConfig.anthropic_min_tokens"><code class="docutils literal notranslate"><span class="pre">PromptCachingConfig.anthropic_min_tokens</span></code></a></li>
+<li><a class="reference internal" href="#PromptCachingConfig.anthropic_cache_ttl"><code class="docutils literal notranslate"><span class="pre">PromptCachingConfig.anthropic_cache_ttl</span></code></a></li>
+<li><a class="reference internal" href="#PromptCachingConfig.session_id"><code class="docutils literal notranslate"><span class="pre">PromptCachingConfig.session_id</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ChatResponse"><code class="docutils literal notranslate"><span class="pre">ChatResponse</span></code></a><ul>
+<li><a class="reference internal" href="#ChatResponse.content"><code class="docutils literal notranslate"><span class="pre">ChatResponse.content</span></code></a></li>
+<li><a class="reference internal" href="#ChatResponse.model"><code class="docutils literal notranslate"><span class="pre">ChatResponse.model</span></code></a></li>
+<li><a class="reference internal" href="#ChatResponse.usage"><code class="docutils literal notranslate"><span class="pre">ChatResponse.usage</span></code></a></li>
+<li><a class="reference internal" href="#ChatResponse.validated_data"><code class="docutils literal notranslate"><span class="pre">ChatResponse.validated_data</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#EmbeddingResponse"><code class="docutils literal notranslate"><span class="pre">EmbeddingResponse</span></code></a><ul>
+<li><a class="reference internal" href="#EmbeddingResponse.embeddings"><code class="docutils literal notranslate"><span class="pre">EmbeddingResponse.embeddings</span></code></a></li>
+<li><a class="reference internal" href="#EmbeddingResponse.model"><code class="docutils literal notranslate"><span class="pre">EmbeddingResponse.model</span></code></a></li>
+<li><a class="reference internal" href="#EmbeddingResponse.dim"><code class="docutils literal notranslate"><span class="pre">EmbeddingResponse.dim</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#helper-functions">Helper Functions</a><ul>
+<li><a class="reference internal" href="#build_cache_config"><code class="docutils literal notranslate"><span class="pre">build_cache_config()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#internal-helpers">Internal Helpers</a><ul>
+<li><a class="reference internal" href="#last_validation_error"><code class="docutils literal notranslate"><span class="pre">_last_validation_error()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#abstract-backend-llmbackend">Abstract Backend — <code class="xref py py-class docutils literal notranslate"><span class="pre">LLMBackend</span></code></a><ul>
+<li><a class="reference internal" href="#LLMBackend"><code class="docutils literal notranslate"><span class="pre">LLMBackend</span></code></a><ul>
+<li><a class="reference internal" href="#LLMBackend.VALIDATION_RETRIES"><code class="docutils literal notranslate"><span class="pre">LLMBackend.VALIDATION_RETRIES</span></code></a></li>
+<li><a class="reference internal" href="#LLMBackend.chat"><code class="docutils literal notranslate"><span class="pre">LLMBackend.chat()</span></code></a></li>
+<li><a class="reference internal" href="#LLMBackend._chat"><code class="docutils literal notranslate"><span class="pre">LLMBackend._chat()</span></code></a></li>
+<li><a class="reference internal" href="#LLMBackend.embed"><code class="docutils literal notranslate"><span class="pre">LLMBackend.embed()</span></code></a></li>
+<li><a class="reference internal" href="#LLMBackend.model_name"><code class="docutils literal notranslate"><span class="pre">LLMBackend.model_name</span></code></a></li>
+<li><a class="reference internal" href="#LLMBackend.embedding_dim"><code class="docutils literal notranslate"><span class="pre">LLMBackend.embedding_dim</span></code></a></li>
+<li><a class="reference internal" href="#LLMBackend._inject_schema_instr"><code class="docutils literal notranslate"><span class="pre">LLMBackend._inject_schema_instr()</span></code></a></li>
+<li><a class="reference internal" href="#LLMBackend._build_retry_messages"><code class="docutils literal notranslate"><span class="pre">LLMBackend._build_retry_messages()</span></code></a></li>
+<li><a class="reference internal" href="#LLMBackend._extract_json"><code class="docutils literal notranslate"><span class="pre">LLMBackend._extract_json()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#backend-registry-llmbackendregistry">Backend Registry — <code class="xref py py-class docutils literal notranslate"><span class="pre">LLMBackendRegistry</span></code></a><ul>
+<li><a class="reference internal" href="#LLMBackendRegistry"><code class="docutils literal notranslate"><span class="pre">LLMBackendRegistry</span></code></a><ul>
+<li><a class="reference internal" href="#LLMBackendRegistry._backends"><code class="docutils literal notranslate"><span class="pre">LLMBackendRegistry._backends</span></code></a></li>
+<li><a class="reference internal" href="#LLMBackendRegistry.register"><code class="docutils literal notranslate"><span class="pre">LLMBackendRegistry.register()</span></code></a></li>
+<li><a class="reference internal" href="#LLMBackendRegistry.get"><code class="docutils literal notranslate"><span class="pre">LLMBackendRegistry.get()</span></code></a></li>
+<li><a class="reference internal" href="#LLMBackendRegistry.list_available"><code class="docutils literal notranslate"><span class="pre">LLMBackendRegistry.list_available()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#resolution-resolve-backend">Resolution — <code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a><ul>
+<li><a class="reference internal" href="#resolve_backend"><code class="docutils literal notranslate"><span class="pre">resolve_backend()</span></code></a></li>
+<li><a class="reference internal" href="#create_backend"><code class="docutils literal notranslate"><span class="pre">_create_backend()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#concrete-implementations-core-llm-backends">Concrete Implementations — <code class="docutils literal notranslate"><span class="pre">core.llm_backends</span></code></a><ul>
+<li><a class="reference internal" href="#ollamabackend">OllamaBackend</a><ul>
+<li><a class="reference internal" href="#OllamaBackend"><code class="docutils literal notranslate"><span class="pre">OllamaBackend</span></code></a><ul>
+<li><a class="reference internal" href="#OllamaBackend.DEFAULT_CHAT_MODEL"><code class="docutils literal notranslate"><span class="pre">OllamaBackend.DEFAULT_CHAT_MODEL</span></code></a></li>
+<li><a class="reference internal" href="#OllamaBackend.DEFAULT_EMBED_MODEL"><code class="docutils literal notranslate"><span class="pre">OllamaBackend.DEFAULT_EMBED_MODEL</span></code></a></li>
+<li><a class="reference internal" href="#OllamaBackend.DEFAULT_EMBED_DIM"><code class="docutils literal notranslate"><span class="pre">OllamaBackend.DEFAULT_EMBED_DIM</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openaibackend">OpenAIBackend</a><ul>
+<li><a class="reference internal" href="#OpenAIBackend"><code class="docutils literal notranslate"><span class="pre">OpenAIBackend</span></code></a><ul>
+<li><a class="reference internal" href="#OpenAIBackend.DEFAULT_MODEL"><code class="docutils literal notranslate"><span class="pre">OpenAIBackend.DEFAULT_MODEL</span></code></a></li>
+<li><a class="reference internal" href="#OpenAIBackend.DEFAULT_EMBED_MODEL"><code class="docutils literal notranslate"><span class="pre">OpenAIBackend.DEFAULT_EMBED_MODEL</span></code></a></li>
+<li><a class="reference internal" href="#OpenAIBackend.DEFAULT_EMBED_DIM"><code class="docutils literal notranslate"><span class="pre">OpenAIBackend.DEFAULT_EMBED_DIM</span></code></a></li>
+<li><a class="reference internal" href="#OpenAIBackend.MAX_RETRIES"><code class="docutils literal notranslate"><span class="pre">OpenAIBackend.MAX_RETRIES</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#azurebackend">AzureBackend</a><ul>
+<li><a class="reference internal" href="#AzureBackend"><code class="docutils literal notranslate"><span class="pre">AzureBackend</span></code></a><ul>
+<li><a class="reference internal" href="#AzureBackend.DEFAULT_EMBED_DIM"><code class="docutils literal notranslate"><span class="pre">AzureBackend.DEFAULT_EMBED_DIM</span></code></a></li>
+<li><a class="reference internal" href="#AzureBackend.MAX_RETRIES"><code class="docutils literal notranslate"><span class="pre">AzureBackend.MAX_RETRIES</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#anthropicbackend">AnthropicBackend</a><ul>
+<li><a class="reference internal" href="#AnthropicBackend"><code class="docutils literal notranslate"><span class="pre">AnthropicBackend</span></code></a><ul>
+<li><a class="reference internal" href="#AnthropicBackend.DEFAULT_MODEL"><code class="docutils literal notranslate"><span class="pre">AnthropicBackend.DEFAULT_MODEL</span></code></a></li>
+<li><a class="reference internal" href="#AnthropicBackend.MAX_RETRIES"><code class="docutils literal notranslate"><span class="pre">AnthropicBackend.MAX_RETRIES</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openrouterbackend">OpenRouterBackend</a><ul>
+<li><a class="reference internal" href="#OpenRouterBackend"><code class="docutils literal notranslate"><span class="pre">OpenRouterBackend</span></code></a><ul>
+<li><a class="reference internal" href="#OpenRouterBackend.BASE_URL"><code class="docutils literal notranslate"><span class="pre">OpenRouterBackend.BASE_URL</span></code></a></li>
+<li><a class="reference internal" href="#OpenRouterBackend.MAX_RETRIES"><code class="docutils literal notranslate"><span class="pre">OpenRouterBackend.MAX_RETRIES</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#auto-registration">Auto-Registration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#design-patterns-architecture">Design Patterns &amp; Architecture</a><ul>
+<li><a class="reference internal" href="#strategy-registry-pattern">Strategy / Registry Pattern</a></li>
+<li><a class="reference internal" href="#backend-selection-flow">Backend Selection Flow</a></li>
+<li><a class="reference internal" href="#api-key-resolution">API Key Resolution</a></li>
+<li><a class="reference internal" href="#prompt-caching-architecture">Prompt Caching Architecture</a></li>
+<li><a class="reference internal" href="#connection-management">Connection Management</a></li>
+<li><a class="reference internal" href="#exception-handling">Exception Handling</a></li>
+<li><a class="reference internal" href="#dependency-groups">Dependency Groups</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#adding-a-new-provider">Adding a New Provider</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

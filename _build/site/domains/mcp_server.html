@@ -1,0 +1,1439 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="OpenZync Frontend" href="frontend.html"><link rel="prev" title="Python SDK (openzync)" href="sdk_python.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>MCP Server (FastMCP) - OpenZync Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">OpenZync Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">OpenZync Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/contributing.html">Contributing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="llm.html">LLM Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph_backends.html">Graph Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reranker.html">Re-ranking &amp; Community Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reranker.html#community-detection">Community Detection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Domain Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="auth.html">Authentication &amp; Authorization Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_context.html">Memory &amp; Context Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="admin_webhooks.html">Admin &amp; Webhooks Domain</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API &amp; Workers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_layer.html">API Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workers.html">Worker System — ARQ Background Job Processing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SDK, MCP &amp; Frontend</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="sdk_python.html">Python SDK (openzync)</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">MCP Server (FastMCP)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="frontend.html">OpenZync Frontend</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Infra</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="infrastructure.html">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</a><input aria-label="Toggle navigation of Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture Decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference (Auto-generated)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/core.html">core package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/routers.html">routers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/models.html">models package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/schemas.html">schemas package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/services.html">services package</a><input aria-label="Toggle navigation of services package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/services.api.html">services.api package</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/services.mcp.html">services.mcp package</a><input aria-label="Toggle navigation of services.mcp package" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.mcp.tools.html">services.mcp.tools package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.mcp.transport.html">services.mcp.transport package</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/services.worker.html">services.worker package</a><input aria-label="Toggle navigation of services.worker package" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.worker.prompts.html">services.worker.prompts package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.worker.tasks.html">services.worker.tasks package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/repositories.html">repositories package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/middleware.html">middleware package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/dependencies.html">dependencies package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/workers.html">workers package</a><input aria-label="Toggle navigation of workers package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/workers.tasks.html">workers.tasks package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/utils.html">utils package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/packages.html">packages package</a><input aria-label="Toggle navigation of packages package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/packages.community.html">packages.community package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/packages.graph_backend.html">packages.graph_backend package</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/blob/main/docs/domains/mcp_server.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/edit/main/docs/domains/mcp_server.rst" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="mcp-server-fastmcp">
+<h1>MCP Server (FastMCP)<a class="headerlink" href="#mcp-server-fastmcp" title="Link to this heading">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This document covers the <strong>OpenZync MCP Server</strong> at
+<code class="docutils literal notranslate"><span class="pre">/home/rohan-linkai/code/personal/openzync/openzync-mcp/</span></code> — an
+independent package (<code class="docutils literal notranslate"><span class="pre">openzync_mcp</span></code>) that exposes OpenZync’s memory
+capabilities as LLM-accessible tools via the <a class="reference external" href="https://spec.modelcontextprotocol.io">Model Context Protocol
+(MCP)</a>.</p>
+<p>The MCP server <strong>replaces</strong> the previous custom JSON-RPC 2.0
+implementation that lived in <code class="docutils literal notranslate"><span class="pre">services.mcp</span></code> inside the
+<code class="docutils literal notranslate"><span class="pre">openzync-core</span></code> monolith (see <a class="reference internal" href="../api/services.mcp.html"><span class="doc">services.mcp package</span></a> for the
+legacy API docs).  The new server is built on <a class="reference external" href="https://gofastmcp.com">FastMCP</a>, which handles protocol compliance, transport
+negotiation, schema generation, and input validation automatically.</p>
+<p><strong>What this document does not cover</strong>: The <code class="docutils literal notranslate"><span class="pre">openzync-core</span></code> monolith’s
+REST API.  See <a class="reference internal" href="memory_context.html"><span class="doc">Memory &amp; Context Domain</span></a> for the ingestion and retrieval
+pipeline, <a class="reference internal" href="auth.html"><span class="doc">Authentication &amp; Authorization Domain</span></a> for authentication, and <a class="reference internal" href="api_layer.html"><span class="doc">API Layer</span></a> for the
+full HTTP API reference.</p>
+</div>
+<nav class="contents this-will-duplicate-information-and-it-is-still-useful-here local" id="sections">
+<p class="topic-title">Sections</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#overview" id="id11">Overview</a></p></li>
+<li><p><a class="reference internal" href="#repository-layout" id="id12">Repository Layout</a></p></li>
+<li><p><a class="reference internal" href="#server-lifecycle" id="id13">Server Lifecycle</a></p></li>
+<li><p><a class="reference internal" href="#entry-point-cli" id="id14">Entry Point &amp; CLI</a></p></li>
+<li><p><a class="reference internal" href="#authentication-model" id="id15">Authentication Model</a></p></li>
+<li><p><a class="reference internal" href="#available-mcp-tools" id="id16">Available MCP Tools</a></p>
+<ul>
+<li><p><a class="reference internal" href="#add-memory" id="id17">add_memory</a></p></li>
+<li><p><a class="reference internal" href="#get-context" id="id18">get_context</a></p></li>
+<li><p><a class="reference internal" href="#search-memory" id="id19">search_memory</a></p></li>
+<li><p><a class="reference internal" href="#delete-memory" id="id20">delete_memory</a></p></li>
+<li><p><a class="reference internal" href="#add-fact" id="id21">add_fact</a></p></li>
+<li><p><a class="reference internal" href="#list-facts" id="id22">list_facts</a></p></li>
+<li><p><a class="reference internal" href="#get-user-graph" id="id23">get_user_graph</a></p></li>
+<li><p><a class="reference internal" href="#list-sessions" id="id24">list_sessions</a></p></li>
+<li><p><a class="reference internal" href="#create-user" id="id25">create_user</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#container-setup" id="id26">Container Setup</a></p></li>
+<li><p><a class="reference internal" href="#setup-connection" id="id27">Setup &amp; Connection</a></p>
+<ul>
+<li><p><a class="reference internal" href="#claude-desktop" id="id28">Claude Desktop</a></p></li>
+<li><p><a class="reference internal" href="#custom-application-http-transport" id="id29">Custom Application (HTTP transport)</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#testing" id="id30">Testing</a></p></li>
+<li><p><a class="reference internal" href="#tool-patterns-conventions" id="id31">Tool Patterns &amp; Conventions</a></p></li>
+<li><p><a class="reference internal" href="#cross-references" id="id32">Cross-References</a></p></li>
+<li><p><a class="reference internal" href="#repository-gaps" id="id33">Repository Gaps</a></p></li>
+</ul>
+</nav>
+<section id="overview">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Overview</a><a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>The OpenZync MCP Server is a lightweight Python process that translates
+<a class="reference external" href="https://spec.modelcontextprotocol.io/latest/schema/#tool">MCP tool calls</a>
+into OpenZync REST API calls via the OpenZync Python SDK
+(<code class="docutils literal notranslate"><span class="pre">openzync.client.AsyncOpenZync</span></code>).  It is designed to be run alongside an
+LLM host (Claude Desktop, Cursor, custom agent frameworks) and provides the
+agent with persistent, queryable memory.</p>
+<p><strong>Architecture highlights:</strong></p>
+<ul class="simple">
+<li><p><strong>FastMCP framework</strong> — handles JSON-RPC 2.0 protocol, schema generation
+from Python type hints, input validation, and transport negotiation.</p></li>
+<li><p><strong>SDK-backed</strong> — tools call the OpenZync REST API via
+<code class="docutils literal notranslate"><span class="pre">AsyncOpenZync</span></code>.  No direct database access.</p></li>
+<li><p><strong>Three transports</strong> — stdio (default, for Claude Desktop), SSE (legacy),
+and Streamable HTTP (for remote deployments).</p></li>
+<li><p><strong>Zero silent fallback</strong> — every failure propagates as an exception to
+the MCP client.  No degraded behaviour, no cached results returned on
+failure.</p></li>
+</ul>
+</section>
+<section id="repository-layout">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Repository Layout</a><a class="headerlink" href="#repository-layout" title="Link to this heading">¶</a></h2>
+<p>The MCP server lives in its own repository at
+<code class="docutils literal notranslate"><span class="pre">/home/rohan-linkai/code/personal/openzync/openzync-mcp/</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>openzync-mcp/
+└── openzync_mcp/
+    ├── __init__.py
+    ├── __main__.py          # Entry point with CLI arg parsing
+    ├── server.py            # FastMCP server singleton + lifespan
+    ├── Dockerfile           # Production container definition
+    └── tools/
+        ├── __init__.py
+        ├── memory.py        # add_memory, get_context, search_memory, delete_memory
+        ├── facts.py         # add_fact, list_facts
+        ├── graph.py         # get_user_graph
+        ├── sessions.py      # list_sessions
+        └── users.py         # create_user
+</pre></div>
+</div>
+<p><strong>Files not present</strong> (noted as gaps):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> — missing.  The Dockerfile builds from a <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>
+or a separate project config that is not in this repository.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LICENSE</span></code> — missing from the repository root (may be inherited from the
+parent project).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">README</span></code> — missing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.gitignore</span></code> — missing.</p></li>
+</ul>
+<p>These are packaging/documentation gaps.  See <a class="reference internal" href="#mcp-repo-gaps"><span class="std std-ref">Repository Gaps</span></a> for
+details.</p>
+</section>
+<section id="server-lifecycle">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Server Lifecycle</a><a class="headerlink" href="#server-lifecycle" title="Link to this heading">¶</a></h2>
+<p>Module: <code class="docutils literal notranslate"><span class="pre">openzync_mcp/server.py</span></code></p>
+<p>The server is a singleton <code class="xref py py-class docutils literal notranslate"><span class="pre">FastMCP</span></code> instance created at import time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mcp</span> <span class="o">=</span> <span class="n">FastMCP</span><span class="p">(</span>
+    <span class="s2">&quot;OpenZync-mcp&quot;</span><span class="p">,</span>
+    <span class="n">instructions</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;OpenZync agent memory platform — persist, query, and manage &quot;</span>
+        <span class="s2">&quot;agent memory...&quot;</span>
+    <span class="p">),</span>
+    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.1.0&quot;</span><span class="p">,</span>
+    <span class="n">lifespan</span><span class="o">=</span><span class="n">openzync_lifespan</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The lifespan function (<code class="docutils literal notranslate"><span class="pre">openzync_lifespan</span></code>) manages the SDK client:</p>
+<ol class="arabic simple">
+<li><p>Reads <code class="docutils literal notranslate"><span class="pre">OPENZYN_API_KEY</span></code> and <code class="docutils literal notranslate"><span class="pre">OPENZYN_BASE_URL</span></code> from environment
+variables (set by <code class="docutils literal notranslate"><span class="pre">__main__.py</span></code> before starting the server).</p></li>
+<li><p>Creates an <code class="docutils literal notranslate"><span class="pre">AsyncOpenZync</span></code> client if one is not already injected (for
+test support).</p></li>
+<li><p>Yields the client in the lifespan context dict, accessible to tool
+handlers via <code class="docutils literal notranslate"><span class="pre">ctx.lifespan_context[&quot;client&quot;]</span></code>.</p></li>
+<li><p>On shutdown, closes the SDK client.</p></li>
+</ol>
+<p class="rubric">Test Injection Hook</p>
+<p>For unit tests, pre-set <code class="docutils literal notranslate"><span class="pre">server._oz_client</span></code> with a mock client before
+creating <code class="docutils literal notranslate"><span class="pre">Client(mcp)</span></code>.  The lifespan will use the pre-set client as-is
+and will <strong>not</strong> close it on shutdown (the test fixture owns the lifecycle).</p>
+</section>
+<section id="entry-point-cli">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Entry Point &amp; CLI</a><a class="headerlink" href="#entry-point-cli" title="Link to this heading">¶</a></h2>
+<p>Module: <code class="docutils literal notranslate"><span class="pre">openzync_mcp/__main__.py</span></code></p>
+<p>The server is started via <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">openzync_mcp</span></code> with the following
+arguments:</p>
+<p><strong>Logging</strong>: All logging goes to <strong>stderr</strong> (stdout is reserved for the
+stdio transport protocol).</p>
+<p>Usage examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run locally for Claude Desktop (stdio transport)</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">openzync_mcp</span> <span class="o">--</span><span class="n">api</span><span class="o">-</span><span class="n">key</span> <span class="n">oz_live_abc123</span>
+
+<span class="c1"># Run as a remote HTTP server</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">openzync_mcp</span> <span class="o">--</span><span class="n">transport</span> <span class="n">http</span> <span class="o">--</span><span class="n">port</span> <span class="mi">8100</span> \
+    <span class="o">--</span><span class="n">api</span><span class="o">-</span><span class="n">key</span> <span class="n">oz_live_abc123</span> \
+    <span class="o">--</span><span class="n">base</span><span class="o">-</span><span class="n">url</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">api</span><span class="o">.</span><span class="n">openzync</span><span class="o">.</span><span class="n">com</span>
+
+<span class="c1"># Run with SSE transport (legacy)</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">openzync_mcp</span> <span class="o">--</span><span class="n">transport</span> <span class="n">sse</span> <span class="o">--</span><span class="n">port</span> <span class="mi">8100</span>
+</pre></div>
+</div>
+</section>
+<section id="authentication-model">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Authentication Model</a><a class="headerlink" href="#authentication-model" title="Link to this heading">¶</a></h2>
+<p>The MCP server itself does <strong>not</strong> authenticate incoming MCP requests —
+authentication is handled at the OpenZync API level via the API key.</p>
+<p><strong>Key points:</strong></p>
+<ul class="simple">
+<li><p>The API key must be a valid OpenZync project-scoped key (prefix
+<code class="docutils literal notranslate"><span class="pre">oz_live_</span></code> or <code class="docutils literal notranslate"><span class="pre">oz_test_</span></code>).</p></li>
+<li><p>The key is passed to the <code class="docutils literal notranslate"><span class="pre">AsyncOpenZync</span></code> client at startup and sent as
+a Bearer token on every API call.</p></li>
+<li><p>There is <strong>no per-request authentication</strong> at the MCP level — any MCP
+client that can connect to the server inherits its authority.</p></li>
+<li><p>For insecure networks, run the server with <code class="docutils literal notranslate"><span class="pre">--transport</span> <span class="pre">stdio</span></code>
+(process-local) or use a reverse proxy with authentication (e.g. mutual
+TLS) in front of the HTTP transport.</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="auth.html"><span class="doc">Authentication &amp; Authorization Domain</span></a> for the full API key authentication flow in the OpenZync
+backend, including key creation, revocation, and verification.</p>
+</div>
+</section>
+<section id="available-mcp-tools">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Available MCP Tools</a><a class="headerlink" href="#available-mcp-tools" title="Link to this heading">¶</a></h2>
+<p>The MCP server exposes <strong>8 tools</strong> across 5 domains:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tool Name</p></th>
+<th class="head"><p>Module</p></th>
+<th class="head"><p>Category</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">add_memory</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">openzync_mcp.tools.memory</span></code></p></td>
+<td><p>Memory</p></td>
+<td><p>Ingest conversation messages into a project.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get_context</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">openzync_mcp.tools.memory</span></code></p></td>
+<td><p>Memory</p></td>
+<td><p>Assemble an LLM-ready context block from hybrid search.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">search_memory</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">openzync_mcp.tools.memory</span></code></p></td>
+<td><p>Memory</p></td>
+<td><p>Search across episodes, facts, and entities.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">delete_memory</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">openzync_mcp.tools.memory</span></code></p></td>
+<td><p>Memory</p></td>
+<td><p>Soft-delete all project memory (GDPR wipe).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">add_fact</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">openzync_mcp.tools.facts</span></code></p></td>
+<td><p>Facts</p></td>
+<td><p>Inject fact triples into the knowledge graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">list_facts</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">openzync_mcp.tools.facts</span></code></p></td>
+<td><p>Facts</p></td>
+<td><p>Search facts by keyword query.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get_user_graph</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">openzync_mcp.tools.graph</span></code></p></td>
+<td><p>Graph</p></td>
+<td><p>Explore the entity-relationship knowledge graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">list_sessions</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">openzync_mcp.tools.sessions</span></code></p></td>
+<td><p>Sessions</p></td>
+<td><p>List conversation sessions with pagination.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">create_user</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">openzync_mcp.tools.users</span></code></p></td>
+<td><p>Users</p></td>
+<td><p>Create a new end-user.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>All tools follow a consistent pattern:</p>
+<ul class="simple">
+<li><p>Log every invocation, success, and error with structured context
+(duration, IDs, counts).</p></li>
+<li><p>Validate all inputs with guard clauses (raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> for invalid
+arguments).</p></li>
+<li><p>Time every operation and include the duration in log lines.</p></li>
+<li><p>Never swallow exceptions — errors propagate back to the MCP client.</p></li>
+</ul>
+<p>Below is the detailed specification for each tool.</p>
+<section id="add-memory">
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">add_memory</a><a class="headerlink" href="#add-memory" title="Link to this heading">¶</a></h3>
+<p><strong>Purpose</strong>: Persist conversation messages as episodes and enqueue async
+enrichment (entity extraction, fact extraction, embedding, classification).</p>
+<div class="table-wrapper docutils container" id="id1">
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Input Parameters</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">project_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>The internal UUID of the target project.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">messages</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">list[dict]</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>List of message objects.  Each must have <code class="docutils literal notranslate"><span class="pre">role</span></code>
+(<code class="docutils literal notranslate"><span class="pre">&quot;user&quot;</span></code> | <code class="docutils literal notranslate"><span class="pre">&quot;assistant&quot;</span></code> | <code class="docutils literal notranslate"><span class="pre">&quot;system&quot;</span></code> | <code class="docutils literal notranslate"><span class="pre">&quot;tool&quot;</span></code>)
+and <code class="docutils literal notranslate"><span class="pre">content</span></code> (message body).  1–1000 messages per call.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">session_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">|</span> <span class="pre">null</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Optional session external ID.  If omitted, a
+<code class="docutils literal notranslate"><span class="pre">__default__</span></code> session is auto-created.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Output</strong>: A confirmation string with the job ID and episode count:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Memory recorded. 5 messages ingested (job: abc-def-ghi).&quot;</span>
+</pre></div>
+</div>
+<p><strong>Example call</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># In Claude Desktop or any MCP client</span>
+<span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;add_memory&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;What is machine learning?&quot;</span><span class="p">},</span>
+      <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;assistant&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Machine learning is a subset of AI...&quot;</span><span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;session_id&quot;</span><span class="p">:</span> <span class="s2">&quot;my-session-001&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Backend mapping</strong>: Calls <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/projects/{project_id}/memory</span></code> on the
+OpenZync API.</p>
+<p><strong>Errors</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code> — empty <code class="docutils literal notranslate"><span class="pre">messages</span></code> list or more than 1000 messages.</p></li>
+<li><p>All API errors (auth failure, project not found, quota exceeded)
+propagate as-is from the SDK.</p></li>
+</ul>
+</section>
+<section id="get-context">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">get_context</a><a class="headerlink" href="#get-context" title="Link to this heading">¶</a></h3>
+<p><strong>Purpose</strong>: Assemble a context block for LLM injection from a
+natural-language query.  Returns recent episodes, extracted facts, and
+graph entities related to the query, formatted as plain text suitable for
+inclusion in an LLM prompt.</p>
+<div class="table-wrapper docutils container" id="id2">
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Input Parameters</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">project_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>The internal UUID of the target project.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">query</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>A natural-language query describing the needed context
+(e.g. <code class="docutils literal notranslate"><span class="pre">&quot;what</span> <span class="pre">does</span> <span class="pre">the</span> <span class="pre">user</span> <span class="pre">know</span> <span class="pre">about</span> <span class="pre">machine</span> <span class="pre">learning&quot;</span></code>).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">limit</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Maximum items per source type (1–100, default 20).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Output</strong>: A plain-text context block with episodes, facts, and entities
+formatted for LLM consumption.</p>
+<p><strong>Example call</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;get_context&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;what have we discussed about Python async patterns&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">10</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Backend mapping</strong>: Calls <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/projects/{project_id}/context</span></code> on the
+OpenZync API.</p>
+<p><strong>Retrieval pipeline</strong> (see <a class="reference internal" href="memory_context.html"><span class="doc">Memory &amp; Context Domain</span></a> for details):</p>
+<ol class="arabic simple">
+<li><p>Hybrid search (5 concurrent legs): episode vector, episode BM25, fact
+vector, fact BM25, graph BFS.</p></li>
+<li><p>RRF merge per source type.</p></li>
+<li><p>Optional cross-encoder re-ranking.</p></li>
+<li><p>Format as plain text.</p></li>
+<li><p>Cache result in Redis (TTL 30s).</p></li>
+</ol>
+<p><strong>Errors</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code> — empty query or limit outside 1–100.</p></li>
+</ul>
+</section>
+<section id="search-memory">
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">search_memory</a><a class="headerlink" href="#search-memory" title="Link to this heading">¶</a></h3>
+<p><strong>Purpose</strong>: Search across a project’s memory using hybrid retrieval.
+Returns results fused via RRF and sorted by relevance score.</p>
+<div class="table-wrapper docutils container" id="id3">
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Input Parameters</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">project_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>The internal UUID of the target project.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">query</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Search query string.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">types</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Comma-separated result types to include:
+<code class="docutils literal notranslate"><span class="pre">&quot;episodes&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;facts&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;entities&quot;</span></code>
+(default: <code class="docutils literal notranslate"><span class="pre">&quot;episodes,facts&quot;</span></code>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">limit</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Maximum results per type (default 20, max 100).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Output</strong>: A formatted string of search results with relevance scores:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Found</span> <span class="mi">3</span> <span class="n">result</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+  <span class="p">[</span><span class="mf">0.8921</span><span class="p">]</span> <span class="n">Machine</span> <span class="n">learning</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">subset</span> <span class="n">of</span> <span class="n">AI</span><span class="o">...</span>
+  <span class="p">[</span><span class="mf">0.7450</span><span class="p">]</span> <span class="n">The</span> <span class="n">user</span> <span class="n">asked</span> <span class="n">about</span> <span class="n">supervised</span> <span class="n">learning</span><span class="o">...</span>
+  <span class="p">[</span><span class="mf">0.6233</span><span class="p">]</span> <span class="n">Alice</span> <span class="ow">is</span> <span class="n">proficient</span> <span class="ow">in</span> <span class="n">Python</span> <span class="ow">and</span> <span class="n">ML</span> <span class="n">frameworks</span>
+</pre></div>
+</div>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">&quot;No</span> <span class="pre">results</span> <span class="pre">found.&quot;</span></code> if no matches.</p>
+<p><strong>Example call</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;search_memory&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;machine learning topics&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;types&quot;</span><span class="p">:</span> <span class="s2">&quot;episodes,facts,entities&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">5</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Backend mapping</strong>: Calls the OpenZync graph search endpoint with the
+specified types.</p>
+<p><strong>Errors</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code> — empty query, limit outside 1–100, or invalid type
+string (allowed: <code class="docutils literal notranslate"><span class="pre">episodes</span></code>, <code class="docutils literal notranslate"><span class="pre">facts</span></code>, <code class="docutils literal notranslate"><span class="pre">entities</span></code>).</p></li>
+</ul>
+</section>
+<section id="delete-memory">
+<h3><a class="toc-backref" href="#id20" role="doc-backlink">delete_memory</a><a class="headerlink" href="#delete-memory" title="Link to this heading">¶</a></h3>
+<p><strong>Purpose</strong>: Delete all memory for a project (soft-delete).  This is the
+GDPR memory-wipe operation and is <strong>not</strong> reversible — deleted data is
+marked inactive but preserved for a 30-day grace period before hard-purge.</p>
+<div class="table-wrapper docutils container" id="id4">
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">Input Parameters</span><a class="headerlink" href="#id4" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">project_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>The internal UUID of the target project.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Output</strong>: <code class="docutils literal notranslate"><span class="pre">&quot;Memory</span> <span class="pre">deleted</span> <span class="pre">successfully.&quot;</span></code></p>
+<p><strong>Example call</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;delete_memory&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Backend mapping</strong>: Calls <code class="docutils literal notranslate"><span class="pre">DELETE</span> <span class="pre">/v1/projects/{project_id}/memory</span></code> on
+the OpenZync API.</p>
+<p><strong>Warning</strong>: This operation:</p>
+<ul class="simple">
+<li><p>Soft-deletes all episodes and facts for the project.</p></li>
+<li><p>Does <strong>not</strong> delete sessions.</p></li>
+<li><p>Is irreversible via the API (data can be recovered by support within
+30 days via DB restore).</p></li>
+</ul>
+</section>
+<section id="add-fact">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">add_fact</a><a class="headerlink" href="#add-fact" title="Link to this heading">¶</a></h3>
+<p><strong>Purpose</strong>: Inject business fact triples into a project’s knowledge graph.
+Facts are persisted as (subject, predicate, object) triples and queued for
+async embedding.</p>
+<div class="table-wrapper docutils container" id="id5">
+<table class="docutils align-default" id="id5">
+<caption><span class="caption-text">Input Parameters</span><a class="headerlink" href="#id5" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">project_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>The internal UUID of the target project.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">facts</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">list[dict]</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>List of fact triples.  Each dict must have <code class="docutils literal notranslate"><span class="pre">subject</span></code>,
+<code class="docutils literal notranslate"><span class="pre">predicate</span></code>, and <code class="docutils literal notranslate"><span class="pre">object</span></code> keys.  Optional
+<code class="docutils literal notranslate"><span class="pre">confidence</span></code> (float, default 1.0).  Max 500 per call.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">session_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">|</span> <span class="pre">null</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Optional session external ID for attribution.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Output</strong>: A confirmation string with accepted count and job ID:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;3 fact(s) accepted for processing (job: abc-def-ghi).&quot;</span>
+</pre></div>
+</div>
+<p><strong>Example call</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;add_fact&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;facts&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="s2">&quot;Alice&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;predicate&quot;</span><span class="p">:</span> <span class="s2">&quot;expert_in&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="s2">&quot;Machine Learning&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;confidence&quot;</span><span class="p">:</span> <span class="mf">0.95</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="s2">&quot;subject&quot;</span><span class="p">:</span> <span class="s2">&quot;Alice&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;predicate&quot;</span><span class="p">:</span> <span class="s2">&quot;works_at&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="s2">&quot;Acme Corp&quot;</span>
+      <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;session_id&quot;</span><span class="p">:</span> <span class="s2">&quot;my-session-001&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Backend mapping</strong>: Calls <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/projects/{project_id}/facts</span></code> on the
+OpenZync API.</p>
+<p><strong>Errors</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code> — empty <code class="docutils literal notranslate"><span class="pre">facts</span></code> list, more than 500 facts, or any fact
+dict missing <code class="docutils literal notranslate"><span class="pre">subject</span></code>, <code class="docutils literal notranslate"><span class="pre">predicate</span></code>, or <code class="docutils literal notranslate"><span class="pre">object</span></code> keys.</p></li>
+</ul>
+</section>
+<section id="list-facts">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">list_facts</a><a class="headerlink" href="#list-facts" title="Link to this heading">¶</a></h3>
+<p><strong>Purpose</strong>: Search facts (knowledge triples) by keyword query.  Returns
+matching facts sorted by relevance.</p>
+<div class="table-wrapper docutils container" id="id6">
+<table class="docutils align-default" id="id6">
+<caption><span class="caption-text">Input Parameters</span><a class="headerlink" href="#id6" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">project_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>The internal UUID of the target project.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">query</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Keyword search query.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">limit</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Maximum results (default 20, max 100).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Output</strong>: A formatted string of matching facts with confidence scores:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Found</span> <span class="mi">2</span> <span class="n">fact</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+  <span class="p">[</span><span class="mf">0.95</span><span class="p">]</span> <span class="n">Alice</span> <span class="n">expert_in</span> <span class="n">Machine</span> <span class="n">Learning</span>
+  <span class="p">[</span><span class="mf">0.85</span><span class="p">]</span> <span class="n">Alice</span> <span class="n">works_at</span> <span class="n">Acme</span> <span class="n">Corp</span>
+</pre></div>
+</div>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">&quot;No</span> <span class="pre">facts</span> <span class="pre">found.&quot;</span></code> if no matches.</p>
+<p><strong>Example call</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;list_facts&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;Alice&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Backend mapping</strong>: Calls the OpenZync graph search endpoint scoped to
+<code class="docutils literal notranslate"><span class="pre">types=&quot;facts&quot;</span></code>.</p>
+<p><strong>Errors</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code> — empty query or limit outside 1–100.</p></li>
+</ul>
+</section>
+<section id="get-user-graph">
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">get_user_graph</a><a class="headerlink" href="#get-user-graph" title="Link to this heading">¶</a></h3>
+<p><strong>Purpose</strong>: Get the entity graph for a project — nodes (entities) and
+edges (relationships).  Optionally filter by entity type.  Edges are
+fetched in parallel for up to 20 entities; for larger graphs, edges are
+shown only for the first 20 entities.</p>
+<div class="table-wrapper docutils container" id="id7">
+<table class="docutils align-default" id="id7">
+<caption><span class="caption-text">Input Parameters</span><a class="headerlink" href="#id7" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">project_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>The internal UUID of the target project.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">entity_type</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">|</span> <span class="pre">null</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Optional entity type filter (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;Person&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;Organization&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Topic&quot;</span></code>).  Omit to return all types.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">limit</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Maximum entities and edges to return (default 50, max 200).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Output</strong>: A formatted string listing entities and their relationships:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Found 3 entity(ies):
+  [Person] Alice (abc12345...)
+  [Topic] Machine Learning (def67890...)
+  [Organization] Acme Corp (ghi11121...)
+
+2 edge(s) (from 3 entity sources):
+  [expert_in] abc12345... → def67890...
+  [works_at] abc12345... → ghi11121...
+</pre></div>
+</div>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">&quot;No</span> <span class="pre">entities</span> <span class="pre">found</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">graph.&quot;</span></code> if the graph is empty.</p>
+<p><strong>Example call</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;get_user_graph&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;entity_type&quot;</span><span class="p">:</span> <span class="s2">&quot;Person&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">30</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Backend mapping</strong>: Calls the OpenZync graph nodes and edges endpoints.</p>
+<p><strong>Edge-fetch behaviour</strong>:</p>
+<ul class="simple">
+<li><p>Edges are fetched for up to 20 entities in parallel
+(<code class="docutils literal notranslate"><span class="pre">asyncio.gather</span></code> with <code class="docutils literal notranslate"><span class="pre">return_exceptions=True</span></code>).</p></li>
+<li><p>Partial failures are handled gracefully — failed entity edge fetches
+are skipped with a warning logged.</p></li>
+<li><p>Edges are deduplicated by <code class="docutils literal notranslate"><span class="pre">(source_id,</span> <span class="pre">target_id,</span> <span class="pre">type)</span></code>.</p></li>
+</ul>
+<p><strong>Errors</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code> — empty <code class="docutils literal notranslate"><span class="pre">project_id</span></code> or limit outside 1–200.</p></li>
+</ul>
+</section>
+<section id="list-sessions">
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">list_sessions</a><a class="headerlink" href="#list-sessions" title="Link to this heading">¶</a></h3>
+<p><strong>Purpose</strong>: List conversation sessions for a project with cursor-based
+pagination.  Each session groups a sequence of conversation messages
+(episodes).</p>
+<div class="table-wrapper docutils container" id="id8">
+<table class="docutils align-default" id="id8">
+<caption><span class="caption-text">Input Parameters</span><a class="headerlink" href="#id8" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">project_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>The internal UUID of the target project.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">limit</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">integer</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Maximum sessions per page (default 50, max 200).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cursor</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">|</span> <span class="pre">null</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Opaque pagination cursor from a previous response.
+Omit to fetch the first page.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Output</strong>: A formatted string listing sessions with IDs and message
+counts, plus a pagination hint if more pages are available:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Found</span> <span class="mi">3</span> <span class="n">session</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+  <span class="p">[</span><span class="n">abc12345</span><span class="p">]</span> <span class="n">my</span><span class="o">-</span><span class="n">session</span><span class="o">-</span><span class="mi">001</span> <span class="p">(</span><span class="mi">15</span> <span class="n">messages</span><span class="p">)</span>
+  <span class="p">[</span><span class="n">def67890</span><span class="p">]</span> <span class="n">my</span><span class="o">-</span><span class="n">session</span><span class="o">-</span><span class="mi">002</span> <span class="p">(</span><span class="mi">8</span> <span class="n">messages</span><span class="p">)</span>
+  <span class="p">[</span><span class="n">ghi11121</span><span class="p">]</span> <span class="n">__default__</span> <span class="p">(</span><span class="mi">42</span> <span class="n">messages</span><span class="p">)</span>
+
+<span class="n">More</span> <span class="n">sessions</span> <span class="n">available</span><span class="o">.</span> <span class="n">Use</span> <span class="n">cursor</span><span class="o">=</span><span class="s2">&quot;eyJsYXN0X2lkI...&quot;</span> <span class="k">for</span> <span class="n">the</span> <span class="nb">next</span> <span class="n">page</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">&quot;No</span> <span class="pre">sessions</span> <span class="pre">found.&quot;</span></code> if the project has no sessions.</p>
+<p><strong>Example call</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;list_sessions&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1"># Second page:</span>
+<span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;list_sessions&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cursor&quot;</span><span class="p">:</span> <span class="s2">&quot;eyJsYXN0X2lkIjoiYWJjMTIzIn0=&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">20</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Backend mapping</strong>: Calls the OpenZync sessions list endpoint.</p>
+<p><strong>Errors</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code> — empty <code class="docutils literal notranslate"><span class="pre">project_id</span></code> or limit outside 1–200.</p></li>
+</ul>
+</section>
+<section id="create-user">
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">create_user</a><a class="headerlink" href="#create-user" title="Link to this heading">¶</a></h3>
+<p><strong>Purpose</strong>: Create a new end-user within an organization.  Users represent
+end-users within an organization and are identified by a caller-chosen
+<code class="docutils literal notranslate"><span class="pre">external_id</span></code>.</p>
+<div class="table-wrapper docutils container" id="id9">
+<table class="docutils align-default" id="id9">
+<caption><span class="caption-text">Input Parameters</span><a class="headerlink" href="#id9" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">external_id</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Caller-defined user identifier
+(e.g. <code class="docutils literal notranslate"><span class="pre">&quot;customer-abc-123&quot;</span></code>).  Must be non-empty and
+unique per organization.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span> <span class="pre">|</span> <span class="pre">null</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Optional display name for the user.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Output</strong>: A confirmation string with the created user’s ID and details:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">User</span> <span class="n">created</span> <span class="n">successfully</span><span class="o">.</span>
+  <span class="n">ID</span><span class="p">:</span> <span class="mf">550e8400</span><span class="o">-</span><span class="n">e29b</span><span class="o">-</span><span class="mi">41</span><span class="n">d4</span><span class="o">-</span><span class="n">a716</span><span class="o">-</span><span class="mi">446655440000</span>
+  <span class="n">External</span> <span class="n">ID</span><span class="p">:</span> <span class="n">customer</span><span class="o">-</span><span class="n">abc</span><span class="o">-</span><span class="mi">123</span>
+  <span class="n">Name</span><span class="p">:</span> <span class="n">Alice</span> <span class="n">Smith</span>
+</pre></div>
+</div>
+<p><strong>Example call</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;create_user&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;arguments&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;external_id&quot;</span><span class="p">:</span> <span class="s2">&quot;customer-abc-123&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Alice Smith&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Backend mapping</strong>: Calls <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/users</span></code> on the OpenZync API (or the
+equivalent SDK method).</p>
+<p><strong>Errors</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ValueError</span></code> — empty <code class="docutils literal notranslate"><span class="pre">external_id</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ConflictError</span></code> from the API if <code class="docutils literal notranslate"><span class="pre">external_id</span></code> already exists in the
+organization (propagates from the SDK).</p></li>
+</ul>
+</section>
+</section>
+<section id="container-setup">
+<h2><a class="toc-backref" href="#id26" role="doc-backlink">Container Setup</a><a class="headerlink" href="#container-setup" title="Link to this heading">¶</a></h2>
+<p>The Docker image uses a multi-stage build for a minimal production image:</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.12-slim</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">builder</span>
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
+<span class="k">COPY</span><span class="w"> </span>pyproject.toml<span class="w"> </span>.
+<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--no-cache-dir<span class="w"> </span>--user<span class="w"> </span>-e<span class="w"> </span>.
+
+<span class="k">FROM</span><span class="w"> </span><span class="s">python:3.12-slim</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">runtime</span>
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>builder<span class="w"> </span>/root/.local<span class="w"> </span>/root/.local
+<span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>.
+<span class="k">ENV</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span>/root/.local/bin:<span class="nv">$PATH</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">PYTHONUNBUFFERED</span><span class="o">=</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="nv">PYTHONDONTWRITEBYTECODE</span><span class="o">=</span><span class="m">1</span>
+<span class="k">EXPOSE</span><span class="w"> </span><span class="s">8100</span>
+<span class="k">CMD</span><span class="w"> </span><span class="o">[</span><span class="s2">&quot;python&quot;</span>,<span class="w"> </span><span class="s2">&quot;-m&quot;</span>,<span class="w"> </span><span class="s2">&quot;openzync_mcp&quot;</span>,<span class="w"> </span><span class="s2">&quot;--transport&quot;</span>,<span class="w"> </span><span class="s2">&quot;http&quot;</span>,<span class="w"> </span><span class="se">\</span>
+<span class="w">     </span><span class="s2">&quot;--host&quot;</span>,<span class="w"> </span><span class="s2">&quot;0.0.0.0&quot;</span>,<span class="w"> </span><span class="s2">&quot;--port&quot;</span>,<span class="w"> </span><span class="s2">&quot;8100&quot;</span><span class="o">]</span>
+</pre></div>
+</div>
+<p><strong>Build &amp; run</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">build</span> <span class="o">-</span><span class="n">t</span> <span class="n">openzync</span><span class="o">-</span><span class="n">mcp</span><span class="p">:</span><span class="n">latest</span> <span class="o">-</span><span class="n">f</span> <span class="n">openzync_mcp</span><span class="o">/</span><span class="n">Dockerfile</span> <span class="o">.</span>
+<span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8100</span><span class="p">:</span><span class="mi">8100</span> <span class="o">--</span><span class="n">env</span><span class="o">-</span><span class="n">file</span> <span class="o">.</span><span class="n">env</span> <span class="n">openzync</span><span class="o">-</span><span class="n">mcp</span><span class="p">:</span><span class="n">latest</span>
+</pre></div>
+</div>
+<p>The container expects:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">OPENZYN_API_KEY</span></code> — required at runtime.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OPENZYN_BASE_URL</span></code> — defaults to <code class="docutils literal notranslate"><span class="pre">http://localhost:8000</span></code> (set to
+the actual API URL in production).</p></li>
+</ul>
+</section>
+<section id="setup-connection">
+<h2><a class="toc-backref" href="#id27" role="doc-backlink">Setup &amp; Connection</a><a class="headerlink" href="#setup-connection" title="Link to this heading">¶</a></h2>
+<section id="claude-desktop">
+<h3><a class="toc-backref" href="#id28" role="doc-backlink">Claude Desktop</a><a class="headerlink" href="#claude-desktop" title="Link to this heading">¶</a></h3>
+<p>To connect Claude Desktop to the OpenZync MCP server, add an MCP server
+entry to your Claude Desktop configuration:</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">~/Library/Application Support/Claude/claude_desktop_config.json (macOS)</span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;mcpServers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;openzync&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;-m&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;openzync_mcp&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;--api-key&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;oz_live_YOUR_API_KEY&quot;</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Claude Desktop communicates with the MCP server over stdio — the server
+inherits Claude’s process environment.</p>
+</section>
+<section id="custom-application-http-transport">
+<h3><a class="toc-backref" href="#id29" role="doc-backlink">Custom Application (HTTP transport)</a><a class="headerlink" href="#custom-application-http-transport" title="Link to this heading">¶</a></h3>
+<p>For remote deployments or custom agent frameworks, start the server with
+HTTP transport:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">d</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8100</span><span class="p">:</span><span class="mi">8100</span> \
+  <span class="o">-</span><span class="n">e</span> <span class="n">OPENZYN_API_KEY</span><span class="o">=</span><span class="n">oz_live_YOUR_API_KEY</span> \
+  <span class="o">-</span><span class="n">e</span> <span class="n">OPENZYN_BASE_URL</span><span class="o">=</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">api</span><span class="o">.</span><span class="n">openzync</span><span class="o">.</span><span class="n">com</span> \
+  <span class="n">openzync</span><span class="o">-</span><span class="n">mcp</span><span class="p">:</span><span class="n">latest</span>
+</pre></div>
+</div>
+<p>Then connect from any MCP client:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mcp</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="k">async</span> <span class="k">with</span> <span class="n">Client</span><span class="p">(</span><span class="s2">&quot;http://localhost:8100/mcp&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">call_tool</span><span class="p">(</span>
+        <span class="s2">&quot;add_memory&quot;</span><span class="p">,</span>
+        <span class="n">arguments</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;messages&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello&quot;</span><span class="p">}],</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="testing">
+<h2><a class="toc-backref" href="#id30" role="doc-backlink">Testing</a><a class="headerlink" href="#testing" title="Link to this heading">¶</a></h2>
+<p>The server includes a test injection hook for the SDK client.  In unit
+tests, pre-set <code class="docutils literal notranslate"><span class="pre">server._oz_client</span></code> before creating <code class="docutils literal notranslate"><span class="pre">Client(mcp)</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">unittest.mock</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncMock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openzync_mcp.server</span><span class="w"> </span><span class="kn">import</span> <span class="n">mcp</span>
+
+<span class="c1"># Pre-set a mock client — the lifespan will use it as-is</span>
+<span class="n">mock_client</span> <span class="o">=</span> <span class="n">AsyncMock</span><span class="p">()</span>
+<span class="n">mock_client</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">ingest</span> <span class="o">=</span> <span class="n">AsyncMock</span><span class="p">(</span><span class="n">return_value</span><span class="o">=...</span><span class="p">)</span>
+<span class="n">mcp</span><span class="o">.</span><span class="n">_oz_client</span> <span class="o">=</span> <span class="n">mock_client</span>
+
+<span class="c1"># Now create the MCP test client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastmcp</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">mcp</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">call_tool</span><span class="p">(</span><span class="s2">&quot;add_memory&quot;</span><span class="p">,</span> <span class="n">arguments</span><span class="o">=</span><span class="p">{</span><span class="o">...</span><span class="p">})</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">_oz_client</span></code> is pre-set, the lifespan does <strong>not</strong> create a new
+client and does <strong>not</strong> close it on shutdown — the test fixture owns
+the lifecycle.</p>
+</div>
+</section>
+<section id="tool-patterns-conventions">
+<h2><a class="toc-backref" href="#id31" role="doc-backlink">Tool Patterns &amp; Conventions</a><a class="headerlink" href="#tool-patterns-conventions" title="Link to this heading">¶</a></h2>
+<p>Every tool in the MCP server follows these conventions:</p>
+<p><strong>Structured logging</strong></p>
+<p>Every invocation, success, and error is logged with structured context:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;mcp.tool.invoke tool=</span><span class="si">%s</span><span class="s2"> project_id=</span><span class="si">%s</span><span class="s2"> ...&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;add_memory&quot;</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;mcp.tool.success tool=</span><span class="si">%s</span><span class="s2"> duration_ms=</span><span class="si">%d</span><span class="s2"> ...&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;add_memory&quot;</span><span class="p">,</span> <span class="n">elapsed</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;mcp.tool.error tool=</span><span class="si">%s</span><span class="s2"> duration_ms=</span><span class="si">%d</span><span class="s2"> ...&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;add_memory&quot;</span><span class="p">,</span> <span class="n">elapsed</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Input validation</strong></p>
+<p>All inputs are validated at the tool boundary with immediate <code class="docutils literal notranslate"><span class="pre">raise</span>
+<span class="pre">ValueError</span></code> — no silent truncation or coercion:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">messages</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least one message is required.&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Maximum 1000 messages per call.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Timing</strong></p>
+<p>Every tool measures wall-clock time and includes it in success/error logs.</p>
+<p><strong>No silent fallback</strong></p>
+<p>As per the platform’s design principle (see <a class="reference internal" href="core.html"><span class="doc">Core Infrastructure</span></a>), the MCP server
+never falls back silently.  If the OpenZync API is unreachable, the API key
+is invalid, or a rate limit is hit, the error propagates directly to the
+MCP client.</p>
+<p><strong>Mutable type validation</strong></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">add_fact</span></code> tool validates that each fact is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> with the
+required keys before making any API call, providing early, clear error
+messages.</p>
+</section>
+<section id="cross-references">
+<h2><a class="toc-backref" href="#id32" role="doc-backlink">Cross-References</a><a class="headerlink" href="#cross-references" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="memory_context.html"><span class="doc">Memory &amp; Context Domain</span></a> — the ingestion and retrieval pipeline that the MCP
+tools call into.</p></li>
+<li><p><a class="reference internal" href="auth.html"><span class="doc">Authentication &amp; Authorization Domain</span></a> — the API key authentication model that the MCP server uses.</p></li>
+<li><p><a class="reference internal" href="api_layer.html"><span class="doc">API Layer</span></a> — the full REST API that the SDK wraps.</p></li>
+<li><p><a class="reference internal" href="workers.html"><span class="doc">Worker System — ARQ Background Job Processing</span></a> — the ARQ background workers that process enrichment
+tasks after ingestion.</p></li>
+<li><p><a class="reference internal" href="../api/services.mcp.html"><span class="doc">services.mcp package</span></a> — legacy MCP service docs (the previous
+custom JSON-RPC implementation in the monolith).</p></li>
+<li><p><a class="reference internal" href="../api/services.mcp.tools.html"><span class="doc">services.mcp.tools package</span></a> — API reference for the tool modules.</p></li>
+<li><p><a class="reference internal" href="core.html"><span class="doc">Core Infrastructure</span></a> — configuration and dependency injection patterns.</p></li>
+</ul>
+</section>
+<section id="repository-gaps">
+<span id="mcp-repo-gaps"></span><h2><a class="toc-backref" href="#id33" role="doc-backlink">Repository Gaps</a><a class="headerlink" href="#repository-gaps" title="Link to this heading">¶</a></h2>
+<p>The following files are missing from the MCP server repository
+(<code class="docutils literal notranslate"><span class="pre">/home/rohan-linkai/code/personal/openzync/openzync-mcp/</span></code>):</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Impact</p></th>
+<th class="head"><p>Recommendation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></p></td>
+<td><p>The Dockerfile references <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> for <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">.</span></code>,
+but the file is not present in the repository.  The build process
+may rely on a parent project’s config or an unpublished
+<code class="docutils literal notranslate"><span class="pre">setup.py</span></code>.</p></td>
+<td><p>Add <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> with project metadata,
+dependencies, and entry point configuration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LICENSE</span></code></p></td>
+<td><p>Legal status is unclear — no license file in the repository.</p></td>
+<td><p>Add a license file matching the parent project (Apache 2.0 /
+MIT).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">README</span></code></p></td>
+<td><p>No documentation in the repository about what this is, how to
+build it, or how to contribute.</p></td>
+<td><p>Add a <code class="docutils literal notranslate"><span class="pre">README.md</span></code> covering build, run, and development
+setup.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.gitignore</span></code></p></td>
+<td><p>No gitignore means generated artifacts (<code class="docutils literal notranslate"><span class="pre">__pycache__</span></code>,
+<code class="docutils literal notranslate"><span class="pre">*.egg-info</span></code>, <code class="docutils literal notranslate"><span class="pre">.venv</span></code>) may be accidentally committed.</p></td>
+<td><p>Add a standard Python <code class="docutils literal notranslate"><span class="pre">.gitignore</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>These are packaging gaps only — the runtime code is functional and
+self-contained.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="frontend.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">OpenZync Frontend</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="sdk_python.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Python SDK (openzync)</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Rohan Shaw
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">MCP Server (FastMCP)</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#repository-layout">Repository Layout</a></li>
+<li><a class="reference internal" href="#server-lifecycle">Server Lifecycle</a></li>
+<li><a class="reference internal" href="#entry-point-cli">Entry Point &amp; CLI</a></li>
+<li><a class="reference internal" href="#authentication-model">Authentication Model</a></li>
+<li><a class="reference internal" href="#available-mcp-tools">Available MCP Tools</a><ul>
+<li><a class="reference internal" href="#add-memory">add_memory</a></li>
+<li><a class="reference internal" href="#get-context">get_context</a></li>
+<li><a class="reference internal" href="#search-memory">search_memory</a></li>
+<li><a class="reference internal" href="#delete-memory">delete_memory</a></li>
+<li><a class="reference internal" href="#add-fact">add_fact</a></li>
+<li><a class="reference internal" href="#list-facts">list_facts</a></li>
+<li><a class="reference internal" href="#get-user-graph">get_user_graph</a></li>
+<li><a class="reference internal" href="#list-sessions">list_sessions</a></li>
+<li><a class="reference internal" href="#create-user">create_user</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#container-setup">Container Setup</a></li>
+<li><a class="reference internal" href="#setup-connection">Setup &amp; Connection</a><ul>
+<li><a class="reference internal" href="#claude-desktop">Claude Desktop</a></li>
+<li><a class="reference internal" href="#custom-application-http-transport">Custom Application (HTTP transport)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#testing">Testing</a></li>
+<li><a class="reference internal" href="#tool-patterns-conventions">Tool Patterns &amp; Conventions</a></li>
+<li><a class="reference internal" href="#cross-references">Cross-References</a></li>
+<li><a class="reference internal" href="#repository-gaps">Repository Gaps</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

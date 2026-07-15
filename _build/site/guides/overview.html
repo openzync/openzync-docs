@@ -1,0 +1,608 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Quickstart" href="quickstart.html"><link rel="prev" title="Welcome to OpenZync’s documentation!" href="../index.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>Overview - OpenZync Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">OpenZync Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">OpenZync Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../domains/core.html">Core Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/llm.html">LLM Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/graph_backends.html">Graph Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/reranker.html">Re-ranking &amp; Community Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/reranker.html#community-detection">Community Detection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Domain Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../domains/auth.html">Authentication &amp; Authorization Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/memory_context.html">Memory &amp; Context Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/admin_webhooks.html">Admin &amp; Webhooks Domain</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API &amp; Workers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../domains/api_layer.html">API Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/workers.html">Worker System — ARQ Background Job Processing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SDK, MCP &amp; Frontend</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../domains/sdk_python.html">Python SDK (openzync)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/mcp_server.html">MCP Server (FastMCP)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/frontend.html">OpenZync Frontend</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Infra</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../domains/infrastructure.html">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</a><input aria-label="Toggle navigation of Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture Decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference (Auto-generated)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/core.html">core package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/routers.html">routers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/models.html">models package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/schemas.html">schemas package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/services.html">services package</a><input aria-label="Toggle navigation of services package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/services.api.html">services.api package</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/services.mcp.html">services.mcp package</a><input aria-label="Toggle navigation of services.mcp package" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.mcp.tools.html">services.mcp.tools package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.mcp.transport.html">services.mcp.transport package</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/services.worker.html">services.worker package</a><input aria-label="Toggle navigation of services.worker package" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.worker.prompts.html">services.worker.prompts package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.worker.tasks.html">services.worker.tasks package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/repositories.html">repositories package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/middleware.html">middleware package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/dependencies.html">dependencies package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/workers.html">workers package</a><input aria-label="Toggle navigation of workers package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/workers.tasks.html">workers.tasks package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/utils.html">utils package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/packages.html">packages package</a><input aria-label="Toggle navigation of packages package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/packages.community.html">packages.community package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/packages.graph_backend.html">packages.graph_backend package</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/blob/main/docs/guides/overview.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/edit/main/docs/guides/overview.rst" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h1>
+<section id="what-is-openzync">
+<h2>What is OpenZync?<a class="headerlink" href="#what-is-openzync" title="Link to this heading">¶</a></h2>
+<p>OpenZync is an open-source agent memory platform designed to give AI agents
+<strong>persistent, queryable, graph-based memory</strong>. It sits between your LLM
+application and your data, providing:</p>
+<ul class="simple">
+<li><p><strong>Hybrid retrieval</strong> — semantic (vector) search combined with graph traversal
+for context-aware memory recall.  See <a class="reference internal" href="../domains/memory_context.html"><span class="doc">Memory &amp; Context Domain</span></a> for the
+retrieval architecture.</p></li>
+<li><p><strong>Knowledge graphs</strong> — entity extraction, relationship detection, and
+community detection over conversation history.  The graph abstraction supports
+multiple backends: see <a class="reference internal" href="../domains/graph_backends.html"><span class="doc">Graph Backend Abstraction</span></a>.</p></li>
+<li><p><strong>Temporal queries</strong> — time-aware memory retrieval that respects when events
+occurred.</p></li>
+<li><p><strong>Multi-tenant isolation</strong> — organizations, projects, and users are fully
+isolated at the data layer.  See <a class="reference internal" href="../domains/auth.html"><span class="doc">Authentication &amp; Authorization Domain</span></a> for the auth and org
+model.</p></li>
+<li><p><strong>Pluggable LLM backends</strong> — OpenAI, Anthropic, Azure OpenAI, OpenRouter,
+and local Ollama.  See <a class="reference internal" href="../domains/llm.html"><span class="doc">LLM Backend Abstraction</span></a> for the strategy/registry pattern.</p></li>
+<li><p><strong>Prompt caching</strong> — provider-side caching for Anthropic (<code class="docutils literal notranslate"><span class="pre">cache_control</span></code>
+markers), OpenAI/Azure (automatic prefix caching), and OpenRouter (session
+stickiness).  Configurable per-org via system settings.</p></li>
+<li><p><strong>PII detection &amp; redaction</strong> — automatic identification and redaction of
+personally identifiable information before storage.</p></li>
+<li><p><strong>Idempotency</strong> — all ingestion and mutation endpoints support idempotency
+keys to prevent duplicate side effects on retry.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>OpenZync is currently a <strong>monolith</strong> — all backend domains live in a single
+repository (<code class="docutils literal notranslate"><span class="pre">openzync-core</span></code>). Future work may decompose into separate
+microservices, but today everything shares a single FastAPI process, a
+single PostgreSQL database, and a single Redis instance.</p>
+</div>
+</section>
+<section id="architecture">
+<h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">¶</a></h2>
+<p>The system is built as a <strong>FastAPI</strong> application with:</p>
+<ul class="simple">
+<li><p><strong>PostgreSQL 15+ with pgvector</strong> for relational data, vector embeddings
+(<code class="docutils literal notranslate"><span class="pre">HNSW</span></code> and <code class="docutils literal notranslate"><span class="pre">IVFFlat</span></code> indexes), and the default graph backend
+(<code class="docutils literal notranslate"><span class="pre">PostgresGraphBackend</span></code>).</p></li>
+<li><p><strong>Redis 7+</strong> for caching, rate limiting, ARQ task queues, and pub/sub event
+broadcasting.</p></li>
+<li><p><strong>Pluggable graph backend</strong> — a common abstraction (see
+<a class="reference internal" href="../domains/graph_backends.html"><span class="doc">Graph Backend Abstraction</span></a>) supporting PostgreSQL-native (default),
+FalkorDB, or SurrealDB for entity-relation storage.  The backend is
+resolved per-organisation at runtime.</p></li>
+<li><p><strong>OpenBao</strong> (Vault-compatible secrets manager) as the <strong>sole source of
+truth</strong> for all runtime configuration and secrets.  See
+<a class="reference internal" href="../domains/infrastructure.html"><span class="doc">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</span></a> and <a class="reference internal" href="../adr/003-openbao-zero-fallback.html"><span class="doc">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</span></a> for
+the architectural rationale.</p></li>
+<li><p><strong>ARQ worker pool</strong> with <strong>high- and low-priority queues</strong> for background
+tasks: entity extraction, fact extraction, dialog classification, embedding
+computation, episode enrichment, entity merging, and user summarisation.
+See <a class="reference internal" href="../domains/workers.html"><span class="doc">Worker System — ARQ Background Job Processing</span></a>.</p></li>
+</ul>
+<p>Layer structure follows strict separation of concerns:</p>
+<div class="table-wrapper docutils container" id="id1">
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Layer responsibilities</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Layer</p></th>
+<th class="head"><p>Responsibility</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">routers/</span></code></p></td>
+<td><p>HTTP adapter only — validates input, delegates to services</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">services/</span></code></p></td>
+<td><p>All business logic — orchestrates call chains</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">repositories/</span></code></p></td>
+<td><p>Database access — SQLAlchemy async queries only</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">models/</span></code></p></td>
+<td><p>ORM definitions — no business logic</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">schemas/</span></code></p></td>
+<td><p>Pydantic request/response models — no ORM imports</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>See <a class="reference internal" href="../domains/api_layer.html"><span class="doc">API Layer</span></a> for the full router/service/repository pattern
+and lifecycle.</p>
+</section>
+<section id="key-features">
+<h2>Key features<a class="headerlink" href="#key-features" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Agent sessions</strong> with memory across conversations.  See
+<a class="reference internal" href="../domains/memory_context.html"><span class="doc">Memory &amp; Context Domain</span></a>.</p></li>
+<li><p><strong>Message ingestion</strong> with automatic entity/fact extraction and enrichment
+pipeline (LLM-based classification, entity linking, community detection).</p></li>
+<li><p><strong>Graph-based memory</strong> with community detection and temporal queries.
+Backends: PostgreSQL (built-in), FalkorDB, SurrealDB.</p></li>
+<li><p><strong>Hybrid retrieval</strong> — multi-leg search combining vector similarity, keyword
+BM25, graph traversal, and temporal filtering with a configurable reranker.
+See <a class="reference internal" href="../domains/reranker.html"><span class="doc">Re-ranking &amp; Community Detection</span></a>.</p></li>
+<li><p><strong>Prompt templates</strong> versioned and stored as Jinja2 files in a manifest
+system with per-organisation overrides (<code class="docutils literal notranslate"><span class="pre">custom_instructions</span></code>).</p></li>
+<li><p><strong>Webhook system</strong> with 14 event types and HMAC-SHA256 (Svix-compatible)
+signed delivery.  See <a class="reference internal" href="../domains/admin_webhooks.html"><span class="doc">Admin &amp; Webhooks Domain</span></a>.</p></li>
+<li><p><strong>SDKs</strong> — Python (<code class="docutils literal notranslate"><span class="pre">openzync</span></code> package) with optional LangChain
+integration.  See <a class="reference internal" href="../domains/sdk_python.html"><span class="doc">Python SDK (openzync)</span></a>.</p></li>
+<li><p><strong>MCP server</strong> — Model Context Protocol server for AI tool integration
+(tools for sessions, memory, facts, graph, and users).  See
+<a class="reference internal" href="../domains/mcp_server.html"><span class="doc">MCP Server (FastMCP)</span></a>.</p></li>
+<li><p><strong>OpenBao-based secrets management</strong> — zero-fallback bootstrap, AppRole
+machine auth, Transit engine for encrypting API keys and PII at rest.</p></li>
+<li><p><strong>Idempotency</strong> — request-level idempotency keys across mutation endpoints.</p></li>
+<li><p><strong>Audit logging</strong> — structured audit trail of configuration changes and
+sensitive operations.</p></li>
+<li><p><strong>OTP &amp; email</strong> — one-time password authentication flow delivered via SMTP
+(<code class="docutils literal notranslate"><span class="pre">aiosmtplib</span></code>).</p></li>
+<li><p><strong>Grafana dashboard</strong> — pre-built <code class="docutils literal notranslate"><span class="pre">OpenZync-overview</span></code> dashboard with API
+request rate, latency percentiles, worker queue depth, LLM token usage, graph
+node growth, and service health panels.</p></li>
+</ul>
+</section>
+<section id="tech-stack">
+<h2>Tech stack<a class="headerlink" href="#tech-stack" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Layer</p></th>
+<th class="head"><p>Technology</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Runtime</strong></p></td>
+<td><p>Python 3.11+ / FastAPI / uvicorn</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Web server</strong></p></td>
+<td><p>NGINX (reverse proxy with optional TLS via Cloudflare origin certs)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Database</strong></p></td>
+<td><p>PostgreSQL 15+ with pgvector</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Cache / Queue</strong></p></td>
+<td><p>Redis 7+ with hiredis, ARQ for async job queues</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>LLM backends</strong></p></td>
+<td><p>OpenAI, Anthropic, Azure OpenAI, OpenRouter, Ollama via pluggable
+strategy/registry pattern</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Graph backends</strong></p></td>
+<td><p>PostgreSQL-native, FalkorDB, SurrealDB (pluggable via
+<a class="reference internal" href="../domains/graph_backends.html"><span class="doc">Graph Backend Abstraction</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Secrets management</strong></p></td>
+<td><p>OpenBao (Vault-compatible) with AppRole auth, Transit engine
+(encryption-as-a-service)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Observability</strong></p></td>
+<td><p>Prometheus, Grafana, Alloy (OpenTelemetry collector)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Structured logging</strong></p></td>
+<td><p>structlog with JSON output (production), PII redaction, request-context
+binding</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Frontend</strong></p></td>
+<td><p>Next.js 16 / React 19 / TypeScript 5 / Tailwind CSS 4 / Radix UI</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Python SDK</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">openzync</span></code> package (PyPI) with optional LangChain integration</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>MCP Server</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">openzync-mcp</span></code> — independently deployable model context protocol
+server</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Deployment</strong></p></td>
+<td><p>Docker Compose (full backend stack), Helm chart (Kubernetes 1.25+),
+GitHub Actions CI/CD</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="related-documentation">
+<h2>Related documentation<a class="headerlink" href="#related-documentation" title="Link to this heading">¶</a></h2>
+<p>Core infrastructure:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../domains/core.html"><span class="doc">Core Infrastructure</span></a> — Configuration system, async DB/Redis/ARQ connection
+management, exception hierarchy, structured logging, OpenBao integration</p></li>
+<li><p><a class="reference internal" href="../domains/llm.html"><span class="doc">LLM Backend Abstraction</span></a> — LLM backend abstraction, providers, caching</p></li>
+<li><p><a class="reference internal" href="../domains/graph_backends.html"><span class="doc">Graph Backend Abstraction</span></a> — Pluggable graph backend abstraction</p></li>
+<li><p><a class="reference internal" href="../domains/reranker.html"><span class="doc">Re-ranking &amp; Community Detection</span></a> — Cross-encoder reranker for hybrid retrieval</p></li>
+</ul>
+<p>Domain services:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../domains/auth.html"><span class="doc">Authentication &amp; Authorization Domain</span></a> — Authentication, authorisation, org model, JWT, OTP</p></li>
+<li><p><a class="reference internal" href="../domains/memory_context.html"><span class="doc">Memory &amp; Context Domain</span></a> — Session memory, context retrieval, hybrid
+search</p></li>
+<li><p><a class="reference internal" href="../domains/admin_webhooks.html"><span class="doc">Admin &amp; Webhooks Domain</span></a> — Webhook system, event types, delivery</p></li>
+<li><p><a class="reference internal" href="../domains/infrastructure.html"><span class="doc">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</span></a> — Docker Compose, OpenBao secrets bootstrap,
+Helm chart, observability stack, production considerations</p></li>
+</ul>
+<p>API &amp; workers:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../domains/api_layer.html"><span class="doc">API Layer</span></a> — Router/service/repository pattern, middleware,
+exception handlers</p></li>
+<li><p><a class="reference internal" href="../domains/workers.html"><span class="doc">Worker System — ARQ Background Job Processing</span></a> — ARQ worker architecture, task registry,
+enrichment pipeline</p></li>
+</ul>
+<p>SDK, MCP &amp; frontend:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../domains/sdk_python.html"><span class="doc">Python SDK (openzync)</span></a> — Python SDK, LangChain integration</p></li>
+<li><p><a class="reference internal" href="../domains/mcp_server.html"><span class="doc">MCP Server (FastMCP)</span></a> — MCP server tools and transport</p></li>
+<li><p><a class="reference internal" href="../domains/frontend.html"><span class="doc">OpenZync Frontend</span></a> — Next.js frontend architecture</p></li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="quickstart.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Quickstart</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Home</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Rohan Shaw
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Overview</a><ul>
+<li><a class="reference internal" href="#what-is-openzync">What is OpenZync?</a></li>
+<li><a class="reference internal" href="#architecture">Architecture</a></li>
+<li><a class="reference internal" href="#key-features">Key features</a></li>
+<li><a class="reference internal" href="#tech-stack">Tech stack</a></li>
+<li><a class="reference internal" href="#related-documentation">Related documentation</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

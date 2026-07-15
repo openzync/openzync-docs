@@ -34,12 +34,20 @@ autodoc_mock_imports = [
 ]
 
 extensions = [
+    "myst_parser",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
     "sphinx.ext.autosummary",
+]
+
+# MyST (Markdown) config — enables .md files in toctrees
+myst_enable_extensions = [
+    "colon_fence",
+    "deflist",
+    "fieldlist",
 ]
 
 templates_path = ["_templates"]

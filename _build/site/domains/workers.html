@@ -1,0 +1,1826 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Python SDK (openzync)" href="sdk_python.html"><link rel="prev" title="API Layer" href="api_layer.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>Worker System — ARQ Background Job Processing - OpenZync Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">OpenZync Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">OpenZync Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/contributing.html">Contributing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="llm.html">LLM Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph_backends.html">Graph Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reranker.html">Re-ranking &amp; Community Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reranker.html#community-detection">Community Detection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Domain Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="auth.html">Authentication &amp; Authorization Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_context.html">Memory &amp; Context Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="admin_webhooks.html">Admin &amp; Webhooks Domain</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API &amp; Workers</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api_layer.html">API Layer</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Worker System — ARQ Background Job Processing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SDK, MCP &amp; Frontend</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sdk_python.html">Python SDK (openzync)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcp_server.html">MCP Server (FastMCP)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="frontend.html">OpenZync Frontend</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Infra</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="infrastructure.html">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</a><input aria-label="Toggle navigation of Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture Decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference (Auto-generated)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/core.html">core package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/routers.html">routers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/models.html">models package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/schemas.html">schemas package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/services.html">services package</a><input aria-label="Toggle navigation of services package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/services.api.html">services.api package</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/services.mcp.html">services.mcp package</a><input aria-label="Toggle navigation of services.mcp package" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.mcp.tools.html">services.mcp.tools package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.mcp.transport.html">services.mcp.transport package</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/services.worker.html">services.worker package</a><input aria-label="Toggle navigation of services.worker package" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.worker.prompts.html">services.worker.prompts package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.worker.tasks.html">services.worker.tasks package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/repositories.html">repositories package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/middleware.html">middleware package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/dependencies.html">dependencies package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/workers.html">workers package</a><input aria-label="Toggle navigation of workers package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/workers.tasks.html">workers.tasks package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/utils.html">utils package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/packages.html">packages package</a><input aria-label="Toggle navigation of packages package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/packages.community.html">packages.community package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/packages.graph_backend.html">packages.graph_backend package</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/blob/main/docs/domains/workers.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/edit/main/docs/domains/workers.rst" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="worker-system-arq-background-job-processing">
+<h1>Worker System — ARQ Background Job Processing<a class="headerlink" href="#worker-system-arq-background-job-processing" title="Link to this heading">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This document covers the ARQ worker system in <code class="docutils literal notranslate"><span class="pre">openzync-core</span></code>, including
+worker configuration, the task registry, every registered task, the
+enrichment pipeline, graph backend resolution, scaling model, and container
+entrypoint.</p>
+<p>The worker process is <strong>independently deployable</strong> from the API server —
+it runs as a separate container in production.  See
+<a class="reference internal" href="../guides/deployment.html"><span class="doc">Deployment Guide</span></a> for orchestration details.</p>
+<p>Related API references:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/workers.html"><span class="doc">workers package</span></a> — <code class="docutils literal notranslate"><span class="pre">workers.tasks</span></code> module API</p></li>
+<li><p><a class="reference internal" href="../api/services.worker.html"><span class="doc">services.worker package</span></a> — <code class="docutils literal notranslate"><span class="pre">services.worker</span></code> module API</p></li>
+<li><p><a class="reference internal" href="../api/services.worker.tasks.html"><span class="doc">services.worker.tasks package</span></a> — <code class="docutils literal notranslate"><span class="pre">services.worker.tasks</span></code> module API</p></li>
+<li><p><a class="reference internal" href="../api/workers.tasks.html"><span class="doc">workers.tasks package</span></a> — <code class="docutils literal notranslate"><span class="pre">workers.tasks</span></code> module API</p></li>
+</ul>
+</div>
+<nav class="contents this-will-duplicate-information-and-it-is-still-useful-here local" id="sections">
+<p class="topic-title">Sections</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#architecture-overview" id="id3">Architecture Overview</a></p></li>
+<li><p><a class="reference internal" href="#startup-sequence" id="id4">Startup Sequence</a></p>
+<ul>
+<li><p><a class="reference internal" href="#phase-1-openbao-bootstrapping" id="id5">Phase 1 — OpenBao Bootstrapping</a></p></li>
+<li><p><a class="reference internal" href="#phase-2-shared-resource-initialisation" id="id6">Phase 2 — Shared Resource Initialisation</a></p></li>
+<li><p><a class="reference internal" href="#phase-3-worker-pool-creation" id="id7">Phase 3 — Worker Pool Creation</a></p></li>
+<li><p><a class="reference internal" href="#phase-4-liftoff" id="id8">Phase 4 — Liftoff</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#container-entrypoint" id="id9">Container Entrypoint</a></p></li>
+<li><p><a class="reference internal" href="#configuration-workersettings" id="id10">Configuration — <code class="docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a></p></li>
+<li><p><a class="reference internal" href="#arq-connection-management-core-arq" id="id11">ARQ Connection Management — <code class="docutils literal notranslate"><span class="pre">core.arq</span></code></a></p></li>
+<li><p><a class="reference internal" href="#task-registry" id="id12">Task Registry</a></p>
+<ul>
+<li><p><a class="reference internal" href="#cron-jobs" id="id13">Cron Jobs</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#enrichment-bitmask-system" id="id14">Enrichment Bitmask System</a></p></li>
+<li><p><a class="reference internal" href="#retry-decorator-with-retry" id="id15">Retry Decorator — <code class="docutils literal notranslate"><span class="pre">with_retry</span></code></a></p></li>
+<li><p><a class="reference internal" href="#graph-backend-resolution-workers-backend" id="id16">Graph Backend Resolution — <code class="docutils literal notranslate"><span class="pre">workers.backend</span></code></a></p></li>
+<li><p><a class="reference internal" href="#task-reference-workers-tasks" id="id17">Task Reference — <code class="docutils literal notranslate"><span class="pre">workers/tasks/</span></code></a></p>
+<ul>
+<li><p><a class="reference internal" href="#enrich-episode-combined-llm-enrichment" id="id18"><code class="docutils literal notranslate"><span class="pre">enrich_episode</span></code> — Combined LLM Enrichment</a></p></li>
+<li><p><a class="reference internal" href="#classify-dialog-dialog-classification" id="id19"><code class="docutils literal notranslate"><span class="pre">classify_dialog</span></code> — Dialog Classification</a></p></li>
+<li><p><a class="reference internal" href="#extract-entities-entity-extraction" id="id20"><code class="docutils literal notranslate"><span class="pre">extract_entities</span></code> — Entity Extraction</a></p></li>
+<li><p><a class="reference internal" href="#extract-facts-fact-extraction" id="id21"><code class="docutils literal notranslate"><span class="pre">extract_facts</span></code> — Fact Extraction</a></p></li>
+<li><p><a class="reference internal" href="#embed-episode-episode-embedding" id="id22"><code class="docutils literal notranslate"><span class="pre">embed_episode</span></code> — Episode Embedding</a></p></li>
+<li><p><a class="reference internal" href="#embed-fact-fact-embedding" id="id23"><code class="docutils literal notranslate"><span class="pre">embed_fact</span></code> — Fact Embedding</a></p></li>
+<li><p><a class="reference internal" href="#extract-structured-structured-extraction" id="id24"><code class="docutils literal notranslate"><span class="pre">extract_structured</span></code> — Structured Extraction</a></p></li>
+<li><p><a class="reference internal" href="#link-entities-to-episode-entityepisode-linking" id="id25"><code class="docutils literal notranslate"><span class="pre">link_entities_to_episode</span></code> — Entity–Episode Linking</a></p></li>
+<li><p><a class="reference internal" href="#compute-observations-graph-topology-observations" id="id26"><code class="docutils literal notranslate"><span class="pre">compute_observations</span></code> — Graph-Topology Observations</a></p></li>
+<li><p><a class="reference internal" href="#summarise-community-community-detection" id="id27"><code class="docutils literal notranslate"><span class="pre">summarise_community</span></code> — Community Detection</a></p></li>
+<li><p><a class="reference internal" href="#merge-duplicate-entities-entity-dedup" id="id28"><code class="docutils literal notranslate"><span class="pre">merge_duplicate_entities</span></code> — Entity Dedup</a></p></li>
+<li><p><a class="reference internal" href="#ingest-business-data-batch-fact-ingestion" id="id29"><code class="docutils literal notranslate"><span class="pre">ingest_business_data</span></code> — Batch Fact Ingestion</a></p></li>
+<li><p><a class="reference internal" href="#generate-user-summary-user-profiling" id="id30"><code class="docutils literal notranslate"><span class="pre">generate_user_summary</span></code> — User Profiling</a></p></li>
+<li><p><a class="reference internal" href="#reconcile-enrichment-enrichment-reconciliation" id="id31"><code class="docutils literal notranslate"><span class="pre">reconcile_enrichment</span></code> — Enrichment Reconciliation</a></p></li>
+<li><p><a class="reference internal" href="#deliver-webhook-webhook-delivery" id="id32"><code class="docutils literal notranslate"><span class="pre">deliver_webhook</span></code> — Webhook Delivery</a></p></li>
+<li><p><a class="reference internal" href="#write-audit-log-audit-log-writethrough" id="id33"><code class="docutils literal notranslate"><span class="pre">write_audit_log</span></code> — Audit Log Writethrough</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#idempotency-label" id="id34">Idempotency Semantics</a></p></li>
+<li><p><a class="reference internal" href="#enrichment-pipeline-flow" id="id35">Enrichment Pipeline Flow</a></p></li>
+<li><p><a class="reference internal" href="#scaling-model" id="id36">Scaling Model</a></p>
+<ul>
+<li><p><a class="reference internal" href="#concurrency" id="id37">Concurrency</a></p></li>
+<li><p><a class="reference internal" href="#resource-injection" id="id38">Resource Injection</a></p></li>
+<li><p><a class="reference internal" href="#deployment-sizing" id="id39">Deployment Sizing</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#monitoring" id="id40">Monitoring</a></p>
+<ul>
+<li><p><a class="reference internal" href="#prometheus-metrics" id="id41">Prometheus Metrics</a></p></li>
+<li><p><a class="reference internal" href="#health-check" id="id42">Health Check</a></p></li>
+<li><p><a class="reference internal" href="#structured-logging" id="id43">Structured Logging</a></p></li>
+<li><p><a class="reference internal" href="#job-lifecycle-callbacks" id="id44">Job Lifecycle Callbacks</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#adding-a-new-task" id="id45">Adding a New Task</a></p></li>
+</ul>
+</nav>
+<section id="architecture-overview">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Architecture Overview</a><a class="headerlink" href="#architecture-overview" title="Link to this heading">¶</a></h2>
+<p>The worker system is built on <strong>ARQ</strong> (<a class="reference external" href="https://arq-docs.helpmanual.io/">Async Redis Queue</a>), a lightweight
+async job queue backed by Redis.  A single worker process runs <strong>two separate
+ARQ worker pools</strong> in the same Python process:</p>
+<p>Queue names follow the pattern <code class="docutils literal notranslate"><span class="pre">OpenZync:{env}:queue:{high|low}</span></code>
+(e.g. <code class="docutils literal notranslate"><span class="pre">OpenZync:prod:queue:high</span></code>).  The two-pool design ensures that
+real-time ingestion tasks never block on long-running batch jobs.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A single process with two pools, rather than two separate containers,
+was chosen for operational simplicity.  If one pool exhausts its
+concurrency, the other is unaffected — they share the event loop but
+have independent <code class="docutils literal notranslate"><span class="pre">max_jobs</span></code> limits.</p>
+</div>
+<p>Prometheus metrics are exposed on port <code class="docutils literal notranslate"><span class="pre">9095</span></code> and a health-check HTTP server
+on port <code class="docutils literal notranslate"><span class="pre">8081</span></code> (<code class="docutils literal notranslate"><span class="pre">/health</span></code>, <code class="docutils literal notranslate"><span class="pre">/ready</span></code>).  See
+<span class="xref std std-ref">monitoring-label</span> below for the full metric reference.</p>
+</section>
+<section id="startup-sequence">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Startup Sequence</a><a class="headerlink" href="#startup-sequence" title="Link to this heading">¶</a></h2>
+<p>The worker process is started via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">services</span><span class="o">.</span><span class="n">worker</span><span class="o">.</span><span class="n">worker</span>
+</pre></div>
+</div>
+<p>This invokes <code class="xref py py-func docutils literal notranslate"><span class="pre">services.worker.worker.main()</span></code>, which runs the following
+startup phases:</p>
+<section id="phase-1-openbao-bootstrapping">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Phase 1 — OpenBao Bootstrapping</a><a class="headerlink" href="#phase-1-openbao-bootstrapping" title="Link to this heading">¶</a></h3>
+<p>The worker authenticates to OpenBao using <strong>worker-specific AppRole</strong>
+credentials (<code class="docutils literal notranslate"><span class="pre">OPENBAO_WORKER_ROLE_ID</span></code> / <code class="docutils literal notranslate"><span class="pre">OPENBAO_WORKER_SECRET_ID</span></code>)
+if provided, falling back to the main OpenBao credentials.  This allows
+operators to scope worker permissions independently from the API service:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_role_id</span> <span class="o">=</span> <span class="n">_bootstrap</span><span class="o">.</span><span class="n">OPENBAO_WORKER_ROLE_ID</span> <span class="ow">or</span> <span class="n">_bootstrap</span><span class="o">.</span><span class="n">OPENBAO_ROLE_ID</span>
+<span class="n">_secret_id</span> <span class="o">=</span> <span class="n">_bootstrap</span><span class="o">.</span><span class="n">OPENBAO_WORKER_SECRET_ID</span> <span class="ow">or</span> <span class="n">_bootstrap</span><span class="o">.</span><span class="n">OPENBAO_SECRET_ID</span>
+</pre></div>
+</div>
+<p>Once authenticated, it calls <code class="xref py py-func docutils literal notranslate"><span class="pre">init_worker_settings_from_bao()</span></code> to load
+<code class="docutils literal notranslate"><span class="pre">DATABASE_URL</span></code>, <code class="docutils literal notranslate"><span class="pre">REDIS_URL</span></code>, <code class="docutils literal notranslate"><span class="pre">ENV</span></code>, <code class="docutils literal notranslate"><span class="pre">LOG_LEVEL</span></code>, and other worker
+settings into the <a class="reference internal" href="#WorkerSettings" title="WorkerSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a> singleton.</p>
+<p>A <strong>persistent</strong> <a class="reference internal" href="core.html#OpenBaoClient" title="OpenBaoClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenBaoClient</span></code></a> is created and stored in the worker
+context for per-task org config resolution.  This avoids re-authenticating
+on every task invocation.</p>
+</section>
+<section id="phase-2-shared-resource-initialisation">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Phase 2 — Shared Resource Initialisation</a><a class="headerlink" href="#phase-2-shared-resource-initialisation" title="Link to this heading">¶</a></h3>
+<p>The following resources are created <strong>once per worker process</strong> and injected
+into every task invocation via the ARQ <code class="docutils literal notranslate"><span class="pre">ctx</span></code> dictionary:</p>
+<p>The shared DB engine eliminates per-task connection churn that would exhaust
+PostgreSQL’s <code class="docutils literal notranslate"><span class="pre">max_connections</span></code> at scale.</p>
+</section>
+<section id="phase-3-worker-pool-creation">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Phase 3 — Worker Pool Creation</a><a class="headerlink" href="#phase-3-worker-pool-creation" title="Link to this heading">¶</a></h3>
+<p>Two <code class="xref py py-class docutils literal notranslate"><span class="pre">arq.worker.Worker</span></code> instances are created with their respective
+task registries.  Cron jobs are attached to the low-priority pool:</p>
+<ul class="simple">
+<li><p><strong>Enrichment reconciliation</strong> every 5 minutes (always active).</p></li>
+<li><p><strong>Community detection</strong> nightly at 02:00 UTC (only when
+<code class="docutils literal notranslate"><span class="pre">AUTO_RUN_COMMUNITY_DETECTION</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code> — the default).</p></li>
+</ul>
+</section>
+<section id="phase-4-liftoff">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Phase 4 — Liftoff</a><a class="headerlink" href="#phase-4-liftoff" title="Link to this heading">¶</a></h3>
+<p>The worker registers SIGTERM/SIGINT handlers for graceful shutdown, starts
+the aiohttp health-check server, the Prometheus HTTP server, and a background
+queue-depth monitoring task.  Finally, it runs both pools concurrently via
+<code class="docutils literal notranslate"><span class="pre">asyncio.gather(high_worker.async_run(),</span> <span class="pre">low_worker.async_run())</span></code>.</p>
+<p>Shutdown is graceful: the current job completes, no new jobs are accepted,
+and a second signal forces an immediate exit.</p>
+</section>
+</section>
+<section id="container-entrypoint">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Container Entrypoint</a><a class="headerlink" href="#container-entrypoint" title="Link to this heading">¶</a></h2>
+<p>The worker container is started by <code class="docutils literal notranslate"><span class="pre">scripts/entrypoint_worker.sh</span></code>, which:</p>
+<ol class="arabic simple">
+<li><p>Waits up to 90 seconds for an OpenBao Agent sidecar to render secrets
+to <code class="docutils literal notranslate"><span class="pre">/run/secrets/system.env</span></code> (checked periodically — exits fatally if
+the file is not ready in time).</p></li>
+<li><p>Sources the secrets file as environment variables.</p></li>
+<li><p>Falls back to reading OpenBao AppRole credentials from bootstrap files
+at <code class="docutils literal notranslate"><span class="pre">/openbao-bootstrap/worker-role_id</span></code> / <code class="docutils literal notranslate"><span class="pre">worker-secret_id</span></code> if not
+already set.</p></li>
+<li><p>Execs <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">services.worker.worker</span></code> as PID 1 (no intermediate
+shell wrapper — signals are received directly).</p></li>
+</ol>
+<p>The container entrypoint is independent from the API entrypoint
+(<code class="docutils literal notranslate"><span class="pre">scripts/entrypoint_api.sh</span></code>), allowing the worker to be deployed as a
+separate Kubernetes Deployment or Docker Compose service.</p>
+</section>
+<section id="configuration-workersettings">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Configuration — <code class="docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a><a class="headerlink" href="#configuration-workersettings" title="Link to this heading">¶</a></h2>
+<p>Module: <code class="docutils literal notranslate"><span class="pre">services.worker.worker_settings</span></code></p>
+<p>Worker configuration is loaded from OpenBao at startup via
+<code class="xref py py-func docutils literal notranslate"><span class="pre">init_worker_settings_from_bao()</span></code>.  The settings singleton is accessed as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">services.worker.worker_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">settings</span>
+
+<span class="n">queue</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">high_queue_full</span>
+<span class="c1"># → &quot;OpenZync:prod:queue:high&quot;</span>
+</pre></div>
+</div>
+<p>All durations are in seconds unless otherwise noted.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="WorkerSettings">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">WorkerSettings</span></span><a class="headerlink" href="#WorkerSettings" title="Link to this definition">¶</a></dt>
+<dd><p>Worker-specific configuration loaded from OpenBao or environment variables.</p>
+</dd></dl>
+
+<p>OpenBao key mapping follows <code class="docutils literal notranslate"><span class="pre">SYSTEM_KEY_MAPPING</span></code> in <code class="docutils literal notranslate"><span class="pre">core/openbao.py</span></code>.
+Validated at startup against the canonical key set — any drift is caught
+immediately, not at runtime.</p>
+</section>
+<section id="arq-connection-management-core-arq">
+<span id="arq-pool-label"></span><h2><a class="toc-backref" href="#id11" role="doc-backlink">ARQ Connection Management — <code class="docutils literal notranslate"><span class="pre">core.arq</span></code></a><a class="headerlink" href="#arq-connection-management-core-arq" title="Link to this heading">¶</a></h2>
+<p>Module: <code class="docutils literal notranslate"><span class="pre">core/arq.py</span></code></p>
+<p>The ARQ connection pool is managed as a module-level singleton with explicit
+lifecycle hooks for FastAPI integration:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.arq</span><span class="w"> </span><span class="kn">import</span> <span class="n">init_arq</span><span class="p">,</span> <span class="n">close_arq</span><span class="p">,</span> <span class="n">get_arq</span>
+
+<span class="c1"># During FastAPI lifespan startup</span>
+<span class="k">await</span> <span class="n">init_arq</span><span class="p">()</span>
+
+<span class="c1"># Enqueue a job</span>
+<span class="n">job_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_arq</span><span class="p">()</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="s2">&quot;embed_episode&quot;</span><span class="p">,</span> <span class="n">episode_id</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="n">org_id</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>
+
+<span class="c1"># During FastAPI lifespan shutdown</span>
+<span class="k">await</span> <span class="n">close_arq</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="ARQPool">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ARQPool</span></span><a class="headerlink" href="#ARQPool" title="Link to this definition">¶</a></dt>
+<dd><p>Manages the ARQ connection pool lifecycle.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ARQPool.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ARQPool.initialize" title="Link to this definition">¶</a></dt>
+<dd><p>Create the pool.  Raises <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ConnectionError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionError</span></code></a> if Redis is unreachable.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARQPool.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ARQPool.close" title="Link to this definition">¶</a></dt>
+<dd><p>Close the pool gracefully.  Safe to call multiple times.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ARQPool.enqueue">
+<span class="sig-name descname"><span class="pre">enqueue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ARQPool.enqueue" title="Link to this definition">¶</a></dt>
+<dd><p>Enqueue a background job.  Returns the job ID or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the pool
+was unavailable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>task_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Registered worker function name (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;embed_episode&quot;</span></code>).</p></li>
+<li><p><strong>queue_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> | </em><em>None</em>) – Optional queue name (<code class="docutils literal notranslate"><span class="pre">&quot;high&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;low&quot;</span></code>).  Passed
+as <code class="docutils literal notranslate"><span class="pre">_queue_name</span></code> to ARQ’s <code class="docutils literal notranslate"><span class="pre">enqueue_job</span></code>.</p></li>
+<li><p><strong>\**kwargs</strong> – Keyword arguments forwarded to the task function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The enqueued job ID string, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Usage from the API server:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.arq</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_arq</span>
+
+<span class="k">await</span> <span class="n">get_arq</span><span class="p">()</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span>
+    <span class="s2">&quot;extract_entities&quot;</span><span class="p">,</span>
+    <span class="n">queue_name</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span>
+    <span class="n">episode_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">episode</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+    <span class="n">org_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">org</span><span class="o">.</span><span class="n">org_id</span><span class="p">),</span>
+    <span class="n">project_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">episode</span><span class="o">.</span><span class="n">project_id</span><span class="p">),</span>
+    <span class="n">content</span><span class="o">=</span><span class="n">episode</span><span class="o">.</span><span class="n">content</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="task-registry">
+<span id="task-registry-label"></span><h2><a class="toc-backref" href="#id12" role="doc-backlink">Task Registry</a><a class="headerlink" href="#task-registry" title="Link to this heading">¶</a></h2>
+<p>Tasks are registered with ARQ by being included in one of two lists defined
+in <code class="docutils literal notranslate"><span class="pre">services/worker/worker.py</span></code>:</p>
+<div class="table-wrapper docutils container" id="id1">
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">High-Priority Queue Tasks (real-time ingestion)</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
+<th class="head"><p>Source Module</p></th>
+<th class="head"><p>Enrichment Bit</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">enrich_episode</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">workers.tasks.enrich_episode</span></code></p></td>
+<td><p>Bits 0, 2, 4, 5</p></td>
+<td><p>Combined LLM enrichment (replaces 4 separate calls)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">classify_dialog</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">workers.tasks.classify_dialog</span></code></p></td>
+<td><p>Bit 4</p></td>
+<td><p>Dialog intent/emotion classification</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">extract_entities</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">workers.tasks.extract_entities</span></code></p></td>
+<td><p>Bit 0</p></td>
+<td><p>Named entity + relationship extraction</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">embed_episode</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">workers.tasks.embed_episode</span></code></p></td>
+<td><p>Bit 1</p></td>
+<td><p>pgvector embedding for episode content</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">extract_facts</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">workers.tasks.extract_facts</span></code></p></td>
+<td><p>Bit 2</p></td>
+<td><p>Zero-shot fact triple extraction</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">embed_fact</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">workers.tasks.embed_fact</span></code></p></td>
+<td><p><em>(none)</em></p></td>
+<td><p>pgvector embedding for fact content</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">extract_structured</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">workers.tasks.extract_structured</span></code></p></td>
+<td><p>Bit 5</p></td>
+<td><p>JSON Schema–guided structured extraction</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-wrapper docutils container" id="id2">
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Low-Priority Queue Tasks (batch / scheduled)</span><a class="headerlink" href="#id2" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Task</p></th>
+<th class="head"><p>Source Module</p></th>
+<th class="head"><p>Enrichment Bit</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">link_entities_to_episode</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">workers.tasks.link_entities_to_episode</span></code></p></td>
+<td><p>Bit 3</p></td>
+<td><p>Link entities to episode via graph join table</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">compute_observations</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">workers.tasks.compute_observations</span></code></p></td>
+<td><p>Bit 6</p></td>
+<td><p>Deferred graph-topology pattern detection</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">summarise_community</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">workers.tasks.summarise_community</span></code></p></td>
+<td><p><em>(none)</em></p></td>
+<td><p>Community detection + LLM summarisation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">merge_duplicate_entities</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">workers.tasks.merge_duplicate_entities</span></code></p></td>
+<td><p><em>(none)</em></p></td>
+<td><p>Entity dedup via exact + fuzzy matching</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">write_audit_log</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">services.worker.tasks.audit_log</span></code></p></td>
+<td><p><em>(none)</em></p></td>
+<td><p>Async audit log persistence</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">deliver_webhook</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">services.worker.tasks.deliver_webhook</span></code></p></td>
+<td><p><em>(none)</em></p></td>
+<td><p>Webhook delivery with retry</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">generate_user_summary</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">workers.tasks.generate_user_summary</span></code></p></td>
+<td><p><em>(none)</em></p></td>
+<td><p>LLM-generated user profile summary</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">reconcile_enrichment</span></code></p></td>
+<td><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">workers.tasks.reconcile_enrichment</span></code></p></td>
+<td><p><em>(none)</em></p></td>
+<td><p>Cron job: re-enqueue stale enrichment tasks</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="cron-jobs">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Cron Jobs</a><a class="headerlink" href="#cron-jobs" title="Link to this heading">¶</a></h3>
+<p>Attached to the low-priority worker pool:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Cron Job</p></th>
+<th class="head"><p>Function</p></th>
+<th class="head"><p>Schedule</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Enrichment</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">reconcile_enrichment</span></code></p></td>
+<td><p>Every 5</p></td>
+<td><p>Safety net for dropped enrichment tasks</p></td>
+</tr>
+<tr class="row-odd"><td><p>reconciliation</p></td>
+<td></td>
+<td><p>minutes</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Community</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">summarise_community</span></code></p></td>
+<td><p>Nightly</p></td>
+<td><p>Label-propagation community detection</p></td>
+</tr>
+<tr class="row-odd"><td><p>detection (nightly)</p></td>
+<td></td>
+<td><p>02:00 UTC</p></td>
+<td><p>(when not event-driven)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="enrichment-bitmask-system">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Enrichment Bitmask System</a><a class="headerlink" href="#enrichment-bitmask-system" title="Link to this heading">¶</a></h2>
+<p>Module: <code class="docutils literal notranslate"><span class="pre">workers/tasks/base.py</span></code></p>
+<p>Enrichment progress is tracked per-episode via an integer bitmask column
+(<code class="docutils literal notranslate"><span class="pre">episodes.enrichment_status</span></code>).  Each enrichment step occupies one bit.
+Workers check their bit before running (idempotency) and set it after
+completion.  The bit allocation is:</p>
+<p><code class="docutils literal notranslate"><span class="pre">ENRICHMENT_ALL</span></code> is the bitmask of all active steps (bits 0–5, excluding
+bit 6).  An episode is considered “fully enriched” when
+<code class="docutils literal notranslate"><span class="pre">enrichment_status</span> <span class="pre">&amp;</span> <span class="pre">ENRICHMENT_ALL</span> <span class="pre">==</span> <span class="pre">ENRICHMENT_ALL</span></code>.</p>
+<p>Bit 6 (<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_OBSERVATIONS</span></code>) is intentionally excluded from
+<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_ALL</span></code> — the observations pass is non-blocking and deferred,
+and should not gate “fully enriched” status.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Bit positions are shared across the team and must not be reassigned
+without updating all workers.  Current allocation allows for bits 7+
+as future expansion.</p>
+</div>
+</section>
+<section id="retry-decorator-with-retry">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Retry Decorator — <code class="docutils literal notranslate"><span class="pre">with_retry</span></code></a><a class="headerlink" href="#retry-decorator-with-retry" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="with_retry">
+<span class="sig-name descname"><span class="pre">with_retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_delay_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_delay_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_exhaustion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_retryable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#with_retry" title="Link to this definition">¶</a></dt>
+<dd><p>Decorator that retries an async function with exponential backoff.
+Used by every task in <code class="docutils literal notranslate"><span class="pre">workers/tasks/</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_retries</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Maximum retry attempts (default <code class="docutils literal notranslate"><span class="pre">3</span></code>).</p></li>
+<li><p><strong>base_delay_s</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Initial delay in seconds.</p></li>
+<li><p><strong>max_delay_s</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Maximum delay cap.</p></li>
+<li><p><strong>on_exhaustion</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – <code class="docutils literal notranslate"><span class="pre">&quot;raise&quot;</span></code> (re-raises last exception) or
+<code class="docutils literal notranslate"><span class="pre">&quot;log&quot;</span></code> (logs and returns <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p></li>
+<li><p><strong>is_retryable</strong> – Optional predicate <code class="docutils literal notranslate"><span class="pre">Callable[[Exception],</span> <span class="pre">bool]</span></code>.
+When <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), all exceptions are retried.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Retry schedule: <code class="docutils literal notranslate"><span class="pre">base_delay_s</span> <span class="pre">×</span> <span class="pre">2²⁰</span> <span class="pre">×</span> <span class="pre">attempt</span></code>, capped at <code class="docutils literal notranslate"><span class="pre">max_delay_s</span></code>.
+Example with defaults: 1s, 2s, 4s.</p>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">workers.tasks.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">with_retry</span>
+
+<span class="nd">@with_retry</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">base_delay_s</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_task</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">episode_id</span><span class="p">,</span> <span class="n">org_id</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="graph-backend-resolution-workers-backend">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Graph Backend Resolution — <code class="docutils literal notranslate"><span class="pre">workers.backend</span></code></a><a class="headerlink" href="#graph-backend-resolution-workers-backend" title="Link to this heading">¶</a></h2>
+<p>Module: <code class="docutils literal notranslate"><span class="pre">workers/backend.py</span></code></p>
+<p>Workers resolve the per-organization graph backend at runtime via
+<a class="reference internal" href="#resolve_graph_backend" title="resolve_graph_backend"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_graph_backend()</span></code></a>.  This function reads the org’s configured
+backends from the <code class="docutils literal notranslate"><span class="pre">organizations.config</span></code> JSONB column (cache-first via
+<code class="xref py py-func docutils literal notranslate"><span class="pre">core.org_config.get_org_config()</span></code>, DB-authoritative) and instantiates
+the appropriate <code class="xref py py-class docutils literal notranslate"><span class="pre">GraphBackend</span></code> implementation.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="resolve_graph_backend">
+<span class="sig-name descname"><span class="pre">resolve_graph_backend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">fallback_to_postgres</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#resolve_graph_backend" title="Link to this definition">¶</a></dt>
+<dd><p>Resolve the per-organization graph backend inside an ARQ worker.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ctx</strong> – ARQ worker context dict — must contain
+<code class="docutils literal notranslate"><span class="pre">graph_backend_dispatcher</span></code> and may contain
+<code class="docutils literal notranslate"><span class="pre">surreal_connection_pool</span></code> and <code class="docutils literal notranslate"><span class="pre">falkordb_client</span></code>.</p></li>
+<li><p><strong>org_id</strong> – Organization UUID.</p></li>
+<li><p><strong>db</strong> – Async SQLAlchemy session.</p></li>
+<li><p><strong>fallback_to_postgres</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), returns a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">PostgresGraphBackend</span></code> when no backend is configured or
+resolution fails.  If <code class="docutils literal notranslate"><span class="pre">False</span></code>, returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An initialised <code class="xref py py-class docutils literal notranslate"><span class="pre">GraphBackend</span></code> instance, or <code class="docutils literal notranslate"><span class="pre">None</span></code>
+if graph is disabled and no fallback.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="core.html#GraphBackendUnavailableError" title="GraphBackendUnavailableError"><strong>GraphBackendUnavailableError</strong></a> – If resolution fails and fallback is
+disabled.</p>
+</dd>
+</dl>
+<p>Resolution order:</p>
+<ol class="arabic simple">
+<li><p>Read <code class="docutils literal notranslate"><span class="pre">org_config.graph_backend</span></code> (cache-first via OpenBao,
+DB-authoritative).</p></li>
+<li><p>If the backend name is <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> or resolution fails: fall back to
+<code class="xref py py-class docutils literal notranslate"><span class="pre">PostgresGraphBackend</span></code> (default) or return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p>If SurrealDB is configured, acquire a connection from the shared
+<code class="docutils literal notranslate"><span class="pre">surreal_connection_pool</span></code>.</p></li>
+<li><p>If FalkorDB is configured, use the shared <code class="docutils literal notranslate"><span class="pre">falkordb_client</span></code>.</p></li>
+<li><p>Delegate to <code class="docutils literal notranslate"><span class="pre">dispatcher.resolve_and_create()</span></code>.</p></li>
+</ol>
+<p>The SurrealDB connection is only acquired when the org explicitly
+configures <code class="docutils literal notranslate"><span class="pre">&quot;surrealdb&quot;</span></code> — avoiding unnecessary network round-trips
+for orgs using Postgres or no graph backend.  If SurrealDB is configured
+but unreachable, the error propagates loudly — no silent fallback.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">workers.backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_graph_backend</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_worker</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">org_id</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">db_session_factory</span><span class="p">()</span> <span class="k">as</span> <span class="n">db</span><span class="p">:</span>
+        <span class="n">backend</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resolve_graph_backend</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">org_id</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Graph disabled — use Postgres fallback</span>
+            <span class="o">...</span>
+        <span class="k">await</span> <span class="n">backend</span><span class="o">.</span><span class="n">link_entity_to_episode</span><span class="p">(</span>
+            <span class="n">org_id</span><span class="o">=</span><span class="n">org_id</span><span class="p">,</span>
+            <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span>
+            <span class="n">episode_id</span><span class="o">=</span><span class="n">episode_id</span><span class="p">,</span>
+            <span class="n">entity_id</span><span class="o">=</span><span class="n">entity_id</span><span class="p">,</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="task-reference-workers-tasks">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">Task Reference — <code class="docutils literal notranslate"><span class="pre">workers/tasks/</span></code></a><a class="headerlink" href="#task-reference-workers-tasks" title="Link to this heading">¶</a></h2>
+<p>Every task follows the ARQ contract:</p>
+<ul class="simple">
+<li><p>The first parameter is <code class="docutils literal notranslate"><span class="pre">ctx:</span> <span class="pre">object</span></code> — the ARQ worker context dict that
+provides shared resources (<code class="docutils literal notranslate"><span class="pre">db_engine</span></code>, <code class="docutils literal notranslate"><span class="pre">db_session_factory</span></code>, <code class="docutils literal notranslate"><span class="pre">redis</span></code>,
+<code class="docutils literal notranslate"><span class="pre">openbao_client</span></code>, etc.).</p></li>
+<li><p>Remaining parameters are the task-specific arguments received at enqueue
+time.</p></li>
+<li><p>Tasks return <code class="docutils literal notranslate"><span class="pre">None</span></code> (void tasks) or a <code class="docutils literal notranslate"><span class="pre">dict</span></code> (for tasks whose callers
+read the result).</p></li>
+<li><p>Every task is decorated with <code class="docutils literal notranslate"><span class="pre">&#64;with_retry(...)</span></code> for resilience.</p></li>
+<li><p>DB engine bootstrap follows a standard pattern: use the shared engine from
+<code class="docutils literal notranslate"><span class="pre">ctx[&quot;db_engine&quot;]</span></code> if available, otherwise create a short-lived engine
+as a fallback (for testability).</p></li>
+</ul>
+<section id="enrich-episode-combined-llm-enrichment">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">enrich_episode</span></code> — Combined LLM Enrichment</a><a class="headerlink" href="#enrich-episode-combined-llm-enrichment" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="enrich_episode">
+<span class="sig-name descname"><span class="pre">enrich_episode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'user'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#enrich_episode" title="Link to this definition">¶</a></dt>
+<dd><p><strong>Queue</strong>: High</p>
+<p><strong>Enrichment bits</strong>: Sets bits 0 (entities), 2 (facts), 4 (classification),
+5 (structured extraction) on success.</p>
+<p><strong>Idempotency</strong>: Checks the logical OR of all 4 LLM bits at the start.
+Skips entirely if all are already set.  Each section is processed in an
+independent savepoint (<code class="docutils literal notranslate"><span class="pre">begin_nested()</span></code>), so failures in one section
+do not roll back completed sections.  On partial failure, raises
+<code class="xref py py-class docutils literal notranslate"><span class="pre">PartialEnrichmentError</span></code> carrying the bitmask of successfully
+completed sections — the ARQ retry picks up where the previous attempt
+left off.</p>
+<p><strong>Pipeline</strong>:</p>
+<ol class="arabic simple">
+<li><p>Open session, set RLS context via <code class="docutils literal notranslate"><span class="pre">app.org_id</span></code>.</p></li>
+<li><p>Check idempotency — skip if all 4 LLM bits already set.</p></li>
+<li><p>Resolve <code class="docutils literal notranslate"><span class="pre">user_id</span></code> from the episode record.</p></li>
+<li><p>Render <code class="docutils literal notranslate"><span class="pre">enrich_episode_v1.jinja2</span></code> prompt with auto-injected context
+(entities, facts, schemas, conversation history).</p></li>
+<li><p>Single LLM call with <code class="xref py py-class docutils literal notranslate"><span class="pre">CombinedLLMOutput</span></code> as <code class="docutils literal notranslate"><span class="pre">response_model</span></code>
+(temperature 0.0, max_tokens 8192).</p></li>
+<li><p>Process each enrichment section in an independent savepoint:
+classification (bit 4), entities (bit 0), facts (bit 2), structured
+(bit 5).</p></li>
+<li><p>Commit all successful savepoints atomically.</p></li>
+<li><p>Raise <code class="docutils literal notranslate"><span class="pre">PartialEnrichmentError</span></code> if any section failed (triggers retry).</p></li>
+</ol>
+<p><strong>Architecture note</strong>: This task replaces the 4 individual LLM tasks
+(<code class="docutils literal notranslate"><span class="pre">classify_dialog</span></code>, <code class="docutils literal notranslate"><span class="pre">extract_entities</span></code>, <code class="docutils literal notranslate"><span class="pre">extract_facts</span></code>,
+<code class="docutils literal notranslate"><span class="pre">extract_structured</span></code>) with a single LLM call.  The individual tasks
+still exist for backward compatibility and for callers that already know
+which enrichment step they need.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.arq</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_arq</span>
+
+<span class="k">await</span> <span class="n">get_arq</span><span class="p">()</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span>
+    <span class="s2">&quot;enrich_episode&quot;</span><span class="p">,</span>
+    <span class="n">queue_name</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span>
+    <span class="n">episode_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">episode</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+    <span class="n">org_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">episode</span><span class="o">.</span><span class="n">organization_id</span><span class="p">),</span>
+    <span class="n">project_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">episode</span><span class="o">.</span><span class="n">project_id</span><span class="p">),</span>
+    <span class="n">content</span><span class="o">=</span><span class="n">episode</span><span class="o">.</span><span class="n">content</span><span class="p">,</span>
+    <span class="n">session_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">episode</span><span class="o">.</span><span class="n">session_id</span><span class="p">),</span>
+    <span class="n">trace_id</span><span class="o">=</span><span class="n">trace_id</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="classify-dialog-dialog-classification">
+<h3><a class="toc-backref" href="#id19" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">classify_dialog</span></code> — Dialog Classification</a><a class="headerlink" href="#classify-dialog-dialog-classification" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="classify_dialog">
+<span class="sig-name descname"><span class="pre">classify_dialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#classify_dialog" title="Link to this definition">¶</a></dt>
+<dd><p><strong>Queue</strong>: High</p>
+<p><strong>Enrichment bit</strong>: Bit 4 (<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_CLASSIFICATION</span></code>)</p>
+<p><strong>Idempotency</strong>: Checks bit 4.  Skips if already set.</p>
+<p><strong>Pipeline</strong>:</p>
+<ol class="arabic simple">
+<li><p>Create or borrow a DB session, set RLS context.</p></li>
+<li><p>Check bit 4 — skip if already classified.</p></li>
+<li><p>Fetch organisation’s classification schemas (<code class="docutils literal notranslate"><span class="pre">type='classification'</span></code>).</p></li>
+<li><p>Extract label definitions for intent and emotion.</p></li>
+<li><p>Render <code class="docutils literal notranslate"><span class="pre">classify_dialog_v1.jinja2</span></code> prompt with DB template + custom
+instructions.</p></li>
+<li><p>Call LLM (temperature 0.0, max_tokens 4096) with
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ClassificationOutput</span></code> as <code class="docutils literal notranslate"><span class="pre">response_model</span></code>.</p></li>
+<li><p>Validate labels against allowed sets (intent, emotion, valence, arousal).</p></li>
+<li><p>Insert <code class="docutils literal notranslate"><span class="pre">DialogClassification</span></code> row.</p></li>
+<li><p>Set bit 4.</p></li>
+</ol>
+<p><strong>Label validation</strong>: <code class="docutils literal notranslate"><span class="pre">intent</span></code> and <code class="docutils literal notranslate"><span class="pre">emotion</span></code> are validated against the
+org’s configured <code class="docutils literal notranslate"><span class="pre">extraction_schemas</span></code>.  Invalid values are logged as
+warnings and stored as <code class="docutils literal notranslate"><span class="pre">None</span></code>.  <code class="docutils literal notranslate"><span class="pre">valence</span></code> is restricted to
+<code class="docutils literal notranslate"><span class="pre">{&quot;positive&quot;,</span> <span class="pre">&quot;negative&quot;,</span> <span class="pre">&quot;neutral&quot;}</span></code>.  <code class="docutils literal notranslate"><span class="pre">arousal</span></code> to
+<code class="docutils literal notranslate"><span class="pre">{&quot;low&quot;,</span> <span class="pre">&quot;medium&quot;,</span> <span class="pre">&quot;high&quot;}</span></code>.  <code class="docutils literal notranslate"><span class="pre">confidence</span></code> is clamped to <code class="docutils literal notranslate"><span class="pre">[0.0,</span> <span class="pre">1.0]</span></code>.</p>
+<p>The post-processing logic is exported as <code class="xref py py-func docutils literal notranslate"><span class="pre">process_classification_output()</span></code>
+for reuse by the combined <code class="docutils literal notranslate"><span class="pre">enrich_episode</span></code> worker.</p>
+</dd></dl>
+
+</section>
+<section id="extract-entities-entity-extraction">
+<h3><a class="toc-backref" href="#id20" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">extract_entities</span></code> — Entity Extraction</a><a class="headerlink" href="#extract-entities-entity-extraction" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="extract_entities">
+<span class="sig-name descname"><span class="pre">extract_entities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#extract_entities" title="Link to this definition">¶</a></dt>
+<dd><p><strong>Queue</strong>: High</p>
+<p><strong>Enrichment bit</strong>: Bit 0 (<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_ENTITIES</span></code>)</p>
+<p><strong>Idempotency</strong>: Checks bit 0.  Skips if already set.</p>
+<p><strong>Pipeline</strong>:</p>
+<ol class="arabic simple">
+<li><p>Resolve <code class="docutils literal notranslate"><span class="pre">user_id</span></code> from episode record.</p></li>
+<li><p>Resolve graph backend for this org.</p></li>
+<li><p>Fetch entity type ontology (<code class="docutils literal notranslate"><span class="pre">extraction_schemas</span> <span class="pre">type='entity_type'</span></code>).</p></li>
+<li><p>Fetch known entities from previous turns if <code class="docutils literal notranslate"><span class="pre">session_id</span></code> is provided
+(for delta extraction).</p></li>
+<li><p>Render prompt with context:
+<code class="docutils literal notranslate"><span class="pre">extract_entities_v4.jinja2</span></code> (delta) or <code class="docutils literal notranslate"><span class="pre">extract_entities_v3.jinja2</span></code>
+(first extraction).</p></li>
+<li><p>Call LLM (temperature 0.1, max_tokens 4096) with
+<code class="xref py py-class docutils literal notranslate"><span class="pre">EntityExtractionOutput</span></code> as <code class="docutils literal notranslate"><span class="pre">response_model</span></code>.</p></li>
+<li><p>Filter pronouns and common filler words (see pronoun skip list in source).</p></li>
+<li><p>Validate entity types against allowed ontology — invalid types are
+reassigned to <code class="docutils literal notranslate"><span class="pre">&quot;Custom&quot;</span></code>.</p></li>
+<li><p>Upsert entities to graph backend via <code class="docutils literal notranslate"><span class="pre">EntityRepository</span></code>.</p></li>
+<li><p>Upsert relationships as graph edges.</p></li>
+<li><p>Link entities to episode via <code class="docutils literal notranslate"><span class="pre">graph_backend.link_entity_to_episode()</span></code>.</p></li>
+<li><p>Set bit 0.</p></li>
+<li><p><strong>Chain</strong> <code class="docutils literal notranslate"><span class="pre">extract_facts</span></code> on the high-priority queue.</p></li>
+</ol>
+<p><strong>Pronoun filter</strong>: 40+ first/second/third-person pronouns and common
+misspellings are filtered from entity creation.  Pronouns are resolved
+during fact extraction via <code class="docutils literal notranslate"><span class="pre">_match_entity()</span></code>.</p>
+<p><strong>Entity recovery pass</strong>: If the LLM mentions an entity in a relationship
+without including it in the <code class="docutils literal notranslate"><span class="pre">entities</span></code> array, it is auto-created as
+<code class="docutils literal notranslate"><span class="pre">&quot;Custom&quot;</span></code> type so the graph edge is not lost.</p>
+<p><strong>Relationship to fact extraction</strong>: After bit 0 is set and entities are
+committed, the task enqueues <code class="docutils literal notranslate"><span class="pre">extract_facts</span></code>.  This chaining ensures
+entity IDs are available in the graph for fact relationship materialisation.</p>
+<p>The post-processing logic is exported as <code class="xref py py-func docutils literal notranslate"><span class="pre">process_entities_output()</span></code>
+for reuse by the combined <code class="docutils literal notranslate"><span class="pre">enrich_episode</span></code> worker.</p>
+</dd></dl>
+
+</section>
+<section id="extract-facts-fact-extraction">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">extract_facts</span></code> — Fact Extraction</a><a class="headerlink" href="#extract-facts-fact-extraction" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="extract_facts">
+<span class="sig-name descname"><span class="pre">extract_facts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#extract_facts" title="Link to this definition">¶</a></dt>
+<dd><p><strong>Queue</strong>: High</p>
+<p><strong>Enrichment bit</strong>: Bit 2 (<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_FACTS</span></code>)</p>
+<p><strong>Idempotency</strong>: Checks bit 2.  Skips if already set.</p>
+<p><strong>Pipeline</strong>:</p>
+<ol class="arabic simple">
+<li><p>Resolve <code class="docutils literal notranslate"><span class="pre">user_id</span></code> and graph backend from episode.</p></li>
+<li><p>Fetch known entities and recent conversation history from session
+(for pronoun resolution).</p></li>
+<li><p>Render prompt: <code class="docutils literal notranslate"><span class="pre">extract_facts_v4.jinja2</span></code> (delta) or
+<code class="docutils literal notranslate"><span class="pre">extract_facts_v3.jinja2</span></code> (first extraction).</p></li>
+<li><p>Call LLM (temperature 0.1) with <code class="xref py py-class docutils literal notranslate"><span class="pre">FactExtractionOutput</span></code> as
+<code class="docutils literal notranslate"><span class="pre">response_model</span></code>.</p></li>
+<li><p>Filter triples by confidence (&gt;= 0.3) and quality heuristics via
+<code class="xref py py-func docutils literal notranslate"><span class="pre">_filter_facts()</span></code>.</p></li>
+<li><p>Resolve subject/object to canonical entity names and UUIDs via
+<code class="xref py py-func docutils literal notranslate"><span class="pre">_resolve_fact_entities()</span></code> (pronoun resolution, substring matching,
+aggressive normalisation fallback).</p></li>
+<li><p>Deduplicate against existing session facts via <code class="xref py py-func docutils literal notranslate"><span class="pre">_deduplicate_facts()</span></code>
+(with predicate synonym mapping — <code class="docutils literal notranslate"><span class="pre">&quot;works_at&quot;</span></code> matches <code class="docutils literal notranslate"><span class="pre">&quot;employed_by&quot;</span></code>).</p></li>
+<li><p>Batch-persist via <code class="docutils literal notranslate"><span class="pre">FactRepository.batch_create_or_skip</span></code>.</p></li>
+<li><p>Attempt live entity lookup in graph if entity IDs were not resolved
+from the prompt context.</p></li>
+<li><p>Upsert relationships to graph backend (non-fatal on failure).</p></li>
+<li><p>Set bit 2.</p></li>
+<li><p><strong>Chain</strong> <code class="docutils literal notranslate"><span class="pre">embed_fact</span></code> per persisted fact (non-blocking — failures
+logged, not propagated).</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Fact extraction must run <em>after</em> entity extraction so that entity
+IDs are available in the graph for relationship materialisation.
+The <code class="docutils literal notranslate"><span class="pre">extract_entities</span></code> task enqueues <code class="docutils literal notranslate"><span class="pre">extract_facts</span></code> explicitly
+after committing entities.</p>
+</div>
+<p>The post-processing logic is exported as <code class="xref py py-func docutils literal notranslate"><span class="pre">process_facts_output()</span></code>
+for reuse by the combined <code class="docutils literal notranslate"><span class="pre">enrich_episode</span></code> worker.</p>
+</dd></dl>
+
+</section>
+<section id="embed-episode-episode-embedding">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">embed_episode</span></code> — Episode Embedding</a><a class="headerlink" href="#embed-episode-episode-embedding" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="embed_episode">
+<span class="sig-name descname"><span class="pre">embed_episode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#embed_episode" title="Link to this definition">¶</a></dt>
+<dd><p><strong>Queue</strong>: High</p>
+<p><strong>Enrichment bit</strong>: Bit 1 (<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_EMBEDDING</span></code>)</p>
+<p><strong>Idempotency</strong>: Checks bit 1.  Skips if already set.</p>
+<p><strong>Pipeline</strong>:</p>
+<ol class="arabic simple">
+<li><p>Check idempotency (bit 1).</p></li>
+<li><p>Fetch per-org config from OpenBao — resolves embedding backend,
+model, and dimension from <code class="docutils literal notranslate"><span class="pre">org_config.embedding_backend</span></code>,
+<code class="docutils literal notranslate"><span class="pre">embedding_model</span></code>, <code class="docutils literal notranslate"><span class="pre">embedding_dim</span></code>.  <strong>There is no env-var
+fallback</strong> — if any required field is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the task raises
+<a class="reference internal" href="core.html#SearchLegFailedError" title="SearchLegFailedError"><code class="xref py py-class docutils literal notranslate"><span class="pre">SearchLegFailedError</span></code></a> so ARQ retries.</p></li>
+<li><p>Resolve the embedding backend via <code class="xref py py-func docutils literal notranslate"><span class="pre">core.llm.resolve_backend()</span></code>.</p></li>
+<li><p>Generate embedding vector for the episode content.</p></li>
+<li><p>Validate that the returned dimension matches <code class="docutils literal notranslate"><span class="pre">embedding_dim</span></code>.</p></li>
+<li><p>Store the vector in <code class="docutils literal notranslate"><span class="pre">episodes.embedding</span></code> (pgvector).</p></li>
+<li><p>Set bit 1.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="core.html#SearchLegFailedError" title="SearchLegFailedError"><strong>SearchLegFailedError</strong></a> – If org config fetch fails, org is not found,
+or no embedding backend is configured.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If the returned embedding dimension does not match
+the configured dimension.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">get_arq</span><span class="p">()</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span>
+    <span class="s2">&quot;embed_episode&quot;</span><span class="p">,</span>
+    <span class="n">queue_name</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span>
+    <span class="n">episode_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">episode</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+    <span class="n">org_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">org_id</span><span class="p">),</span>
+    <span class="n">project_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">project_id</span><span class="p">),</span>
+    <span class="n">content</span><span class="o">=</span><span class="n">episode</span><span class="o">.</span><span class="n">content</span><span class="p">,</span>
+    <span class="n">trace_id</span><span class="o">=</span><span class="n">trace_id</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="embed-fact-fact-embedding">
+<h3><a class="toc-backref" href="#id23" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">embed_fact</span></code> — Fact Embedding</a><a class="headerlink" href="#embed-fact-fact-embedding" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="embed_fact">
+<span class="sig-name descname"><span class="pre">embed_fact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fact_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#embed_fact" title="Link to this definition">¶</a></dt>
+<dd><p><strong>Queue</strong>: High</p>
+<p><strong>Enrichment bit</strong>: None (facts do not have enrichment status bits).</p>
+<p><strong>Idempotency</strong>: The task itself is not idempotent (the facts table has
+no enrichment bit), but content-hash dedup at the <code class="docutils literal notranslate"><span class="pre">FactRepository</span></code> level
+prevents duplicate embeddings.  In practice, repeated invocations with the
+same <code class="docutils literal notranslate"><span class="pre">fact_id</span></code> and content produce the same embedding, making it safe.</p>
+<p><strong>Pipeline</strong>:</p>
+<ol class="arabic simple">
+<li><p>Fetch fact content from DB if not provided as parameter.</p></li>
+<li><p>Fetch per-org config from OpenBao.</p></li>
+<li><p>Resolve embedding backend, generate embedding, validate dimension.</p></li>
+<li><p>Store vector in <code class="docutils literal notranslate"><span class="pre">facts.embedding</span></code>.</p></li>
+</ol>
+<p>This task is usually chained by <code class="docutils literal notranslate"><span class="pre">extract_facts</span></code> or <code class="docutils literal notranslate"><span class="pre">ingest_business_data</span></code>,
+not enqueued directly.</p>
+</dd></dl>
+
+</section>
+<section id="extract-structured-structured-extraction">
+<h3><a class="toc-backref" href="#id24" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">extract_structured</span></code> — Structured Extraction</a><a class="headerlink" href="#extract-structured-structured-extraction" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="extract_structured">
+<span class="sig-name descname"><span class="pre">extract_structured</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#extract_structured" title="Link to this definition">¶</a></dt>
+<dd><p><strong>Queue</strong>: High</p>
+<p><strong>Enrichment bit</strong>: Bit 5 (<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_STRUCTURED_EXTRACTION</span></code>)</p>
+<p><strong>Idempotency</strong>: Checks bit 5.  Skips if already set.</p>
+<p><strong>Pipeline</strong>:</p>
+<ol class="arabic simple">
+<li><p>Set RLS context, check idempotency (bit 5).</p></li>
+<li><p>Fetch organisation’s structured schemas (<code class="docutils literal notranslate"><span class="pre">type='structured'</span></code>).</p></li>
+<li><p>If no schemas configured, set bit 5 and return immediately
+(nothing to extract).</p></li>
+<li><p>Render <code class="docutils literal notranslate"><span class="pre">extract_structured_v1.jinja2</span></code> prompt.</p></li>
+<li><p>Call LLM (temperature 0.0, max_tokens configurable via
+<code class="docutils literal notranslate"><span class="pre">STRUCTURED_EXTRACTION_MAX_TOKENS</span></code>) with
+<code class="xref py py-class docutils literal notranslate"><span class="pre">StructuredExtractionOutput</span></code> as <code class="docutils literal notranslate"><span class="pre">response_model</span></code>.</p></li>
+<li><p>For each matched schema, validate output against the JSON Schema
+via <code class="docutils literal notranslate"><span class="pre">jsonschema.validate()</span></code>.</p></li>
+<li><p>Insert one <code class="docutils literal notranslate"><span class="pre">StructuredExtraction</span></code> row per valid schema with
+<code class="docutils literal notranslate"><span class="pre">ON</span> <span class="pre">CONFLICT</span> <span class="pre">(episode_id,</span> <span class="pre">schema_id)</span> <span class="pre">DO</span> <span class="pre">UPDATE</span></code>.</p></li>
+<li><p>Set bit 5.</p></li>
+</ol>
+<p><strong>Schema validation</strong>: Each output key is validated against the
+corresponding JSON Schema.  Invalid outputs are logged and skipped
+(per-schema granularity).  Required fields that are missing from the
+LLM output are filled with type-appropriate defaults.</p>
+<p>The post-processing logic is exported as <code class="xref py py-func docutils literal notranslate"><span class="pre">process_structured_output()</span></code>
+for reuse by the combined <code class="docutils literal notranslate"><span class="pre">enrich_episode</span></code> worker.</p>
+</dd></dl>
+
+</section>
+<section id="link-entities-to-episode-entityepisode-linking">
+<h3><a class="toc-backref" href="#id25" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">link_entities_to_episode</span></code> — Entity–Episode Linking</a><a class="headerlink" href="#link-entities-to-episode-entityepisode-linking" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="link_entities_to_episode">
+<span class="sig-name descname"><span class="pre">link_entities_to_episode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#link_entities_to_episode" title="Link to this definition">¶</a></dt>
+<dd><p><strong>Queue</strong>: Low</p>
+<p><strong>Enrichment bit</strong>: Bit 3 (<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_ENTITY_LINKS</span></code>)</p>
+<p><strong>Idempotency</strong>: Checks bit 3.  Skips if already set.</p>
+<p><strong>Pipeline</strong>:</p>
+<ol class="arabic simple">
+<li><p>Fetch the episode.</p></li>
+<li><p>Resolve graph backend.</p></li>
+<li><p>Extract potential entity names from content (capitalised words of
+length &gt; 2, simple heuristic).</p></li>
+<li><p>Search matching entities via <code class="docutils literal notranslate"><span class="pre">backend.bulk_search_entities()</span></code>.</p></li>
+<li><p>Link each match via <code class="docutils literal notranslate"><span class="pre">backend.link_entity_to_episode()</span></code>.</p></li>
+<li><p>Set bit 3.</p></li>
+<li><p><strong>Chain</strong> <code class="docutils literal notranslate"><span class="pre">compute_observations</span></code> on the low-priority queue
+(with per-project 30-second dedup in Redis).</p></li>
+<li><p>Optionally <strong>chain</strong> <code class="docutils literal notranslate"><span class="pre">summarise_community</span></code> (when
+<code class="docutils literal notranslate"><span class="pre">AUTO_RUN_COMMUNITY_DETECTION</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, with per-org 1-hour
+dedup in Redis).</p></li>
+</ol>
+<p>If the graph backend is unavailable, the task logs a warning and
+skips entity linking (non-fatal — can be re-linked later).</p>
+</dd></dl>
+
+</section>
+<section id="compute-observations-graph-topology-observations">
+<h3><a class="toc-backref" href="#id26" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">compute_observations</span></code> — Graph-Topology Observations</a><a class="headerlink" href="#compute-observations-graph-topology-observations" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="compute_observations">
+<span class="sig-name descname"><span class="pre">compute_observations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">episode_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#compute_observations" title="Link to this definition">¶</a></dt>
+<dd><p><strong>Queue</strong>: Low</p>
+<p><strong>Enrichment bit</strong>: Bit 6 (<code class="docutils literal notranslate"><span class="pre">ENRICHMENT_OBSERVATIONS</span></code>)</p>
+<p><strong>Idempotency</strong>: Two layers:</p>
+<ul class="simple">
+<li><p>Per-episode bit 6 check (inside this worker).</p></li>
+<li><p>Per-project dedup at enqueue time (30-second window in
+<code class="docutils literal notranslate"><span class="pre">link_entities_to_episode</span></code>).</p></li>
+</ul>
+<p><strong>Pipeline</strong>:</p>
+<ol class="arabic simple">
+<li><p>Check bit 6 — skip if already set.</p></li>
+<li><p>Resolve graph backend and instantiate <code class="xref py py-class docutils literal notranslate"><span class="pre">ObservationService</span></code>.</p></li>
+<li><p>Run a full project scan of graph topology data via
+<code class="docutils literal notranslate"><span class="pre">service.run_full_project_scan()</span></code> (co-occurrence, temporal gaps,
+behavioural patterns).</p></li>
+<li><p>Optionally call LLM to generate natural-language <code class="docutils literal notranslate"><span class="pre">content</span></code> field
+(falls back to template-based descriptions if LLM is unavailable).</p></li>
+<li><p>Persist observations via <code class="docutils literal notranslate"><span class="pre">backend.upsert_observation()</span></code>.</p></li>
+<li><p>Set bit 6.</p></li>
+</ol>
+<p><strong>Pattern detection is SQL-first</strong> — all detection algorithms query
+PostgreSQL directly.  The LLM is used only to generate the descriptive
+<code class="docutils literal notranslate"><span class="pre">content</span></code> field; when unavailable, template-based descriptions are used.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Bit 6 is intentionally excluded from <code class="docutils literal notranslate"><span class="pre">ENRICHMENT_ALL</span></code> — the
+observations pass is non-blocking and deferred.  An episode can be
+“fully enriched” without observations.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="summarise-community-community-detection">
+<h3><a class="toc-backref" href="#id27" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">summarise_community</span></code> — Community Detection</a><a class="headerlink" href="#summarise-community-community-detection" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="summarise_community">
+<span class="sig-name descname"><span class="pre">summarise_community</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#summarise_community" title="Link to this definition">¶</a></dt>
+<dd><p><strong>Queue</strong>: Low</p>
+<p><strong>Enrichment bit</strong>: None (data maintenance task).</p>
+<p><strong>Idempotency</strong>: Task-level idempotency is via upsert semantics in the
+graph backend — duplicate communities are not created for the same set
+of entities within a single run.  The nightly cron schedule provides
+natural dedup (runs once per 24h).</p>
+<p><strong>Pipeline</strong>:</p>
+<ol class="arabic">
+<li><p>Determine orgs to process: all eligible orgs (when <code class="docutils literal notranslate"><span class="pre">org_id</span></code> is
+<code class="docutils literal notranslate"><span class="pre">None</span></code>) or a single org.</p></li>
+<li><p>For each org, resolve graph backend and find projects with graph data.</p></li>
+<li><p>Per project:
+a. Fetch all entities (min 5 required) and relationships via backend.
+b. Build a NetworkX graph (<a class="reference internal" href="reranker.html#build_entity_graph" title="build_entity_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">build_entity_graph()</span></code></a>).
+c. Run Label Propagation community detection</p>
+<blockquote>
+<div><p>(<a class="reference internal" href="reranker.html#detect_communities_label_propagation" title="detect_communities_label_propagation"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_communities_label_propagation()</span></code></a>).</p>
+</div></blockquote>
+<ol class="loweralpha simple" start="4">
+<li><p>For each community (≥ 2 entities), generate an LLM summary.</p></li>
+<li><p>Store community entity + <code class="docutils literal notranslate"><span class="pre">MEMBER_OF</span></code> edges via the backend.</p></li>
+</ol>
+</li>
+<li><p>Commit per-org transaction.</p></li>
+</ol>
+<p><strong>Can be invoked in two modes</strong>:</p>
+<ul class="simple">
+<li><p><strong>Scheduled nightly</strong> (default, 02:00 UTC) — configured as a cron job
+on the low-priority pool when <code class="docutils literal notranslate"><span class="pre">AUTO_RUN_COMMUNITY_DETECTION=False</span></code>.</p></li>
+<li><p><strong>Event-driven</strong> — chained after <code class="docutils literal notranslate"><span class="pre">link_entities_to_episode</span></code> when
+<code class="docutils literal notranslate"><span class="pre">AUTO_RUN_COMMUNITY_DETECTION=True</span></code> (with per-org 1-hour Redis dedup).</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dict with <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">orgs_processed</span></code>, <code class="docutils literal notranslate"><span class="pre">orgs_failed</span></code>,
+<code class="docutils literal notranslate"><span class="pre">communities_created</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="merge-duplicate-entities-entity-dedup">
+<h3><a class="toc-backref" href="#id28" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">merge_duplicate_entities</span></code> — Entity Dedup</a><a class="headerlink" href="#merge-duplicate-entities-entity-dedup" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="merge_duplicate_entities">
+<span class="sig-name descname"><span class="pre">merge_duplicate_entities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#merge_duplicate_entities" title="Link to this definition">¶</a></dt>
+<dd><p><strong>Queue</strong>: Low</p>
+<p><strong>Enrichment bit</strong>: None (data maintenance task).</p>
+<p><strong>Idempotency</strong>: Once merged (<code class="docutils literal notranslate"><span class="pre">is_merged</span></code> flag set), entities are not
+eligible for future dedup runs.  The task skips merged entities via
+<code class="docutils literal notranslate"><span class="pre">backend.get_all_entities(include_merged=False)</span></code>.</p>
+<p><strong>Pipeline</strong>:</p>
+<ol class="arabic">
+<li><p>Determine orgs: all eligible (when <code class="docutils literal notranslate"><span class="pre">org_id</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>) or single.</p></li>
+<li><p>For each org, resolve graph backend and find active projects.</p></li>
+<li><p>Per project:
+a. Fetch all non-merged entities.
+b. Phase 1: Exact match — group by <code class="docutils literal notranslate"><span class="pre">LOWER(name)</span></code>.
+c. Phase 2: Fuzzy match — <code class="docutils literal notranslate"><span class="pre">backend.bulk_search_entities()</span></code> with</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">fuzzy_threshold=0.85</span></code>.</p>
+</div></blockquote>
+<ol class="loweralpha simple" start="4">
+<li><p>For each duplicate cluster:
+- Select canonical entity (most recent <code class="docutils literal notranslate"><span class="pre">created_at</span></code>).
+- <code class="docutils literal notranslate"><span class="pre">backend.merge_entities()</span></code> — atomic rewire + dedup + soft-delete.
+- Write <code class="docutils literal notranslate"><span class="pre">audit_log</span></code> entry with before/after snapshot.</p></li>
+<li><p>7-day recovery window via <code class="docutils literal notranslate"><span class="pre">is_merged</span></code> soft-delete flag.</p></li>
+</ol>
+</li>
+<li><p>Per-org commit (project-level rollback on failure).</p></li>
+</ol>
+<p><strong>Batch size</strong>: 100 entity clusters per transaction.  If all clusters
+in a project fail, the project is marked as failed (still continues to
+next project).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dict with <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">orgs_processed</span></code>, <code class="docutils literal notranslate"><span class="pre">orgs_failed</span></code>,
+<code class="docutils literal notranslate"><span class="pre">clusters_merged</span></code>, <code class="docutils literal notranslate"><span class="pre">entities_merged</span></code>, <code class="docutils literal notranslate"><span class="pre">relationships_rewired</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="ingest-business-data-batch-fact-ingestion">
+<h3><a class="toc-backref" href="#id29" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">ingest_business_data</span></code> — Batch Fact Ingestion</a><a class="headerlink" href="#ingest-business-data-batch-fact-ingestion" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="ingest_business_data">
+<span class="sig-name descname"><span class="pre">ingest_business_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ingest_business_data" title="Link to this definition">¶</a></dt>
+<dd><p><strong>Queue</strong>: Low</p>
+<p><strong>Enrichment bit</strong>: None (data ingestion task).</p>
+<p><strong>Idempotency</strong>: Content-hash dedup is checked at the API layer
+(<code class="docutils literal notranslate"><span class="pre">FactService</span></code>).  The worker relies on the fact that identical payloads
+produce identical facts — the repository’s <code class="docutils literal notranslate"><span class="pre">batch_create</span></code> handles
+duplicate rows gracefully.  In practice, the ARQ retry is safe because
+<code class="docutils literal notranslate"><span class="pre">FactRepository.batch_create</span></code> returns only newly inserted rows.</p>
+<p><strong>Pipeline</strong>:</p>
+<ol class="arabic simple">
+<li><p>Validate each triple (subject, predicate, object required).</p></li>
+<li><p>Bulk-insert valid facts via <code class="docutils literal notranslate"><span class="pre">FactRepository.batch_create</span></code>.</p></li>
+<li><p>Enqueue <code class="docutils literal notranslate"><span class="pre">embed_fact</span></code> per inserted fact (non-blocking).</p></li>
+<li><p>Return result dict with <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">accepted</span></code> count, and
+<code class="docutils literal notranslate"><span class="pre">errors</span></code> list.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>A dict:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p>”status”: “completed” | “completed_with_errors”,
+“accepted”: 42,
+“errors”: [</p>
+<blockquote>
+<div><p>{“index”: 3, “error”: “Missing required field: …”, “fact”: {…}}</p>
+</div></blockquote>
+<p>],
+“detail”: “42 facts ingested, 1 errors”,</p>
+</div></blockquote>
+<p>}</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="generate-user-summary-user-profiling">
+<h3><a class="toc-backref" href="#id30" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">generate_user_summary</span></code> — User Profiling</a><a class="headerlink" href="#generate-user-summary-user-profiling" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="generate_user_summary">
+<span class="sig-name descname"><span class="pre">generate_user_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">org_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#generate_user_summary" title="Link to this definition">¶</a></dt>
+<dd><p><strong>Queue</strong>: Low</p>
+<p><strong>Enrichment bit</strong>: None (user profiling task).</p>
+<p><strong>Idempotency</strong>: Replaces the previous summary on each successful run.
+Repeated invocations produce an updated profile — there is no “already
+done” check because new conversation data may have accumulated since
+the last run.  Callers are responsible for throttling (typically
+triggered after every N new episodes).</p>
+<p><strong>Pipeline</strong>:</p>
+<ol class="arabic simple">
+<li><p>Fetch the user’s last 100 conversation episodes (chronological).</p></li>
+<li><p>Fetch extracted facts (subject-predicate-object triples).</p></li>
+<li><p>Fetch graph entities linked to the user’s sessions.</p></li>
+<li><p>Fetch aggregate dialog classifications (top intents/emotions).</p></li>
+<li><p>Render <code class="docutils literal notranslate"><span class="pre">summarise_user_v1</span></code> Jinja2 prompt.</p></li>
+<li><p>Call LLM (temperature 0.3).</p></li>
+<li><p>Persist the summary on the <code class="docutils literal notranslate"><span class="pre">User</span></code> model via
+<code class="docutils literal notranslate"><span class="pre">UserRepository.update_summary</span></code>.</p></li>
+</ol>
+</dd></dl>
+
+</section>
+<section id="reconcile-enrichment-enrichment-reconciliation">
+<h3><a class="toc-backref" href="#id31" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">reconcile_enrichment</span></code> — Enrichment Reconciliation</a><a class="headerlink" href="#reconcile-enrichment-enrichment-reconciliation" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="reconcile_enrichment">
+<span class="sig-name descname"><span class="pre">reconcile_enrichment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#reconcile_enrichment" title="Link to this definition">¶</a></dt>
+<dd><p><strong>Queue</strong>: Low (runs as a cron job every 5 minutes).</p>
+<p><strong>Enrichment bit</strong>: None (supervisory task).</p>
+<p><strong>Idempotency</strong>: Designed to be safe for overlapping runs.  The cron
+job uses <code class="docutils literal notranslate"><span class="pre">unique=True</span></code> in ARQ, preventing concurrent invocations.
+The backlog guard (high-priority queue depth &gt; 1000) prevents adding
+more jobs faster than workers can drain them.</p>
+<p><strong>Pipeline</strong>:</p>
+<ol class="arabic simple">
+<li><p>Derive dependencies from ARQ context (session factory, Redis).</p></li>
+<li><p>Backlog guard: skip if high-priority queue has &gt; 1000 pending jobs.</p></li>
+<li><p>Query episodes where <code class="docutils literal notranslate"><span class="pre">enrichment_status</span> <span class="pre">!=</span> <span class="pre">ENRICHMENT_ALL</span></code> AND
+<code class="docutils literal notranslate"><span class="pre">updated_at</span> <span class="pre">&lt;</span> <span class="pre">NOW()</span> <span class="pre">-</span> <span class="pre">30</span> <span class="pre">minutes</span></code> (batch size: 100).</p></li>
+<li><p>For each stale episode, compute missing enrichment bits.</p></li>
+<li><p>Enqueue missing tasks on the appropriate queue:</p>
+<ul class="simple">
+<li><p>If any of the 4 LLM bits (0, 2, 4, 5) are missing: enqueue
+<code class="docutils literal notranslate"><span class="pre">enrich_episode</span></code> once (high queue).</p></li>
+<li><p>Missing bit 1: enqueue <code class="docutils literal notranslate"><span class="pre">embed_episode</span></code> (high queue).</p></li>
+<li><p>Missing bit 3: enqueue <code class="docutils literal notranslate"><span class="pre">link_entities_to_episode</span></code> (low queue).</p></li>
+</ul>
+</li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A summary string for the cron log, e.g.
+<code class="docutils literal notranslate"><span class="pre">&quot;Re-enqueued</span> <span class="pre">12</span> <span class="pre">enrichment</span> <span class="pre">tasks</span> <span class="pre">across</span> <span class="pre">5</span> <span class="pre">episodes&quot;</span></code>.</p>
+</dd>
+</dl>
+<p>This is the <strong>safety net</strong> for worker crashes, job timeouts, or any
+scenario where enrichment tasks are dropped without completion.
+Without this cron job, a worker crash would leave episodes
+un-enriched until an operator manually intervenes.</p>
+</dd></dl>
+
+</section>
+<section id="deliver-webhook-webhook-delivery">
+<h3><a class="toc-backref" href="#id32" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">deliver_webhook</span></code> — Webhook Delivery</a><a class="headerlink" href="#deliver-webhook-webhook-delivery" title="Link to this heading">¶</a></h3>
+<p>Defined in <code class="xref py py-mod docutils literal notranslate"><span class="pre">services.worker.tasks.deliver_webhook</span></code>.</p>
+<p><strong>Queue</strong>: Low</p>
+<p><strong>Pipeline</strong>: Sends an HTTP POST to a configured webhook URL with the
+event payload.  Includes retry logic for transient HTTP failures.
+See <a class="reference internal" href="../api/services.worker.tasks.html"><span class="doc">services.worker.tasks package</span></a> for details.</p>
+</section>
+<section id="write-audit-log-audit-log-writethrough">
+<h3><a class="toc-backref" href="#id33" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">write_audit_log</span></code> — Audit Log Writethrough</a><a class="headerlink" href="#write-audit-log-audit-log-writethrough" title="Link to this heading">¶</a></h3>
+<p>Defined in <code class="xref py py-mod docutils literal notranslate"><span class="pre">services.worker.tasks.audit_log</span></code>.</p>
+<p><strong>Queue</strong>: Low</p>
+<p><strong>Pipeline</strong>: Persists an audit log entry asynchronously.  Used by
+the API server to avoid blocking the response on audit writes.
+See <a class="reference internal" href="../api/services.worker.tasks.html"><span class="doc">services.worker.tasks package</span></a> for details.</p>
+</section>
+</section>
+<section id="idempotency-label">
+<span id="idempotency-semantics"></span><h2><a class="toc-backref" href="#id34" role="doc-backlink">Idempotency Semantics</a><a class="headerlink" href="#idempotency-label" title="Link to this heading">¶</a></h2>
+<p>Every task in the enrichment pipeline follows the <strong>same idempotency pattern</strong>:</p>
+<ol class="arabic simple">
+<li><p><strong>Bitmask check</strong>: Before doing any work, check the episode’s
+<code class="docutils literal notranslate"><span class="pre">enrichment_status</span></code> bitmask.  If the relevant bit is already set,
+return immediately.  This is the primary idempotency mechanism.</p></li>
+<li><p><strong>Exponential backoff retry</strong>: All tasks are decorated with
+<code class="docutils literal notranslate"><span class="pre">&#64;with_retry(...)</span></code>.  On transient failure (LLM timeout, DB deadlock),
+the task retries with backoff.  The bitmask check at the entry ensures
+that partial progress from a previous attempt (e.g., bit 4 set but bit 0
+not) is not redone.</p></li>
+<li><p><strong>Savepoint isolation</strong> (combined worker): The <code class="docutils literal notranslate"><span class="pre">enrich_episode</span></code> task
+processes each section in an independent <code class="docutils literal notranslate"><span class="pre">begin_nested()</span></code> savepoint.
+A failure in facts does not roll back entities.</p></li>
+</ol>
+<p>The <code class="docutils literal notranslate"><span class="pre">reconcile_enrichment</span></code> cron job provides a <strong>secondary safety net</strong>
+for dropped tasks — it does not rely on the primary idempotency mechanism
+and instead re-enqueues missing tasks for any episode stale for &gt; 30 minutes.</p>
+<p>Non-enrichment tasks (<code class="docutils literal notranslate"><span class="pre">summarise_community</span></code>, <code class="docutils literal notranslate"><span class="pre">merge_duplicate_entities</span></code>,
+<code class="docutils literal notranslate"><span class="pre">generate_user_summary</span></code>) use upsert semantics or skip-already-processed
+checks specific to their domain.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There is <strong>no at-least-once delivery guarantee</strong> in ARQ.  If the worker
+crashes mid-job, the job is lost.  The reconciliation cron job is the
+recovery mechanism for enrichment tasks.  For business-critical tasks,
+consider adding a separate dead-letter queue or using a more durable
+queue backend.</p>
+</div>
+</section>
+<section id="enrichment-pipeline-flow">
+<h2><a class="toc-backref" href="#id35" role="doc-backlink">Enrichment Pipeline Flow</a><a class="headerlink" href="#enrichment-pipeline-flow" title="Link to this heading">¶</a></h2>
+<p>The episode enrichment pipeline follows this sequence:</p>
+<ol class="arabic simple">
+<li><p><strong>Episode committed</strong> — The API server creates an <code class="docutils literal notranslate"><span class="pre">Episode</span></code> row in
+PostgreSQL (<code class="docutils literal notranslate"><span class="pre">enrichment_status</span> <span class="pre">=</span> <span class="pre">0</span></code>).</p></li>
+<li><p><strong>Combined enrichment enqueued</strong> — The API enqueues <code class="docutils literal notranslate"><span class="pre">enrich_episode</span></code>
+on the <strong>high-priority queue</strong> (or, for backward compatibility, individual
+tasks like <code class="docutils literal notranslate"><span class="pre">extract_entities</span></code>).</p></li>
+<li><p><strong>LLM enrichment</strong> (bits 0, 2, 4, 5) — <code class="docutils literal notranslate"><span class="pre">enrich_episode</span></code> makes a single
+LLM call with <code class="docutils literal notranslate"><span class="pre">CombinedLLMOutput</span></code> schema, then processes classification,
+entities, facts, and structured extraction in independent savepoints.</p></li>
+<li><p><strong>Episode embedding</strong> (bit 1) — <code class="docutils literal notranslate"><span class="pre">embed_episode</span></code> generates a pgvector
+embedding for the episode content.  This runs <strong>after</strong> LLM enrichment
+so the embedding can be used for semantic search over enriched episodes.</p></li>
+<li><p><strong>Entity–episode linking</strong> (bit 3) — <code class="docutils literal notranslate"><span class="pre">link_entities_to_episode</span></code> links
+extracted entities to the episode in the graph backend.  This is a
+<strong>low-priority</strong> task because the PostgreSQL data is already authoritative
+— the graph is a secondary index for traversal.</p></li>
+<li><p><strong>Deferred observations</strong> (bit 6) — <code class="docutils literal notranslate"><span class="pre">compute_observations</span></code> runs
+project-wide pattern detection.  This is <strong>non-blocking</strong> — the episode
+is already queryable by enrichment at this point.</p></li>
+</ol>
+<p>The pipeline is <strong>not strictly linear</strong> — individual tasks can be enqueued
+independently, and the reconciliation cron handles any gaps.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Episode Committed
+      │
+      ▼
+┌───────────────────────────────┐
+│   enrich_episode              │  ← Single LLM call, savepoint isolation
+│   (bits 0, 2, 4, 5)           │     or 4 individual tasks (legacy)
+└───────────┬───────────────────┘
+            │
+            ▼
+┌───────────────────────────────┐
+│   embed_episode               │  ← pgvector, per-org embedding config
+│   (bit 1)                     │
+└───────────┬───────────────────┘
+            │
+            ▼
+┌───────────────────────────────┐
+│   link_entities_to_episode    │  ← Low-priority, graph index
+│   (bit 3)                     │
+└───────────┬───────────────────┘
+            │
+            ▼
+┌───────────────────────────────┐
+│   compute_observations        │  ← Deferred, non-blocking
+│   (bit 6, not in ALL)         │
+└───────────────────────────────┘
+</pre></div>
+</div>
+</section>
+<section id="scaling-model">
+<h2><a class="toc-backref" href="#id36" role="doc-backlink">Scaling Model</a><a class="headerlink" href="#scaling-model" title="Link to this heading">¶</a></h2>
+<section id="concurrency">
+<h3><a class="toc-backref" href="#id37" role="doc-backlink">Concurrency</a><a class="headerlink" href="#concurrency" title="Link to this heading">¶</a></h3>
+<p>Concurrency is controlled by <code class="docutils literal notranslate"><span class="pre">MAX_WORKERS</span></code> (default <code class="docutils literal notranslate"><span class="pre">4</span></code>, range <code class="docutils literal notranslate"><span class="pre">1–32</span></code>):</p>
+<ul class="simple">
+<li><p><strong>High-priority pool</strong>: <code class="docutils literal notranslate"><span class="pre">min(MAX_WORKERS,</span> <span class="pre">8)</span></code> — bounded at 8 to prevent
+overloading the LLM provider with concurrent requests.</p></li>
+<li><p><strong>Low-priority pool</strong>: <code class="docutils literal notranslate"><span class="pre">max(1,</span> <span class="pre">MAX_WORKERS</span> <span class="pre">//</span> <span class="pre">4)</span></code> — one low-priority slot
+per four high-priority slots.</p></li>
+</ul>
+<p>For I/O-bound tasks (LLM calls, DB queries, embedding), concurrency can be
+increased to 8–16 without significant CPU pressure.  For CPU-bound work,
+set <code class="docutils literal notranslate"><span class="pre">MAX_WORKERS</span></code> to the number of available CPU cores.</p>
+<p>The two pools run in the same event loop — they share the asyncio event loop
+but have independent <code class="docutils literal notranslate"><span class="pre">max_jobs</span></code> limits.  If the high-priority pool is at
+capacity, the low-priority pool still accepts jobs (and vice versa).</p>
+</section>
+<section id="resource-injection">
+<h3><a class="toc-backref" href="#id38" role="doc-backlink">Resource Injection</a><a class="headerlink" href="#resource-injection" title="Link to this heading">¶</a></h3>
+<p>The following shared resources are created once per worker process and
+injected into every task invocation:</p>
+<ul class="simple">
+<li><p><strong>DB engine</strong>: <code class="docutils literal notranslate"><span class="pre">core.db</span></code> async engine with <code class="docutils literal notranslate"><span class="pre">pool_size=10</span></code>,
+<code class="docutils literal notranslate"><span class="pre">max_overflow=5</span></code>.  This means up to 15 concurrent PostgreSQL connections
+per worker process.  Scale the number of worker replicas and PostgreSQL’s
+<code class="docutils literal notranslate"><span class="pre">max_connections</span></code> accordingly.</p></li>
+<li><p><strong>Redis</strong>: ARQ manages its own Redis connection per pool.  Each worker pool
+opens one persistent Redis connection for listening, plus one for job
+result writes.  Total: ~4 Redis connections per worker process.</p></li>
+<li><p><strong>FalkorDB</strong>: Optional.  One connection pool (<code class="docutils literal notranslate"><span class="pre">max_connections=10</span></code>,
+default) shared across all tasks.</p></li>
+<li><p><strong>SurrealDB</strong>: Lazy per-org connection pool.  Connections are created on
+demand and cached within the worker process.</p></li>
+<li><p><strong>OpenBao client</strong>: One persistent authenticated client shared across all
+tasks for org config resolution.</p></li>
+</ul>
+</section>
+<section id="deployment-sizing">
+<h3><a class="toc-backref" href="#id39" role="doc-backlink">Deployment Sizing</a><a class="headerlink" href="#deployment-sizing" title="Link to this heading">¶</a></h3>
+<p>Each additional worker pod adds 15 DB connections and ~4 Redis connections.
+PostgreSQL’s <code class="docutils literal notranslate"><span class="pre">max_connections</span></code> should be set to
+<code class="docutils literal notranslate"><span class="pre">(pod_count</span> <span class="pre">×</span> <span class="pre">15)</span> <span class="pre">+</span> <span class="pre">API_server_connections</span> <span class="pre">+</span> <span class="pre">20%</span> <span class="pre">headroom</span></code>.</p>
+</section>
+</section>
+<section id="monitoring">
+<h2><a class="toc-backref" href="#id40" role="doc-backlink">Monitoring</a><a class="headerlink" href="#monitoring" title="Link to this heading">¶</a></h2>
+<section id="prometheus-metrics">
+<h3><a class="toc-backref" href="#id41" role="doc-backlink">Prometheus Metrics</a><a class="headerlink" href="#prometheus-metrics" title="Link to this heading">¶</a></h3>
+<p>The worker exposes the following metrics on <code class="docutils literal notranslate"><span class="pre">PROMETHEUS_PORT</span></code> (default 9095):</p>
+</section>
+<section id="health-check">
+<h3><a class="toc-backref" href="#id42" role="doc-backlink">Health Check</a><a class="headerlink" href="#health-check" title="Link to this heading">¶</a></h3>
+<p>Available on <code class="docutils literal notranslate"><span class="pre">HEALTH_PORT</span></code> (default 8081):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/health</span></code> — Returns <code class="docutils literal notranslate"><span class="pre">{&quot;status&quot;:</span> <span class="pre">&quot;ok&quot;,</span> <span class="pre">&quot;redis_connected&quot;:</span> <span class="pre">true}</span></code> or
+<code class="docutils literal notranslate"><span class="pre">{&quot;status&quot;:</span> <span class="pre">&quot;unhealthy&quot;,</span> <span class="pre">...}</span></code> with HTTP 503.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/ready</span></code> — Same as <code class="docutils literal notranslate"><span class="pre">/health</span></code> (for Kubernetes readiness probe).</p></li>
+</ul>
+<p>Both endpoints verify Redis connectivity via <code class="docutils literal notranslate"><span class="pre">PING</span></code>.</p>
+</section>
+<section id="structured-logging">
+<h3><a class="toc-backref" href="#id43" role="doc-backlink">Structured Logging</a><a class="headerlink" href="#structured-logging" title="Link to this heading">¶</a></h3>
+<p>The worker uses <code class="docutils literal notranslate"><span class="pre">structlog</span></code> with a JSON renderer in production.  Every log
+entry is automatically enriched with <code class="docutils literal notranslate"><span class="pre">timestamp</span></code>, <code class="docutils literal notranslate"><span class="pre">level</span></code>, <code class="docutils literal notranslate"><span class="pre">logger</span></code>
+(<code class="docutils literal notranslate"><span class="pre">OpenZync.worker</span></code>), and per-task context (<code class="docutils literal notranslate"><span class="pre">trace_id</span></code>, <code class="docutils literal notranslate"><span class="pre">org_id</span></code>,
+<code class="docutils literal notranslate"><span class="pre">task_type</span></code>, <code class="docutils literal notranslate"><span class="pre">job_id</span></code>) bound via <code class="docutils literal notranslate"><span class="pre">structlog.contextvars.bind_contextvars</span></code>.</p>
+<p>In development, <code class="docutils literal notranslate"><span class="pre">STRUCTLOG_FORMAT=console</span></code> produces human-readable output.
+In production, JSON output is ingested by Loki for centralised log
+aggregation.</p>
+</section>
+<section id="job-lifecycle-callbacks">
+<h3><a class="toc-backref" href="#id44" role="doc-backlink">Job Lifecycle Callbacks</a><a class="headerlink" href="#job-lifecycle-callbacks" title="Link to this heading">¶</a></h3>
+<p>The worker registers two ARQ callbacks:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">on_job_end</span></code> — Logs completion with duration, emits Prometheus metrics.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_shutdown</span></code> — Closes the persistent OpenBao client, logs shutdown
+completion.</p></li>
+</ul>
+<p>See <code class="xref py py-func docutils literal notranslate"><span class="pre">services.worker.worker.on_job_end()</span></code> and
+<code class="xref py py-func docutils literal notranslate"><span class="pre">services.worker.worker.on_shutdown()</span></code>.</p>
+<p>Queue depth is sampled every 15 seconds in a background <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.Task" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">asyncio.Task</span></code></a>
+and exposed via the <code class="docutils literal notranslate"><span class="pre">openzync_worker_queue_depth</span></code> gauge.</p>
+</section>
+</section>
+<section id="adding-a-new-task">
+<h2><a class="toc-backref" href="#id45" role="doc-backlink">Adding a New Task</a><a class="headerlink" href="#adding-a-new-task" title="Link to this heading">¶</a></h2>
+<p>To add a new worker task:</p>
+<ol class="arabic">
+<li><p><strong>Create the task module</strong> in <code class="docutils literal notranslate"><span class="pre">workers/tasks/{task_name}.py</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@with_retry</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">base_delay_s</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">my_new_task</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">episode_id</span><span class="p">,</span> <span class="n">org_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Docstring following Google style.&quot;&quot;&quot;</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>Follow the standard DB engine bootstrap pattern (prefer shared engine
+from <code class="docutils literal notranslate"><span class="pre">ctx[&quot;db_engine&quot;]</span></code>, fall back to short-lived engine for testability).</p>
+</li>
+<li><p><strong>Export from the tasks package</strong> — add the new function to
+<code class="docutils literal notranslate"><span class="pre">workers/tasks/__init__.py</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">workers.tasks.my_new_task</span><span class="w"> </span><span class="kn">import</span> <span class="n">my_new_task</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="s2">&quot;my_new_task&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Register with the worker</strong> — import in <code class="docutils literal notranslate"><span class="pre">services/worker/worker.py</span></code>
+and add to the appropriate queue list:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">workers.tasks.my_new_task</span><span class="w"> </span><span class="kn">import</span> <span class="n">my_new_task</span>
+
+<span class="n">HIGH_QUEUE_TASKS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">my_new_task</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Assign an enrichment bit</strong> (if applicable) — add a new constant to
+<code class="docutils literal notranslate"><span class="pre">workers/tasks/base.py</span></code> and include it in <code class="docutils literal notranslate"><span class="pre">ENRICHMENT_ALL</span></code> if the
+step is required for “fully enriched” status.</p></li>
+<li><p><strong>Enqueue from the API or service layer</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">core.arq</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_arq</span>
+
+<span class="n">job_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_arq</span><span class="p">()</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span>
+    <span class="s2">&quot;my_new_task&quot;</span><span class="p">,</span>
+    <span class="n">queue_name</span><span class="o">=</span><span class="s2">&quot;high&quot;</span> <span class="k">if</span> <span class="n">is_realtime</span> <span class="k">else</span> <span class="s2">&quot;low&quot;</span><span class="p">,</span>
+    <span class="n">episode_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">episode</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+    <span class="n">org_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">org</span><span class="o">.</span><span class="n">org_id</span><span class="p">),</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Write tests</strong> — see <a class="reference internal" href="../guides/contributing.html"><span class="doc">Contributing</span></a> for testing conventions.
+Mock the LLM backend, use a test PostgreSQL via <code class="docutils literal notranslate"><span class="pre">asyncpg</span></code>, and test both
+the success path and the idempotency skip path.</p></li>
+</ol>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="sdk_python.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Python SDK (openzync)</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="api_layer.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">API Layer</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Rohan Shaw
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Worker System — ARQ Background Job Processing</a><ul>
+<li><a class="reference internal" href="#architecture-overview">Architecture Overview</a></li>
+<li><a class="reference internal" href="#startup-sequence">Startup Sequence</a><ul>
+<li><a class="reference internal" href="#phase-1-openbao-bootstrapping">Phase 1 — OpenBao Bootstrapping</a></li>
+<li><a class="reference internal" href="#phase-2-shared-resource-initialisation">Phase 2 — Shared Resource Initialisation</a></li>
+<li><a class="reference internal" href="#phase-3-worker-pool-creation">Phase 3 — Worker Pool Creation</a></li>
+<li><a class="reference internal" href="#phase-4-liftoff">Phase 4 — Liftoff</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#container-entrypoint">Container Entrypoint</a></li>
+<li><a class="reference internal" href="#configuration-workersettings">Configuration — <code class="docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a><ul>
+<li><a class="reference internal" href="#WorkerSettings"><code class="docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#arq-connection-management-core-arq">ARQ Connection Management — <code class="docutils literal notranslate"><span class="pre">core.arq</span></code></a><ul>
+<li><a class="reference internal" href="#ARQPool"><code class="docutils literal notranslate"><span class="pre">ARQPool</span></code></a><ul>
+<li><a class="reference internal" href="#ARQPool.initialize"><code class="docutils literal notranslate"><span class="pre">ARQPool.initialize()</span></code></a></li>
+<li><a class="reference internal" href="#ARQPool.close"><code class="docutils literal notranslate"><span class="pre">ARQPool.close()</span></code></a></li>
+<li><a class="reference internal" href="#ARQPool.enqueue"><code class="docutils literal notranslate"><span class="pre">ARQPool.enqueue()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#task-registry">Task Registry</a><ul>
+<li><a class="reference internal" href="#cron-jobs">Cron Jobs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#enrichment-bitmask-system">Enrichment Bitmask System</a></li>
+<li><a class="reference internal" href="#retry-decorator-with-retry">Retry Decorator — <code class="docutils literal notranslate"><span class="pre">with_retry</span></code></a><ul>
+<li><a class="reference internal" href="#with_retry"><code class="docutils literal notranslate"><span class="pre">with_retry()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#graph-backend-resolution-workers-backend">Graph Backend Resolution — <code class="docutils literal notranslate"><span class="pre">workers.backend</span></code></a><ul>
+<li><a class="reference internal" href="#resolve_graph_backend"><code class="docutils literal notranslate"><span class="pre">resolve_graph_backend()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#task-reference-workers-tasks">Task Reference — <code class="docutils literal notranslate"><span class="pre">workers/tasks/</span></code></a><ul>
+<li><a class="reference internal" href="#enrich-episode-combined-llm-enrichment"><code class="docutils literal notranslate"><span class="pre">enrich_episode</span></code> — Combined LLM Enrichment</a><ul>
+<li><a class="reference internal" href="#enrich_episode"><code class="docutils literal notranslate"><span class="pre">enrich_episode()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#classify-dialog-dialog-classification"><code class="docutils literal notranslate"><span class="pre">classify_dialog</span></code> — Dialog Classification</a><ul>
+<li><a class="reference internal" href="#classify_dialog"><code class="docutils literal notranslate"><span class="pre">classify_dialog()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#extract-entities-entity-extraction"><code class="docutils literal notranslate"><span class="pre">extract_entities</span></code> — Entity Extraction</a><ul>
+<li><a class="reference internal" href="#extract_entities"><code class="docutils literal notranslate"><span class="pre">extract_entities()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#extract-facts-fact-extraction"><code class="docutils literal notranslate"><span class="pre">extract_facts</span></code> — Fact Extraction</a><ul>
+<li><a class="reference internal" href="#extract_facts"><code class="docutils literal notranslate"><span class="pre">extract_facts()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#embed-episode-episode-embedding"><code class="docutils literal notranslate"><span class="pre">embed_episode</span></code> — Episode Embedding</a><ul>
+<li><a class="reference internal" href="#embed_episode"><code class="docutils literal notranslate"><span class="pre">embed_episode()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#embed-fact-fact-embedding"><code class="docutils literal notranslate"><span class="pre">embed_fact</span></code> — Fact Embedding</a><ul>
+<li><a class="reference internal" href="#embed_fact"><code class="docutils literal notranslate"><span class="pre">embed_fact()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#extract-structured-structured-extraction"><code class="docutils literal notranslate"><span class="pre">extract_structured</span></code> — Structured Extraction</a><ul>
+<li><a class="reference internal" href="#extract_structured"><code class="docutils literal notranslate"><span class="pre">extract_structured()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#link-entities-to-episode-entityepisode-linking"><code class="docutils literal notranslate"><span class="pre">link_entities_to_episode</span></code> — Entity–Episode Linking</a><ul>
+<li><a class="reference internal" href="#link_entities_to_episode"><code class="docutils literal notranslate"><span class="pre">link_entities_to_episode()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#compute-observations-graph-topology-observations"><code class="docutils literal notranslate"><span class="pre">compute_observations</span></code> — Graph-Topology Observations</a><ul>
+<li><a class="reference internal" href="#compute_observations"><code class="docutils literal notranslate"><span class="pre">compute_observations()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#summarise-community-community-detection"><code class="docutils literal notranslate"><span class="pre">summarise_community</span></code> — Community Detection</a><ul>
+<li><a class="reference internal" href="#summarise_community"><code class="docutils literal notranslate"><span class="pre">summarise_community()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#merge-duplicate-entities-entity-dedup"><code class="docutils literal notranslate"><span class="pre">merge_duplicate_entities</span></code> — Entity Dedup</a><ul>
+<li><a class="reference internal" href="#merge_duplicate_entities"><code class="docutils literal notranslate"><span class="pre">merge_duplicate_entities()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ingest-business-data-batch-fact-ingestion"><code class="docutils literal notranslate"><span class="pre">ingest_business_data</span></code> — Batch Fact Ingestion</a><ul>
+<li><a class="reference internal" href="#ingest_business_data"><code class="docutils literal notranslate"><span class="pre">ingest_business_data()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#generate-user-summary-user-profiling"><code class="docutils literal notranslate"><span class="pre">generate_user_summary</span></code> — User Profiling</a><ul>
+<li><a class="reference internal" href="#generate_user_summary"><code class="docutils literal notranslate"><span class="pre">generate_user_summary()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#reconcile-enrichment-enrichment-reconciliation"><code class="docutils literal notranslate"><span class="pre">reconcile_enrichment</span></code> — Enrichment Reconciliation</a><ul>
+<li><a class="reference internal" href="#reconcile_enrichment"><code class="docutils literal notranslate"><span class="pre">reconcile_enrichment()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#deliver-webhook-webhook-delivery"><code class="docutils literal notranslate"><span class="pre">deliver_webhook</span></code> — Webhook Delivery</a></li>
+<li><a class="reference internal" href="#write-audit-log-audit-log-writethrough"><code class="docutils literal notranslate"><span class="pre">write_audit_log</span></code> — Audit Log Writethrough</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#idempotency-label">Idempotency Semantics</a></li>
+<li><a class="reference internal" href="#enrichment-pipeline-flow">Enrichment Pipeline Flow</a></li>
+<li><a class="reference internal" href="#scaling-model">Scaling Model</a><ul>
+<li><a class="reference internal" href="#concurrency">Concurrency</a></li>
+<li><a class="reference internal" href="#resource-injection">Resource Injection</a></li>
+<li><a class="reference internal" href="#deployment-sizing">Deployment Sizing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#monitoring">Monitoring</a><ul>
+<li><a class="reference internal" href="#prometheus-metrics">Prometheus Metrics</a></li>
+<li><a class="reference internal" href="#health-check">Health Check</a></li>
+<li><a class="reference internal" href="#structured-logging">Structured Logging</a></li>
+<li><a class="reference internal" href="#job-lifecycle-callbacks">Job Lifecycle Callbacks</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#adding-a-new-task">Adding a New Task</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

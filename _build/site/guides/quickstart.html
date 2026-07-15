@@ -1,0 +1,1074 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Architecture Overview" href="architecture.html"><link rel="prev" title="Overview" href="overview.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>Quickstart - OpenZync Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">OpenZync Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">OpenZync Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../domains/core.html">Core Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/llm.html">LLM Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/graph_backends.html">Graph Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/reranker.html">Re-ranking &amp; Community Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/reranker.html#community-detection">Community Detection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Domain Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../domains/auth.html">Authentication &amp; Authorization Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/memory_context.html">Memory &amp; Context Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/admin_webhooks.html">Admin &amp; Webhooks Domain</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API &amp; Workers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../domains/api_layer.html">API Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/workers.html">Worker System — ARQ Background Job Processing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SDK, MCP &amp; Frontend</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../domains/sdk_python.html">Python SDK (openzync)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/mcp_server.html">MCP Server (FastMCP)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/frontend.html">OpenZync Frontend</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Infra</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../domains/infrastructure.html">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</a><input aria-label="Toggle navigation of Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture Decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference (Auto-generated)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/core.html">core package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/routers.html">routers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/models.html">models package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/schemas.html">schemas package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/services.html">services package</a><input aria-label="Toggle navigation of services package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/services.api.html">services.api package</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/services.mcp.html">services.mcp package</a><input aria-label="Toggle navigation of services.mcp package" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.mcp.tools.html">services.mcp.tools package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.mcp.transport.html">services.mcp.transport package</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/services.worker.html">services.worker package</a><input aria-label="Toggle navigation of services.worker package" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.worker.prompts.html">services.worker.prompts package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.worker.tasks.html">services.worker.tasks package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/repositories.html">repositories package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/middleware.html">middleware package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/dependencies.html">dependencies package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/workers.html">workers package</a><input aria-label="Toggle navigation of workers package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/workers.tasks.html">workers.tasks package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/utils.html">utils package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/packages.html">packages package</a><input aria-label="Toggle navigation of packages package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/packages.community.html">packages.community package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/packages.graph_backend.html">packages.graph_backend package</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/blob/main/docs/guides/quickstart.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/edit/main/docs/guides/quickstart.rst" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading">¶</a></h1>
+<p>This guide takes you from zero to a running local OpenZync instance and your
+first successful API call — using only the documentation.</p>
+<p>If you already understand the architecture, this is all you need. For detailed
+deployment options (production Docker Compose, Helm, observability stack), see
+<a class="reference internal" href="../domains/infrastructure.html"><span class="doc">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</span></a>.</p>
+<nav class="contents this-will-duplicate-information-and-it-is-still-useful-here local" id="sections">
+<p class="topic-title">Sections</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#prerequisites" id="id1">Prerequisites</a></p></li>
+<li><p><a class="reference internal" href="#clone-and-bootstrap" id="id2">Clone and Bootstrap</a></p>
+<ul>
+<li><p><a class="reference internal" href="#step-1-clone-the-repository" id="id3">Step 1 — Clone the repository</a></p></li>
+<li><p><a class="reference internal" href="#step-2-generate-bootstrap-secrets" id="id4">Step 2 — Generate bootstrap secrets</a></p></li>
+<li><p><a class="reference internal" href="#step-3-start-the-stack" id="id5">Step 3 — Start the stack</a></p></li>
+<li><p><a class="reference internal" href="#step-4-tail-the-bootstrap-logs-optional-but-instructive" id="id6">Step 4 — Tail the bootstrap logs (optional, but instructive)</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#boot-sequence-what-happens-in-those-60s" id="id7">Boot Sequence — What Happens in Those 60s</a></p></li>
+<li><p><a class="reference internal" href="#verify-the-installation" id="id8">Verify the Installation</a></p></li>
+<li><p><a class="reference internal" href="#first-api-calls" id="id9">First API Calls</a></p>
+<ul>
+<li><p><a class="reference internal" href="#step-1-sign-up-and-get-jwt-tokens" id="id10">Step 1 — Sign up and get JWT tokens</a></p></li>
+<li><p><a class="reference internal" href="#step-2-create-a-project" id="id11">Step 2 — Create a project</a></p></li>
+<li><p><a class="reference internal" href="#step-3-ingest-a-message" id="id12">Step 3 — Ingest a message</a></p></li>
+<li><p><a class="reference internal" href="#step-4-retrieve-context" id="id13">Step 4 — Retrieve context</a></p></li>
+<li><p><a class="reference internal" href="#step-5-search" id="id14">Step 5 — Search</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#using-the-sdk" id="id15">Using the SDK</a></p>
+<ul>
+<li><p><a class="reference internal" href="#authentication-with-the-sdk" id="id16">Authentication with the SDK</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#using-the-dashboard" id="id17">Using the Dashboard</a></p></li>
+<li><p><a class="reference internal" href="#development-setup" id="id18">Development Setup</a></p>
+<ul>
+<li><p><a class="reference internal" href="#issue-port-already-in-use" id="id19">Issue: Port already in use</a></p></li>
+<li><p><a class="reference internal" href="#issue-docker-compose-fails-with-required-variable-is-unset" id="id20">Issue: Docker Compose fails with “required variable is unset”</a></p></li>
+<li><p><a class="reference internal" href="#issue-openbao-seal-key-lost-and-openbao-won-t-start" id="id21">Issue: OpenBao seal key lost and OpenBao won’t start</a></p></li>
+<li><p><a class="reference internal" href="#issue-api-returns-503-on-v1-ready" id="id22">Issue: API returns 503 on /v1/ready</a></p></li>
+<li><p><a class="reference internal" href="#issue-signup-returns-429-rate-limited" id="id23">Issue: Signup returns 429 (rate limited)</a></p></li>
+<li><p><a class="reference internal" href="#issue-migration-failures" id="id24">Issue: Migration failures</a></p></li>
+<li><p><a class="reference internal" href="#administrative-openbao-access" id="id25">Administrative OpenBao access</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#next-steps" id="id26">Next Steps</a></p></li>
+</ul>
+</nav>
+<section id="prerequisites">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Prerequisites</a><a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<p>Before you begin, ensure you have the following installed and available on your
+<code class="docutils literal notranslate"><span class="pre">PATH</span></code>:</p>
+<ul class="simple">
+<li><p><strong>Docker</strong> <code class="docutils literal notranslate"><span class="pre">&gt;=24.0</span></code> and <strong>Docker Compose</strong> <code class="docutils literal notranslate"><span class="pre">&gt;=v2.20</span></code>
+(<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span></code> plugin, not the standalone <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code>).</p></li>
+<li><p><strong>~3 GB</strong> of free disk space for the backing containers (PostgreSQL, Redis,
+OpenBao) plus the Docker images.</p></li>
+<li><p><strong>OpenSSL</strong> (<code class="docutils literal notranslate"><span class="pre">openssl</span></code>) and <strong>Python 3.11+</strong> (<code class="docutils literal notranslate"><span class="pre">python3</span></code>) — used to
+generate the required bootstrap secrets.</p></li>
+<li><p><strong>curl</strong> for API smoke-testing (or any HTTP client of your choice).</p></li>
+<li><p><strong>Ports</strong> <code class="docutils literal notranslate"><span class="pre">8000</span></code>, <code class="docutils literal notranslate"><span class="pre">5432</span></code>, <code class="docutils literal notranslate"><span class="pre">6379</span></code>, and <code class="docutils literal notranslate"><span class="pre">8200</span></code> free on <code class="docutils literal notranslate"><span class="pre">127.0.0.1</span></code>.
+These are bound by the backend stack.</p></li>
+</ul>
+</section>
+<section id="clone-and-bootstrap">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Clone and Bootstrap</a><a class="headerlink" href="#clone-and-bootstrap" title="Link to this heading">¶</a></h2>
+<section id="step-1-clone-the-repository">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Step 1 — Clone the repository</a><a class="headerlink" href="#step-1-clone-the-repository" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/rohnsha0/openzync.git
+<span class="nb">cd</span><span class="w"> </span>openzync/openzync-core
+</pre></div>
+</div>
+</section>
+<section id="step-2-generate-bootstrap-secrets">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Step 2 — Generate bootstrap secrets</a><a class="headerlink" href="#step-2-generate-bootstrap-secrets" title="Link to this heading">¶</a></h3>
+<p>The stack uses four required environment variables. Three of them are
+<strong>bootstrap-only</strong> — after first boot, every secret is stored in OpenBao and
+auto-rotated. The fourth (<code class="docutils literal notranslate"><span class="pre">BAO_STATIC_SEAL_KEY</span></code>) must be backed up; if lost,
+all secrets in OpenBao are irrecoverable.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copy the template</span>
+cp<span class="w"> </span>.env.example<span class="w"> </span>.env
+
+<span class="c1"># Generate all four required secrets</span>
+sed<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;s|&lt;replace-with-64-char-hex&gt;|</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span><span class="k">)</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+sed<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;s|&lt;replace-with-32-byte-base64&gt;|</span><span class="k">$(</span>openssl<span class="w"> </span>rand<span class="w"> </span>-base64<span class="w"> </span><span class="m">32</span><span class="k">)</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+sed<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;s|&lt;replace-with-48+-char-url-safe-secret&gt;|</span><span class="k">$(</span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import secrets; print(secrets.token_urlsafe(48))&quot;</span><span class="k">)</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+sed<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;s|&lt;replace-with-32+-char-url-safe-secret&gt;|</span><span class="k">$(</span>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import secrets; print(secrets.token_urlsafe(32))&quot;</span><span class="k">)</span><span class="s2">|&quot;</span><span class="w"> </span>.env
+
+<span class="c1"># Verify the file has no remaining placeholders</span>
+grep<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;&lt;replace-with&#39;</span><span class="w"> </span>.env<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;ERROR: some secrets were not replaced&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;OK&quot;</span>
+</pre></div>
+</div>
+<p>What each variable does:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Purpose</p></th>
+<th class="head"><p>Generation</p></th>
+<th class="head"><p>Stored in OpenBao after boot?</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BAO_STATIC_SEAL_KEY</span></code></p></td>
+<td><p>OpenBao auto-unseal key (AES-256-GCM). <strong>Back this up</strong> — if lost,
+all OpenBao secrets are irrecoverable.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">openssl</span> <span class="pre">rand</span> <span class="pre">-hex</span> <span class="pre">32</span></code> (64 hex chars)</p></td>
+<td><p>No (used by OpenBao directly)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">POSTGRES_PASSWORD</span></code></p></td>
+<td><p>Postgres superuser password for first-boot cluster init. Auto-rotated
+after boot.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">openssl</span> <span class="pre">rand</span> <span class="pre">-base64</span> <span class="pre">32</span></code></p></td>
+<td><p>Discarded after rotation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">OZ_SECRET_KEY</span></code></p></td>
+<td><p>JWT signing and application crypto operations.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-c</span> <span class="pre">&quot;import</span> <span class="pre">secrets;</span> <span class="pre">print(secrets.token_urlsafe(48))&quot;</span></code></p></td>
+<td><p>Yes (in system secret)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">OZ_WEBHOOK_SIGNING_SECRET</span></code></p></td>
+<td><p>HMAC-SHA256 webhook signing key (Svix-compatible).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-c</span> <span class="pre">&quot;import</span> <span class="pre">secrets;</span> <span class="pre">print(secrets.token_urlsafe(32))&quot;</span></code></p></td>
+<td><p>Yes (in system secret)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you see <code class="docutils literal notranslate"><span class="pre">&lt;replace-with-*&gt;</span></code> values remaining in <code class="docutils literal notranslate"><span class="pre">.env</span></code>, Docker Compose
+will refuse to start with an explicit error message naming the missing
+variable.  The <code class="docutils literal notranslate"><span class="pre">:?</span></code> modifier on every required env var is fail-fast by
+design.</p>
+</div>
+</section>
+<section id="step-3-start-the-stack">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Step 3 — Start the stack</a><a class="headerlink" href="#step-3-start-the-stack" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker-compose.backend.yml<span class="w"> </span>up<span class="w"> </span>-d
+</pre></div>
+</div>
+<p>This pulls the images and starts every service in the correct dependency order.
+No <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">migrate</span></code>, no manual secret copy-paste.</p>
+</section>
+<section id="step-4-tail-the-bootstrap-logs-optional-but-instructive">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Step 4 — Tail the bootstrap logs (optional, but instructive)</a><a class="headerlink" href="#step-4-tail-the-bootstrap-logs-optional-but-instructive" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker-compose.backend.yml<span class="w"> </span>logs<span class="w"> </span>-f
+</pre></div>
+</div>
+<p>Watch for each phase completing. The full bootstrap takes <strong>~60 seconds</strong> on a
+cold start (first pull may take longer depending on your connection speed).</p>
+</section>
+</section>
+<section id="boot-sequence-what-happens-in-those-60s">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Boot Sequence — What Happens in Those 60s</a><a class="headerlink" href="#boot-sequence-what-happens-in-those-60s" title="Link to this heading">¶</a></h2>
+<p>The bootstrap is an eight-phase directed acyclic graph enforced by Docker
+Compose <code class="docutils literal notranslate"><span class="pre">depends_on</span></code> conditions:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>openbao ─► openbao-init ─► postgres ─► postgres-init ─► postgres-migrate
+                                                            │
+                                ┌───────────────────────────┘
+                                ▼
+                            openbao-write-db
+                                │
+                  ┌─────────────┴─────────────┐
+                  ▼                           ▼
+          openbao-agent-api            openbao-agent-worker
+             (sidecar)                     (sidecar)
+                  │                           │
+                  ▼                           ▼
+                 api                        worker
+                  │                           │
+                  └─────────► redis ◄─────────┘
+</pre></div>
+</div>
+<p>Timeline:</p>
+<p>After this sequence, the API is available at <code class="docutils literal notranslate"><span class="pre">http://localhost:8000</span></code> and the
+ARQ worker is listening on the Redis queue for enrichment jobs.</p>
+</section>
+<section id="verify-the-installation">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Verify the Installation</a><a class="headerlink" href="#verify-the-installation" title="Link to this heading">¶</a></h2>
+<p>Once the bootstrap is complete, run the health and readiness checks:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8000/v1/health<span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</pre></div>
+</div>
+<p>Expected response:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;service&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;openzync-api&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Readiness probe (checks PostgreSQL and Redis):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span>http://localhost:8000/v1/ready<span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</pre></div>
+</div>
+<p>Expected response:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ok&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;checks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;database&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;redis&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If you get a <code class="docutils literal notranslate"><span class="pre">503</span></code> with <code class="docutils literal notranslate"><span class="pre">&quot;database&quot;:</span> <span class="pre">false</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;redis&quot;:</span> <span class="pre">false</span></code>, wait a
+few more seconds and retry — the api container may have started before the
+sidecar finished rendering the secrets. See <span class="xref std std-ref">quickstart-troubleshooting</span>
+below.</p>
+</section>
+<section id="first-api-calls">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">First API Calls</a><a class="headerlink" href="#first-api-calls" title="Link to this heading">¶</a></h2>
+<section id="step-1-sign-up-and-get-jwt-tokens">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Step 1 — Sign up and get JWT tokens</a><a class="headerlink" href="#step-1-sign-up-and-get-jwt-tokens" title="Link to this heading">¶</a></h3>
+<p>The signup flow is two-step by design: the server sends a 6-digit OTP to the
+registered email, and the client completes the flow by verifying it.  In a
+development environment the OTP is printed to the server logs (no email
+infrastructure is configured by default).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># (a) Create organization + admin user</span>
+curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/v1/auth/signup<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;email&quot;: &quot;alice@example.com&quot;,</span>
+<span class="s1">    &quot;password&quot;: &quot;SecurePass123!&quot;,</span>
+<span class="s1">    &quot;organization_name&quot;: &quot;Acme Corp&quot;</span>
+<span class="s1">  }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</pre></div>
+</div>
+<p>Expected response:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Verification code sent to email&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;alice@example.com&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># (b) Retrieve the OTP from the docker logs</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker-compose.backend.yml<span class="w"> </span>logs<span class="w"> </span>api<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-oP<span class="w"> </span><span class="s1">&#39;(?&lt;=OTP: )\d{6}&#39;</span>
+
+<span class="c1"># If the grep finds nothing, try the worker logs or a broader search:</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker-compose.backend.yml<span class="w"> </span>logs<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;verification.*code\|otp.*code\|[Oo][Tt][Pp]&quot;</span>
+
+<span class="c1"># (c) Verify email with the OTP to receive JWT tokens</span>
+curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/v1/auth/verify-email<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;email&quot;: &quot;alice@example.com&quot;,</span>
+<span class="s1">    &quot;otp&quot;: &quot;483926&quot;</span>
+<span class="s1">  }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</pre></div>
+</div>
+<p>Expected response:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;access_token&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;refresh_token&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;oz_ref_xxxxxxxxxx&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;expires_in&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1800</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;token_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bearer&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Set the access token in a shell variable for the subsequent calls:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">TOKEN</span><span class="o">=</span><span class="s2">&quot;eyJhbGciOiJIUzI1NiIs...&quot;</span><span class="w">    </span><span class="c1"># ← paste your access_token here</span>
+</pre></div>
+</div>
+</section>
+<section id="step-2-create-a-project">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Step 2 — Create a project</a><a class="headerlink" href="#step-2-create-a-project" title="Link to this heading">¶</a></h3>
+<p>All memory operations are scoped to a project. Create one:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/v1/projects<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;name&quot;: &quot;My First Project&quot;,</span>
+<span class="s1">    &quot;description&quot;: &quot;Trying out OpenZync&quot;</span>
+<span class="s1">  }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</pre></div>
+</div>
+<p>Expected response (abbreviated):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;a1b2c3d4-...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;My First Project&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Trying out OpenZync&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="err">...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Save the project ID:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">PROJECT_ID</span><span class="o">=</span><span class="s2">&quot;a1b2c3d4-...&quot;</span><span class="w">    </span><span class="c1"># ← paste your project id here</span>
+</pre></div>
+</div>
+</section>
+<section id="step-3-ingest-a-message">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Step 3 — Ingest a message</a><a class="headerlink" href="#step-3-ingest-a-message" title="Link to this heading">¶</a></h3>
+<p>Ingest a conversation message. The API returns immediately (HTTP 202) and an
+ARQ worker enriches the message asynchronously — extracting entities, facts,
+and embeddings.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;http://localhost:8000/v1/projects/</span><span class="si">${</span><span class="nv">PROJECT_ID</span><span class="si">}</span><span class="s2">/memory&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;session_id&quot;: &quot;conv-001&quot;,</span>
+<span class="s1">    &quot;messages&quot;: [</span>
+<span class="s1">      {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hi, my name is Alice and I work at Acme Corp in San Francisco.&quot;},</span>
+<span class="s1">      {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;Nice to meet you, Alice! How can I help you today?&quot;}</span>
+<span class="s1">    ]</span>
+<span class="s1">  }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</pre></div>
+</div>
+<p>Expected response:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;job_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;e5f6g7h8-...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;episode_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;accepted&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Messages accepted for enrichment&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">job_id</span></code> can be used to poll the enrichment status at
+<code class="docutils literal notranslate"><span class="pre">/v1/projects/{project_id}/memory/jobs/{job_id}</span></code>.</p>
+</section>
+<section id="step-4-retrieve-context">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Step 4 — Retrieve context</a><a class="headerlink" href="#step-4-retrieve-context" title="Link to this heading">¶</a></h3>
+<p>After enrichment completes (typically 5–20 seconds), query OpenZync for an
+assembled context block ready for LLM injection:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;http://localhost:8000/v1/projects/</span><span class="si">${</span><span class="nv">PROJECT_ID</span><span class="si">}</span><span class="s2">/context?query=What+does+Alice+do&amp;limit=5&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</pre></div>
+</div>
+<p>Expected response:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;context&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;---\nEpisodes:\n  [user] Hi, my name is Alice and I work at Acme Corp in San Francisco.\n  [assistant] Nice to meet you, Alice! How can I help you today?\n\nFacts:\n  - Alice works_for Acme Corp\n  - Alice located_in San Francisco\n\nEntities:\n  - Alice (person)\n  - Acme Corp (organization)\n  - San Francisco (location)\n&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;cache_hit&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;total_episodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;total_facts&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;total_entities&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="step-5-search">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Step 5 — Search</a><a class="headerlink" href="#step-5-search" title="Link to this heading">¶</a></h3>
+<p>Perform a hybrid search across the project’s memory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;http://localhost:8000/v1/projects/</span><span class="si">${</span><span class="nv">PROJECT_ID</span><span class="si">}</span><span class="s2">/search?q=Acme+Corp+San+Francisco&amp;limit=10&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</pre></div>
+</div>
+<p>Expected response (abbreviated):</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;query&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Acme Corp San Francisco&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;results&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;episode&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Hi, my name is Alice and I work at Acme Corp in San Francisco.&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.89</span><span class="p">,</span>
+<span class="w">      </span><span class="err">...</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="using-the-sdk">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Using the SDK</a><a class="headerlink" href="#using-the-sdk" title="Link to this heading">¶</a></h2>
+<p>The OpenZync Python SDK wraps the REST API in typed, async-first client
+classes.  Install it from PyPI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>openzync
+</pre></div>
+</div>
+<p>The SDK requires Python <code class="docutils literal notranslate"><span class="pre">&gt;=3.11</span></code>.  For LangChain integration, install with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>openzync<span class="o">[</span>langchain<span class="o">]</span>
+</pre></div>
+</div>
+<p>Quick-start example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openzync</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncOpenZync</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncOpenZync</span><span class="p">(</span>
+        <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;oz_live_xxxxxxxxxxxxxxxx&quot;</span><span class="p">,</span>
+        <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;http://localhost:8000&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># 1. Ingest messages</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">ingest</span><span class="p">([</span>
+            <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;My name is Bob and I work at Initech.&quot;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;assistant&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello Bob!&quot;</span><span class="p">},</span>
+        <span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ingested </span><span class="si">{</span><span class="n">resp</span><span class="o">.</span><span class="n">episode_count</span><span class="si">}</span><span class="s2"> episode(s)&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 2. Retrieve context for an LLM prompt</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">get_context</span><span class="p">(</span>
+            <span class="n">query</span><span class="o">=</span><span class="s2">&quot;What does Bob do?&quot;</span><span class="p">,</span>
+            <span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">context</span><span class="p">)</span>
+
+        <span class="c1"># 3. List graph entities</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Entity: </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>For the full SDK reference, see <a class="reference internal" href="../domains/sdk_python.html"><span class="doc">Python SDK (openzync)</span></a>.</p>
+<section id="authentication-with-the-sdk">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Authentication with the SDK</a><a class="headerlink" href="#authentication-with-the-sdk" title="Link to this heading">¶</a></h3>
+<p>The SDK authenticates using an <strong>API key</strong>, not the JWT from the dashboard
+signup flow.  Generate an API key after signing in to the dashboard:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Using the JWT from signup, create an API key scoped to your project</span>
+curl<span class="w"> </span>-s<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s2">&quot;http://localhost:8000/v1/projects/</span><span class="si">${</span><span class="nv">PROJECT_ID</span><span class="si">}</span><span class="s2">/api-keys&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;name&quot;: &quot;dev-key&quot;, &quot;permissions&quot;: [&quot;read&quot;, &quot;write&quot;]}&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>json.tool
+</pre></div>
+</div>
+<p>The response contains the <code class="docutils literal notranslate"><span class="pre">key</span></code> value — use it as <code class="docutils literal notranslate"><span class="pre">api_key</span></code> in the SDK.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The SDK’s <code class="docutils literal notranslate"><span class="pre">AsyncOpenZync</span></code> client is a context manager.  It manages the
+HTTP connection pool and automatically authenticates every request with the
+<code class="docutils literal notranslate"><span class="pre">Bearer</span></code> token derived from your API key.  You never need to pass the key
+on individual calls.</p>
+</div>
+</section>
+</section>
+<section id="using-the-dashboard">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">Using the Dashboard</a><a class="headerlink" href="#using-the-dashboard" title="Link to this heading">¶</a></h2>
+<p>The OpenZync frontend provides a web dashboard for graph exploration, tenant
+management, and configuration.  It runs separately from the backend stack.</p>
+<p>Start the frontend:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>../openzync-frontend
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>deploy/docker-compose.yml<span class="w"> </span>up<span class="w"> </span>-d
+</pre></div>
+</div>
+<p>The dashboard is available at <code class="docutils literal notranslate"><span class="pre">http://localhost:3000</span></code>.</p>
+<p>Login using the email and password from the signup step above.  After login,
+the dashboard shows:</p>
+<ul class="simple">
+<li><p><strong>Overview</strong> — org-level usage stats and health indicators.</p></li>
+<li><p><strong>Projects</strong> — list of projects with member management.</p></li>
+<li><p><strong>Graph Explorer</strong> — interactive knowledge graph visualisation with entity
+nodes, relationship edges, and community clusters.</p></li>
+<li><p><strong>Users</strong> — user management within the organisation.</p></li>
+<li><p><strong>Settings</strong> — LLM provider configuration, extraction schemas, classification
+templates, webhook endpoints, and prompt template manager.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For the dashboard to work, the backend API must be reachable at
+<code class="docutils literal notranslate"><span class="pre">http://localhost:8000</span></code>.  The frontend proxy routes <code class="docutils literal notranslate"><span class="pre">/v1/*</span></code> requests
+to the API automatically.  See <a class="reference internal" href="../domains/frontend.html"><span class="doc">OpenZync Frontend</span></a> for the full
+frontend documentation.</p>
+</div>
+</section>
+<section id="development-setup">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">Development Setup</a><a class="headerlink" href="#development-setup" title="Link to this heading">¶</a></h2>
+<p>For local development with hot-reload (code changes trigger an automatic server
+restart), run only the infrastructure in Docker and start the API locally:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start only the supporting containers (OpenBao, Postgres, Redis, worker,</span>
+<span class="c1"># and the OpenBao Agent sidecars)</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker-compose.backend.yml<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>openbao<span class="w"> </span>postgres<span class="w"> </span>redis<span class="w"> </span>worker<span class="w"> </span>openbao-agent-api
+
+<span class="c1"># Wait for the bootstrap sequence to complete (~60s), then start the API</span>
+<span class="c1"># with hot-reload</span>
+make<span class="w"> </span>dev
+
+<span class="c1"># The API is now running at http://localhost:8000 with live reload.</span>
+<span class="c1"># Any change to a .py file triggers an automatic restart.</span>
+</pre></div>
+</div>
+<p>The local API process reads configuration from OpenBao (via the OpenBao Agent
+sidecar) — just like the containerised API.  No additional configuration is
+needed.</p>
+<p>Useful Makefile targets for development:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
+<th class="head"><p>What it does</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code></p></td>
+<td><p>Run unit tests only</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test-all</span></code></p></td>
+<td><p>Run all tests (unit + integration + security)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">lint</span></code></p></td>
+<td><p>Ruff check + format verification</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">lint-fix</span></code></p></td>
+<td><p>Auto-fix lint issues</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">migrate</span></code></p></td>
+<td><p>Apply pending Alembic migrations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">migrate-new</span></code></p></td>
+<td><p>Auto-generate a new migration revision</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docker-up</span></code></p></td>
+<td><p>Start the full backend stack</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docker-down</span></code></p></td>
+<td><p>Stop the backend stack</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docker-logs</span></code></p></td>
+<td><p>Tail logs from all containers</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docker-reset</span></code></p></td>
+<td><p>Full reset — removes all volumes (OpenBao state, Postgres data, etc.)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docs-build</span></code></p></td>
+<td><p>Build the Sphinx documentation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docs-watch</span></code></p></td>
+<td><p>Serve documentation with live-reload on port 8600</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install development dependencies</span>
+make<span class="w"> </span>install
+
+<span class="c1"># Run a specific test by name</span>
+make<span class="w"> </span><span class="nb">test</span><span class="w"> </span><span class="nv">ARGS</span><span class="o">=</span><span class="s2">&quot;-k test_memory_ingest&quot;</span>
+</pre></div>
+</div>
+<section id="issue-port-already-in-use">
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">Issue: Port already in use</a><a class="headerlink" href="#issue-port-already-in-use" title="Link to this heading">¶</a></h3>
+<p>If port 8000 (or 5432, 6379, 8200) is already allocated:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check which service is using the port</span>
+sudo<span class="w"> </span>lsof<span class="w"> </span>-i<span class="w"> </span>:8000
+
+<span class="c1"># Stop the conflicting service, or update the port mapping in</span>
+<span class="c1"># infra/docker-compose.backend.yml and the API entrypoint.</span>
+</pre></div>
+</div>
+</section>
+<section id="issue-docker-compose-fails-with-required-variable-is-unset">
+<h3><a class="toc-backref" href="#id20" role="doc-backlink">Issue: Docker Compose fails with “required variable is unset”</a><a class="headerlink" href="#issue-docker-compose-fails-with-required-variable-is-unset" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">:?</span></code> modifier in the compose file means every required env var must be
+set.  Common causes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.env</span></code> has placeholder values (<code class="docutils literal notranslate"><span class="pre">&lt;replace-with-64-char-hex&gt;</span></code>) instead of
+generated secrets.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.env</span></code> is missing one or more of the four required variables.</p></li>
+</ul>
+<p>Fix:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Regenerate secrets for any placeholder values still present</span>
+grep<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;&lt;replace-with&#39;</span><span class="w"> </span>.env
+<span class="c1"># Replace as shown in Step 2 of Clone and Bootstrap</span>
+</pre></div>
+</div>
+</section>
+<section id="issue-openbao-seal-key-lost-and-openbao-won-t-start">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">Issue: OpenBao seal key lost and OpenBao won’t start</a><a class="headerlink" href="#issue-openbao-seal-key-lost-and-openbao-won-t-start" title="Link to this heading">¶</a></h3>
+<p>If <code class="docutils literal notranslate"><span class="pre">BAO_STATIC_SEAL_KEY</span></code> is lost, <strong>all secrets in OpenBao are
+irrecoverable</strong>.  The only option is a full reset:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>docker-reset
+</pre></div>
+</div>
+<p>This destroys all Docker volumes (OpenBao Raft data, PostgreSQL data, Redis
+data).  You will need to re-bootstrap from scratch.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docker-reset</span></code> deletes <strong>all data</strong>.  There is no recovery path.
+Back up <code class="docutils literal notranslate"><span class="pre">BAO_STATIC_SEAL_KEY</span></code> in a password manager or secrets vault.</p>
+</div>
+</section>
+<section id="issue-api-returns-503-on-v1-ready">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">Issue: API returns 503 on /v1/ready</a><a class="headerlink" href="#issue-api-returns-503-on-v1-ready" title="Link to this heading">¶</a></h3>
+<p>The readiness probe checks PostgreSQL and Redis connectivity.  If one or both
+report <code class="docutils literal notranslate"><span class="pre">false</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check the api logs for startup errors</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker-compose.backend.yml<span class="w"> </span>logs<span class="w"> </span>api
+
+<span class="c1"># Check the Agent sidecar — the api waits for the rendered env file</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker-compose.backend.yml<span class="w"> </span>logs<span class="w"> </span>openbao-agent-api
+
+<span class="c1"># Common cause: the Agent is still authenticating or rendering secrets.</span>
+<span class="c1"># The healthcheck allows up to 90s for this.  If it exceeds 90s, the</span>
+<span class="c1"># sidecar may be in a crash loop — check with:</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker-compose.backend.yml<span class="w"> </span>ps
+</pre></div>
+</div>
+</section>
+<section id="issue-signup-returns-429-rate-limited">
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">Issue: Signup returns 429 (rate limited)</a><a class="headerlink" href="#issue-signup-returns-429-rate-limited" title="Link to this heading">¶</a></h3>
+<p>Auth endpoints are rate-limited per IP.  Wait 60 seconds before retrying.</p>
+</section>
+<section id="issue-migration-failures">
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">Issue: Migration failures</a><a class="headerlink" href="#issue-migration-failures" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check migration logs</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker-compose.backend.yml<span class="w"> </span>logs<span class="w"> </span>postgres-migrate
+
+<span class="c1"># If the migration failed (e.g., Alembic revision conflict), the</span>
+<span class="c1"># bootstrap chain stops.  Fix the migration, then run:</span>
+make<span class="w"> </span>docker-reset
+
+<span class="c1"># Migrations can also be run manually against the bootstrapped database:</span>
+make<span class="w"> </span>migrate
+</pre></div>
+</div>
+</section>
+<section id="administrative-openbao-access">
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">Administrative OpenBao access</a><a class="headerlink" href="#administrative-openbao-access" title="Link to this heading">¶</a></h3>
+<p>The root token is at <code class="docutils literal notranslate"><span class="pre">/bao-init/root-token</span></code> inside the <code class="docutils literal notranslate"><span class="pre">openbao-init-data</span></code>
+volume.  Access it with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker-compose.backend.yml<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>openbao<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>bao<span class="w"> </span>login<span class="w"> </span><span class="k">$(</span>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker-compose.backend.yml<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>run<span class="w"> </span>--rm<span class="w"> </span>--no-deps<span class="w"> </span>openbao<span class="w"> </span>cat<span class="w"> </span>/bao-init/root-token<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="k">)</span>
+
+<span class="c1"># List the system secret</span>
+docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>infra/docker-compose.backend.yml<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>openbao<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>bao<span class="w"> </span>kv<span class="w"> </span>get<span class="w"> </span>-namespace<span class="o">=</span>system/<span class="w"> </span>config/data/system
+</pre></div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>The root token is powerful.  In production, set
+<code class="docutils literal notranslate"><span class="pre">BAO_REVOKE_ROOT_TOKEN=true</span></code> on the <code class="docutils literal notranslate"><span class="pre">openbao-init</span></code> service to revoke
+it after bootstrap.</p>
+</div>
+</section>
+</section>
+<section id="next-steps">
+<h2><a class="toc-backref" href="#id26" role="doc-backlink">Next Steps</a><a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../domains/infrastructure.html"><span class="doc">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</span></a> — detailed deployment configuration (Helm
+chart, NGINX, observability stack).</p></li>
+<li><p><a class="reference internal" href="../domains/auth.html"><span class="doc">Authentication &amp; Authorization Domain</span></a> — authentication architecture, JWT and API key flows.</p></li>
+<li><p><a class="reference internal" href="../domains/memory_context.html"><span class="doc">Memory &amp; Context Domain</span></a> — memory ingestion, context assembly, hybrid
+retrieval pipeline.</p></li>
+<li><p><a class="reference internal" href="../domains/sdk_python.html"><span class="doc">Python SDK (openzync)</span></a> — Python SDK reference with all domain clients.</p></li>
+<li><p><a class="reference internal" href="../domains/frontend.html"><span class="doc">OpenZync Frontend</span></a> — dashboard setup, routes, and features.</p></li>
+<li><p><a class="reference internal" href="../domains/graph_backends.html"><span class="doc">Graph Backend Abstraction</span></a> — pluggable graph backends (PostgreSQL-native,
+FalkorDB, SurrealDB).</p></li>
+<li><p><a class="reference internal" href="../domains/workers.html"><span class="doc">Worker System — ARQ Background Job Processing</span></a> — ARQ worker architecture, enrichment pipeline,
+job lifecycle.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/docs</span></code> endpoint on your running API — interactive Swagger UI for every
+endpoint.</p></li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="architecture.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Architecture Overview</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="overview.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Overview</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Rohan Shaw
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Quickstart</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#clone-and-bootstrap">Clone and Bootstrap</a><ul>
+<li><a class="reference internal" href="#step-1-clone-the-repository">Step 1 — Clone the repository</a></li>
+<li><a class="reference internal" href="#step-2-generate-bootstrap-secrets">Step 2 — Generate bootstrap secrets</a></li>
+<li><a class="reference internal" href="#step-3-start-the-stack">Step 3 — Start the stack</a></li>
+<li><a class="reference internal" href="#step-4-tail-the-bootstrap-logs-optional-but-instructive">Step 4 — Tail the bootstrap logs (optional, but instructive)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#boot-sequence-what-happens-in-those-60s">Boot Sequence — What Happens in Those 60s</a></li>
+<li><a class="reference internal" href="#verify-the-installation">Verify the Installation</a></li>
+<li><a class="reference internal" href="#first-api-calls">First API Calls</a><ul>
+<li><a class="reference internal" href="#step-1-sign-up-and-get-jwt-tokens">Step 1 — Sign up and get JWT tokens</a></li>
+<li><a class="reference internal" href="#step-2-create-a-project">Step 2 — Create a project</a></li>
+<li><a class="reference internal" href="#step-3-ingest-a-message">Step 3 — Ingest a message</a></li>
+<li><a class="reference internal" href="#step-4-retrieve-context">Step 4 — Retrieve context</a></li>
+<li><a class="reference internal" href="#step-5-search">Step 5 — Search</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-the-sdk">Using the SDK</a><ul>
+<li><a class="reference internal" href="#authentication-with-the-sdk">Authentication with the SDK</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-the-dashboard">Using the Dashboard</a></li>
+<li><a class="reference internal" href="#development-setup">Development Setup</a><ul>
+<li><a class="reference internal" href="#issue-port-already-in-use">Issue: Port already in use</a></li>
+<li><a class="reference internal" href="#issue-docker-compose-fails-with-required-variable-is-unset">Issue: Docker Compose fails with “required variable is unset”</a></li>
+<li><a class="reference internal" href="#issue-openbao-seal-key-lost-and-openbao-won-t-start">Issue: OpenBao seal key lost and OpenBao won’t start</a></li>
+<li><a class="reference internal" href="#issue-api-returns-503-on-v1-ready">Issue: API returns 503 on /v1/ready</a></li>
+<li><a class="reference internal" href="#issue-signup-returns-429-rate-limited">Issue: Signup returns 429 (rate limited)</a></li>
+<li><a class="reference internal" href="#issue-migration-failures">Issue: Migration failures</a></li>
+<li><a class="reference internal" href="#administrative-openbao-access">Administrative OpenBao access</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

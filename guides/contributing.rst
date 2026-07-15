@@ -6,9 +6,9 @@ Setup
 
 .. code-block:: bash
 
-   # Clone the repository
-   git clone https://github.com/rohnsha0/openzync.git
-   cd openzync
+   # Clone the core repository
+   git clone https://github.com/rohnsha0/openzync-core.git
+   cd openzync-core
 
    # Create a virtual environment
    python3 -m venv .venv
@@ -96,8 +96,8 @@ Pull requests
 
 Commit messages follow ``type(scope): short description``:
 
-- ``feat(agents): add tool retry with exponential backoff``
-- ``fix(billing): correct credit deduction on partial failure``
+- ``feat(graph): add FalkorDB BFS traversal with edge type filtering``
+- ``fix(workers): handle LLM timeout in entity extraction``
 - ``docs(sphinx): initialise Sphinx documentation``
 
 License

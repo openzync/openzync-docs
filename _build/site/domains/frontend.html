@@ -1,0 +1,1460 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm" href="infrastructure.html"><link rel="prev" title="MCP Server (FastMCP)" href="mcp_server.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>OpenZync Frontend - OpenZync Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">OpenZync Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">OpenZync Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/contributing.html">Contributing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="llm.html">LLM Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph_backends.html">Graph Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reranker.html">Re-ranking &amp; Community Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reranker.html#community-detection">Community Detection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Domain Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="auth.html">Authentication &amp; Authorization Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="memory_context.html">Memory &amp; Context Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="admin_webhooks.html">Admin &amp; Webhooks Domain</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API &amp; Workers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_layer.html">API Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workers.html">Worker System — ARQ Background Job Processing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SDK, MCP &amp; Frontend</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="sdk_python.html">Python SDK (openzync)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mcp_server.html">MCP Server (FastMCP)</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">OpenZync Frontend</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Infra</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="infrastructure.html">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</a><input aria-label="Toggle navigation of Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture Decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference (Auto-generated)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/core.html">core package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/routers.html">routers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/models.html">models package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/schemas.html">schemas package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/services.html">services package</a><input aria-label="Toggle navigation of services package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/services.api.html">services.api package</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/services.mcp.html">services.mcp package</a><input aria-label="Toggle navigation of services.mcp package" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.mcp.tools.html">services.mcp.tools package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.mcp.transport.html">services.mcp.transport package</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/services.worker.html">services.worker package</a><input aria-label="Toggle navigation of services.worker package" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.worker.prompts.html">services.worker.prompts package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.worker.tasks.html">services.worker.tasks package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/repositories.html">repositories package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/middleware.html">middleware package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/dependencies.html">dependencies package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/workers.html">workers package</a><input aria-label="Toggle navigation of workers package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/workers.tasks.html">workers.tasks package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/utils.html">utils package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/packages.html">packages package</a><input aria-label="Toggle navigation of packages package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/packages.community.html">packages.community package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/packages.graph_backend.html">packages.graph_backend package</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/blob/main/docs/domains/frontend.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/edit/main/docs/domains/frontend.rst" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="openzync-frontend">
+<span id="frontend"></span><h1>OpenZync Frontend<a class="headerlink" href="#openzync-frontend" title="Link to this heading">¶</a></h1>
+<p>The OpenZync frontend is a <a class="reference external" href="https://nextjs.org/">Next.js 16</a> application that
+provides the administrative dashboard and knowledge graph explorer for the
+OpenZync agent memory infrastructure platform.</p>
+<p>It is a <strong>client-side rendered</strong> (<code class="docutils literal notranslate"><span class="pre">&quot;use</span> <span class="pre">client&quot;</span></code>) single-page application
+styled with <a class="reference external" href="https://tailwindcss.com/">Tailwind CSS v4</a> and <a class="reference external" href="https://www.radix-ui.com/">Radix UI</a> primitives, deployed behind an nginx reverse
+proxy that also routes API calls to the backend.</p>
+<nav class="contents this-will-duplicate-information-and-it-is-still-useful-here local" id="on-this-page">
+<p class="topic-title">On this page</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#tech-stack" id="id4">Tech Stack</a></p></li>
+<li><p><a class="reference internal" href="#application-architecture" id="id5">Application Architecture</a></p>
+<ul>
+<li><p><a class="reference internal" href="#route-pattern" id="id6">Route Pattern</a></p></li>
+<li><p><a class="reference internal" href="#layout-hierarchy" id="id7">Layout Hierarchy</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#design-system" id="id8">Design System</a></p>
+<ul>
+<li><p><a class="reference internal" href="#theme-tokens" id="id9">Theme Tokens</a></p></li>
+<li><p><a class="reference internal" href="#default-theme" id="id10">Default Theme</a></p></li>
+<li><p><a class="reference internal" href="#reusable-css-patterns" id="id11">Reusable CSS Patterns</a></p></li>
+<li><p><a class="reference internal" href="#component-library" id="id12">Component Library</a></p>
+<ul>
+<li><p><a class="reference internal" href="#ui-primitives-src-components-ui" id="id13">UI Primitives (<code class="docutils literal notranslate"><span class="pre">src/components/ui/</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#shared-components-src-components-shared" id="id14">Shared Components (<code class="docutils literal notranslate"><span class="pre">src/components/shared/</span></code>)</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#api-client-authentication" id="id15">API Client &amp; Authentication</a></p>
+<ul>
+<li><p><a class="reference internal" href="#centralized-api-client-src-lib-api-client-ts" id="id16">Centralized API Client (<code class="docutils literal notranslate"><span class="pre">src/lib/api-client.ts</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#authentication-flow" id="id17">Authentication Flow</a></p></li>
+<li><p><a class="reference internal" href="#session-token-storage" id="id18">Session Token Storage</a></p></li>
+<li><p><a class="reference internal" href="#auth-guard-require-auth-tsx" id="id19">Auth Guard (<code class="docutils literal notranslate"><span class="pre">require-auth.tsx</span></code>)</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#user-flows" id="id20">User Flows</a></p>
+<ul>
+<li><p><a class="reference internal" href="#registration-onboarding" id="id21">Registration &amp; Onboarding</a></p></li>
+<li><p><a class="reference internal" href="#login-flow" id="id22">Login Flow</a></p></li>
+<li><p><a class="reference internal" href="#password-reset" id="id23">Password Reset</a></p></li>
+<li><p><a class="reference internal" href="#dashboard-overview-overview" id="id24">Dashboard Overview (<code class="docutils literal notranslate"><span class="pre">/overview</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#projects" id="id25">Projects</a></p>
+<ul>
+<li><p><a class="reference internal" href="#list-projects" id="id26">List (<code class="docutils literal notranslate"><span class="pre">/projects</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#project-dashboard-projects-id" id="id27">Project Dashboard (<code class="docutils literal notranslate"><span class="pre">/projects/[id]/</span></code>)</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#administration" id="id28">Administration</a></p>
+<ul>
+<li><p><a class="reference internal" href="#users-users" id="id29">Users (<code class="docutils literal notranslate"><span class="pre">/users</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#user-detail-users-id" id="id30">User Detail (<code class="docutils literal notranslate"><span class="pre">/users/[id]</span></code>)</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#settings" id="id31">Settings</a></p>
+<ul>
+<li><p><a class="reference internal" href="#system-settings-settings" id="id32">System Settings (<code class="docutils literal notranslate"><span class="pre">/settings</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#administration-pages" id="id33">Administration Pages</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#monitoring-analytics" id="id34">Monitoring &amp; Analytics</a></p>
+<ul>
+<li><p><a class="reference internal" href="#analytics-analytics" id="id35">Analytics (<code class="docutils literal notranslate"><span class="pre">/analytics</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#monitoring-monitoring" id="id36">Monitoring (<code class="docutils literal notranslate"><span class="pre">/monitoring</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#audit-log-audit" id="id37">Audit Log (<code class="docutils literal notranslate"><span class="pre">/audit</span></code>)</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#graph-visualization" id="id38">Graph Visualization</a></p>
+<ul>
+<li><p><a class="reference internal" href="#types" id="id39">Types</a></p></li>
+<li><p><a class="reference internal" href="#features" id="id40">Features</a></p></li>
+<li><p><a class="reference internal" href="#node-colours" id="id41">Node Colours</a></p></li>
+<li><p><a class="reference internal" href="#graph-data-loading-projects-id-graph-page-tsx" id="id42">Graph Data Loading (<code class="docutils literal notranslate"><span class="pre">/projects/[id]/graph/page.tsx</span></code>)</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#state-management" id="id43">State Management</a></p>
+<ul>
+<li><p><a class="reference internal" href="#react-context" id="id44">React Context</a></p>
+<ul>
+<li><p><a class="reference internal" href="#projectcontext-src-stores-project-context-tsx" id="id45"><code class="docutils literal notranslate"><span class="pre">ProjectContext</span></code> (<code class="docutils literal notranslate"><span class="pre">src/stores/project-context.tsx</span></code>)</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#custom-hooks" id="id46">Custom Hooks</a></p>
+<ul>
+<li><p><a class="reference internal" href="#usepinnedprojects-src-hooks-use-pinned-projects-ts" id="id47"><code class="docutils literal notranslate"><span class="pre">usePinnedProjects</span></code> (<code class="docutils literal notranslate"><span class="pre">src/hooks/use-pinned-projects.ts</span></code>)</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#local-component-state" id="id48">Local Component State</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#utility-functions" id="id49">Utility Functions</a></p></li>
+<li><p><a class="reference internal" href="#deployment" id="id50">Deployment</a></p>
+<ul>
+<li><p><a class="reference internal" href="#docker" id="id51">Docker</a></p></li>
+<li><p><a class="reference internal" href="#docker-compose" id="id52">Docker Compose</a></p></li>
+<li><p><a class="reference internal" href="#ci-cd" id="id53">CI/CD</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#environment-variables" id="id54">Environment Variables</a></p></li>
+<li><p><a class="reference internal" href="#project-structure" id="id55">Project Structure</a></p></li>
+<li><p><a class="reference internal" href="#cross-references" id="id56">Cross-References</a></p></li>
+</ul>
+</nav>
+<section id="tech-stack">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Tech Stack</a><a class="headerlink" href="#tech-stack" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Layer</p></th>
+<th class="head"><p>Technology</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Framework</p></td>
+<td><p><a class="reference external" href="https://nextjs.org/">Next.js 16.2.9</a> (App Router, Standalone output)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Language</p></td>
+<td><p>TypeScript 5.x (strict mode)</p></td>
+</tr>
+<tr class="row-even"><td><p>Styling</p></td>
+<td><p><a class="reference external" href="https://tailwindcss.com/">Tailwind CSS v4</a> + <code class="docutils literal notranslate"><span class="pre">tailwind-merge</span></code> + <code class="docutils literal notranslate"><span class="pre">clsx</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>UI Primitives</p></td>
+<td><p><a class="reference external" href="https://www.radix-ui.com/">Radix UI</a> (Dialog, DropdownMenu, Tabs, Toast, Tooltip, etc.)</p></td>
+</tr>
+<tr class="row-even"><td><p>Icons</p></td>
+<td><p><a class="reference external" href="https://lucide.dev/">Lucide React</a> v1.18</p></td>
+</tr>
+<tr class="row-odd"><td><p>Graph Visualization</p></td>
+<td><p><a class="reference external" href="https://d3js.org/">D3.js v7</a> (force simulation, convex hulls)</p></td>
+</tr>
+<tr class="row-even"><td><p>Notifications</p></td>
+<td><p><a class="reference external" href="https://sonner.emilkowal.ski/">Sonner</a> v2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Fonts</p></td>
+<td><p>Inter (sans-serif), JetBrains Mono (monospace)</p></td>
+</tr>
+<tr class="row-even"><td><p>Font Loading</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">next/font</span></code> (Google Fonts via Next.js)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Package Manager</p></td>
+<td><p>npm (<code class="docutils literal notranslate"><span class="pre">package-lock.json</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>Container</p></td>
+<td><p>Docker (multi-stage Node.js 20 Alpine build)</p></td>
+</tr>
+<tr class="row-odd"><td><p>CI/CD</p></td>
+<td><p>GitHub Actions (<code class="docutils literal notranslate"><span class="pre">.github/workflows/deploy.yml</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="application-architecture">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Application Architecture</a><a class="headerlink" href="#application-architecture" title="Link to this heading">¶</a></h2>
+<section id="route-pattern">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Route Pattern</a><a class="headerlink" href="#route-pattern" title="Link to this heading">¶</a></h3>
+<p>The application uses Next.js <strong>App Router</strong> with the following top-level route
+groups:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>src/app/
+├── page.tsx                        # / → redirects to /overview
+├── layout.tsx                      # Root layout (fonts, ThemeProvider)
+├── globals.css                     # Tailwind v4 + design tokens
+│
+├── login/                          # Public: password login
+├── login/otp/                      # Public: OTP (magic code) login
+├── login/mfa/                      # Public: MFA challenge
+├── signup/                         # Public: registration
+├── verify-email/                   # Public: email verification
+├── forgot-password/                # Public: password reset request
+├── reset-password/                 # Public: password reset (OTP + new pw)
+├── onboarding/                     # Post-registration setup wizard
+│
+└── (dashboard)/                    # Authenticated layout group
+    ├── layout.tsx                  # Dashboard shell (sidebar, topbar)
+    ├── require-auth.tsx            # Auth guard component
+    ├── overview/                   # Org overview / home
+    ├── analytics/                  # Usage analytics + charts
+    ├── monitoring/                 # Prometheus-based system monitoring
+    ├── monitoring/query/           # Ad-hoc PromQL query tool
+    ├── projects/                   # Project list
+    ├── projects/[id]/              # Project-scoped routes
+    ├── users/                      # User management list
+    ├── users/[id]/                 # User detail (summary, instructions)
+    ├── audit/                      # Audit log (paginated, filterable)
+    └── settings/                   # System settings pages
+        ├── schemas/                # Extraction schemas
+        ├── classifications/        # Classification schemas
+        ├── extractions/            # Extraction viewer
+        ├── extraction-instructions/# Extraction instructions
+        ├── webhooks/               # Webhook endpoints
+        ├── prompts/                # Prompt template manager
+        └── org-config/             # Org configuration (LLM, graph, etc.)
+</pre></div>
+</div>
+</section>
+<section id="layout-hierarchy">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Layout Hierarchy</a><a class="headerlink" href="#layout-hierarchy" title="Link to this heading">¶</a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>RootLayout (html, fonts, ThemeProvider)
+├── Public pages (login, signup, etc.) — no sidebar
+└── DashboardLayout (RequireAuth guard)
+    ├── Sidebar (collapsible, role-aware)
+    ├── TopBar (page title, search, theme toggle, user menu)
+    ├── Breadcrumb
+    ├── ProjectLayout (optional, wraps [id] routes)
+    │   └── ProjectProvider (fetches project metadata)
+    └── Page content
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>RootLayout</strong> (<code class="docutils literal notranslate"><span class="pre">src/app/layout.tsx</span></code>): Loads Inter + JetBrains Mono via
+<code class="docutils literal notranslate"><span class="pre">next/font</span></code>, wraps children in a <code class="docutils literal notranslate"><span class="pre">ThemeProvider</span></code> (<code class="docutils literal notranslate"><span class="pre">next-themes</span></code>,
+forced dark mode), and adds skip-navigation links for accessibility.</p></li>
+<li><p><strong>DashboardLayout</strong> (<code class="docutils literal notranslate"><span class="pre">src/app/(dashboard)/layout.tsx</span></code>): All authenticated
+pages live inside this layout group. It renders the collapsible sidebar,
+top bar with theme/user menu, breadcrumb trail, and the <code class="docutils literal notranslate"><span class="pre">main</span></code> content
+area. The layout is guarded by <code class="docutils literal notranslate"><span class="pre">&lt;RequireAuth&gt;</span></code>.</p></li>
+<li><p><strong>ProjectLayout</strong> (<code class="docutils literal notranslate"><span class="pre">src/app/(dashboard)/projects/[id]/layout.tsx</span></code>):
+Wraps project-scoped pages with <code class="docutils literal notranslate"><span class="pre">&lt;ProjectProvider&gt;</span></code> which fetches
+project metadata from the API and makes it available via
+<code class="docutils literal notranslate"><span class="pre">useProject()</span></code>.</p></li>
+<li><p><strong>OrgConfigLayout</strong> (<code class="docutils literal notranslate"><span class="pre">src/app/(dashboard)/settings/org-config/layout.tsx</span></code>):
+Adds a tabbed sub-navigation (LLM / Embeddings / Graph / Behaviour) for the
+organization configuration section.</p></li>
+</ul>
+</section>
+</section>
+<section id="design-system">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Design System</a><a class="headerlink" href="#design-system" title="Link to this heading">¶</a></h2>
+<p>The design system is defined in <code class="docutils literal notranslate"><span class="pre">src/app/globals.css</span></code> using Tailwind CSS v4’s
+<code class="docutils literal notranslate"><span class="pre">&#64;theme</span></code> directive.</p>
+<section id="theme-tokens">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Theme Tokens</a><a class="headerlink" href="#theme-tokens" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Token Family</p></th>
+<th class="head"><p>Example Values</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--color-brand-*</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">500:</span> <span class="pre">#14488C</span></code> (deep blue — primary action colour)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--color-accent-*</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">300:</span> <span class="pre">#8FAFD9</span></code> (light blue — secondary accent)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--color-surface-*</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">900:</span> <span class="pre">#161B22</span></code> / <code class="docutils literal notranslate"><span class="pre">950:</span> <span class="pre">#0D1117</span></code> (dark backgrounds)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--color-success</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#66BB6A</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--color-warning</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#FFA726</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--color-error</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#EF5350</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--color-text-primary</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#F2F2F2</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--font-sans</span></code></p></td>
+<td><p>Inter</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--font-mono</span></code></p></td>
+<td><p>JetBrains Mono</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="default-theme">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Default Theme</a><a class="headerlink" href="#default-theme" title="Link to this heading">¶</a></h3>
+<p>The application defaults to <strong>dark mode</strong> (<code class="docutils literal notranslate"><span class="pre">defaultTheme=&quot;dark&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">enableSystem={false}</span></code>). Users can toggle between dark and light via the
+sun/moon icon in the top bar.</p>
+</section>
+<section id="reusable-css-patterns">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Reusable CSS Patterns</a><a class="headerlink" href="#reusable-css-patterns" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">globals.css</span></code> file defines several utility classes used throughout the
+application:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.card-base</span></code> — Standard card container (rounded border, surface-900 bg)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.card-interactive</span></code> — Clickable card with hover border/shadow transition</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.stat-card</span></code> — KPI stat card with hover elevation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.input-base</span></code> — Unified input/select/textarea styling</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.animate-fade-in</span></code>, <code class="docutils literal notranslate"><span class="pre">.animate-slide-up</span></code> — Common animations</p></li>
+</ul>
+</section>
+<section id="component-library">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Component Library</a><a class="headerlink" href="#component-library" title="Link to this heading">¶</a></h3>
+<section id="ui-primitives-src-components-ui">
+<h4><a class="toc-backref" href="#id13" role="doc-backlink">UI Primitives (<code class="docutils literal notranslate"><span class="pre">src/components/ui/</span></code>)</a><a class="headerlink" href="#ui-primitives-src-components-ui" title="Link to this heading">¶</a></h4>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Button</span></code></p></td>
+<td><p>Variants: <code class="docutils literal notranslate"><span class="pre">primary</span></code>, <code class="docutils literal notranslate"><span class="pre">secondary</span></code>, <code class="docutils literal notranslate"><span class="pre">ghost</span></code>, <code class="docutils literal notranslate"><span class="pre">danger</span></code>; sizes: <code class="docutils literal notranslate"><span class="pre">sm</span></code>, <code class="docutils literal notranslate"><span class="pre">md</span></code>, <code class="docutils literal notranslate"><span class="pre">lg</span></code>; loading state with <code class="docutils literal notranslate"><span class="pre">Spinner</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Badge</span></code> / <code class="docutils literal notranslate"><span class="pre">StatusBadge</span></code> / <code class="docutils literal notranslate"><span class="pre">ActorTypeBadge</span></code></p></td>
+<td><p>Status badges with colour variants (success, warning, error, info, brand) + HTTP status code and actor type helpers</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Dialog</span></code></p></td>
+<td><p>Radix-based modal dialog with close button</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Spinner</span></code></p></td>
+<td><p>Inline SVG animated spinner</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Switch</span></code></p></td>
+<td><p>Toggle switch (Radix-based)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SecretInput</span></code></p></td>
+<td><p>Password-style input with eye toggle for API key fields</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="shared-components-src-components-shared">
+<h4><a class="toc-backref" href="#id14" role="doc-backlink">Shared Components (<code class="docutils literal notranslate"><span class="pre">src/components/shared/</span></code>)</a><a class="headerlink" href="#shared-components-src-components-shared" title="Link to this heading">¶</a></h4>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PageHeader</span></code></p></td>
+<td><p>Standardised page title + optional description + action buttons</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">StatCard</span></code></p></td>
+<td><p>KPI card with icon, value, loading skeleton, and trend indicator</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EmptyState</span></code></p></td>
+<td><p>Centered icon + title + description + optional action</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ErrorState</span></code></p></td>
+<td><p>Inline error banner with optional retry button</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ConfirmDialog</span></code></p></td>
+<td><p>Modal confirmation dialog (Escape to close, loading state)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AuthLoadingScreen</span></code></p></td>
+<td><p>Full-page branded loading overlay during auth check</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TableSkeleton</span></code> / <code class="docutils literal notranslate"><span class="pre">Skeleton</span></code></p></td>
+<td><p>Animated placeholder rows for loading tables</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+</section>
+<section id="api-client-authentication">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">API Client &amp; Authentication</a><a class="headerlink" href="#api-client-authentication" title="Link to this heading">¶</a></h2>
+<section id="centralized-api-client-src-lib-api-client-ts">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Centralized API Client (<code class="docutils literal notranslate"><span class="pre">src/lib/api-client.ts</span></code>)</a><a class="headerlink" href="#centralized-api-client-src-lib-api-client-ts" title="Link to this heading">¶</a></h3>
+<p>Every API call in the frontend routes through a single module located at
+<code class="docutils literal notranslate"><span class="pre">src/lib/api-client.ts</span></code>. It provides:</p>
+<ul class="simple">
+<li><p><strong>Base URL</strong>: Reads <code class="docutils literal notranslate"><span class="pre">NEXT_PUBLIC_API_URL</span></code> from environment, defaults to
+<code class="docutils literal notranslate"><span class="pre">http://localhost:8000</span></code>.</p></li>
+<li><p><strong>Auth Headers</strong>: Automatically injects <code class="docutils literal notranslate"><span class="pre">Authorization:</span> <span class="pre">Bearer</span> <span class="pre">&lt;token&gt;</span></code>
+from <code class="docutils literal notranslate"><span class="pre">sessionStorage</span></code> (key <code class="docutils literal notranslate"><span class="pre">mg_access_token</span></code>).</p></li>
+<li><p><strong>Token Refresh</strong>: On a 401 response, the client attempts a transparent
+token refresh by calling <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/auth/refresh</span></code> with the stored refresh
+token (key <code class="docutils literal notranslate"><span class="pre">mg_refresh_token</span></code>). If refresh succeeds, the original request
+is retried once. If it fails, tokens are cleared and the user is redirected
+to <code class="docutils literal notranslate"><span class="pre">/login?reason=not-signed-in</span></code>.</p></li>
+<li><p><strong>Typed Helpers</strong>: Exports <code class="docutils literal notranslate"><span class="pre">get&lt;T&gt;()</span></code>, <code class="docutils literal notranslate"><span class="pre">post&lt;T&gt;()</span></code>, <code class="docutils literal notranslate"><span class="pre">put&lt;T&gt;()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">patch&lt;T&gt;()</span></code>, <code class="docutils literal notranslate"><span class="pre">del&lt;T&gt;()</span></code> — all generic typed wrappers around the
+internal <code class="docutils literal notranslate"><span class="pre">request()</span></code> function.</p></li>
+<li><p><strong>Pagination</strong>: <code class="docutils literal notranslate"><span class="pre">CursorPageParams</span></code> / <code class="docutils literal notranslate"><span class="pre">OffsetPageParams</span></code> types and an
+<code class="docutils literal notranslate"><span class="pre">extractList()</span></code> helper that normalises responses that use <code class="docutils literal notranslate"><span class="pre">data</span></code>,
+<code class="docutils literal notranslate"><span class="pre">items</span></code>, or bare arrays.</p></li>
+<li><p><strong>Error Handling</strong>: <code class="docutils literal notranslate"><span class="pre">ApiError</span></code> class with convenience getters
+(<code class="docutils literal notranslate"><span class="pre">isUnauthorized</span></code>, <code class="docutils literal notranslate"><span class="pre">isNotFound</span></code>, <code class="docutils literal notranslate"><span class="pre">isRateLimited</span></code>, <code class="docutils literal notranslate"><span class="pre">isServerError</span></code>).</p></li>
+</ul>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="c1">// Example: fetching paginated sessions</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">get</span><span class="p">,</span><span class="w"> </span><span class="nx">post</span><span class="p">,</span><span class="w"> </span><span class="nx">extractList</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@/lib/api-client&quot;</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">sessions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">get</span><span class="o">&lt;</span><span class="nx">SessionsResponse</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">  </span><span class="sb">`/v1/projects/</span><span class="si">${</span><span class="nx">projectId</span><span class="si">}</span><span class="sb">/sessions?limit=50`</span><span class="p">,</span>
+<span class="p">);</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">items</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">extractList</span><span class="o">&lt;</span><span class="nx">Session</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">sessions</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="authentication-flow">
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">Authentication Flow</a><a class="headerlink" href="#authentication-flow" title="Link to this heading">¶</a></h3>
+<p>The frontend supports <strong>four authentication methods</strong>:</p>
+<ol class="arabic">
+<li><p><strong>Password Login</strong> (<code class="docutils literal notranslate"><span class="pre">/login</span></code>)
+- POST credentials to <code class="docutils literal notranslate"><span class="pre">/v1/auth/login</span></code>
+- On success, stores <code class="docutils literal notranslate"><span class="pre">access_token</span></code> and <code class="docutils literal notranslate"><span class="pre">refresh_token</span></code> in</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">sessionStorage</span></code></p>
+</div></blockquote>
+<ul class="simple">
+<li><p>If the backend returns <code class="docutils literal notranslate"><span class="pre">requires_mfa:</span> <span class="pre">true</span></code>, redirects to
+<code class="docutils literal notranslate"><span class="pre">/login/mfa</span></code> with an <code class="docutils literal notranslate"><span class="pre">mfa_session_token</span></code></p></li>
+</ul>
+</li>
+<li><p><strong>OTP / Magic Code</strong> (<code class="docutils literal notranslate"><span class="pre">/login/otp</span></code>)
+- Two-step flow: email → OTP receipt → code verification
+- <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/auth/login/otp/send</span></code> then <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/auth/login/otp/verify</span></code>
+- Resend with 60-second cooldown timer</p></li>
+<li><p><strong>MFA Challenge</strong> (<code class="docutils literal notranslate"><span class="pre">/login/mfa</span></code>)
+- After password authentication when MFA is enabled
+- Requires email + 6-digit code + <code class="docutils literal notranslate"><span class="pre">mfa_session_token</span></code>
+- Verifies via <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/auth/mfa/verify</span></code></p></li>
+<li><p><strong>Social Login</strong> (button stubs, currently disabled)
+- GitHub and Google buttons rendered but disabled</p></li>
+</ol>
+</section>
+<section id="session-token-storage">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">Session Token Storage</a><a class="headerlink" href="#session-token-storage" title="Link to this heading">¶</a></h3>
+<p>All tokens are stored in <strong>``sessionStorage``</strong> (not <code class="docutils literal notranslate"><span class="pre">localStorage</span></code>) using
+the keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mg_access_token</span></code> — JWT access token</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mg_refresh_token</span></code> — JWT refresh token</p></li>
+</ul>
+<p>Tokens are cleared on logout, on 401-after-refresh failure, and when the
+session expires.</p>
+</section>
+<section id="auth-guard-require-auth-tsx">
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">Auth Guard (<code class="docutils literal notranslate"><span class="pre">require-auth.tsx</span></code>)</a><a class="headerlink" href="#auth-guard-require-auth-tsx" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;RequireAuth&gt;</span></code> component wraps the entire dashboard layout. On mount it
+checks for a valid (non-expired) JWT in <code class="docutils literal notranslate"><span class="pre">sessionStorage</span></code>. If the token is
+missing or expired (checked by decoding the JWT payload and comparing <code class="docutils literal notranslate"><span class="pre">exp</span></code>
+to <code class="docutils literal notranslate"><span class="pre">Date.now()</span></code>), it clears stale tokens and redirects to
+<code class="docutils literal notranslate"><span class="pre">/login?reason=not-signed-in</span></code> after a brief 500ms display of the loading
+screen (for a polished UX).</p>
+</section>
+</section>
+<section id="user-flows">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">User Flows</a><a class="headerlink" href="#user-flows" title="Link to this heading">¶</a></h2>
+<section id="registration-onboarding">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">Registration &amp; Onboarding</a><a class="headerlink" href="#registration-onboarding" title="Link to this heading">¶</a></h3>
+<ol class="arabic">
+<li><p>User visits <code class="docutils literal notranslate"><span class="pre">/signup</span></code>, fills out organization name, email, and password
+(with a client-side password strength meter)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/auth/signup</span></code> → redirects to <code class="docutils literal notranslate"><span class="pre">/verify-email?email=...</span></code></p></li>
+<li><p>User enters 6-digit OTP received by email → <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/auth/verify-email</span></code>
+→ tokens stored → redirected to <code class="docutils literal notranslate"><span class="pre">/onboarding</span></code></p></li>
+<li><p><strong>Onboarding wizard</strong> (<code class="docutils literal notranslate"><span class="pre">/onboarding</span></code>): A single-page setup form
+covering:
+- <strong>LLM Configuration</strong>: Backend (OpenAI, Anthropic, OpenRouter, Azure,</p>
+<blockquote>
+<div><p>Ollama, OpenAI-compatible), model name, temperature, max tokens</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><strong>API Keys</strong>: Secret inputs for OpenAI, Anthropic, OpenRouter, Azure
+keys, plus Azure endpoint and Ollama base URL</p></li>
+<li><p><strong>Embeddings</strong>: Backend provider, model, dimensions, API key</p></li>
+<li><p><strong>Knowledge Graph</strong>: Backend (PostgreSQL/pgvector, SurrealDB, or none),
+search type (hybrid, BM25, vector), traversal depth, SurrealDB
+connection fields</p></li>
+<li><p><strong>Behaviour</strong>: Context cache TTL, audit log response body toggle</p></li>
+</ul>
+</li>
+<li><p>On save, <code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/admin/org/config</span></code> stores the configuration and the user
+is redirected to <code class="docutils literal notranslate"><span class="pre">/overview</span></code></p></li>
+</ol>
+</section>
+<section id="login-flow">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">Login Flow</a><a class="headerlink" href="#login-flow" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>User enters email/password at <code class="docutils literal notranslate"><span class="pre">/login</span></code></p></li>
+<li><p>If MFA is enabled, redirected to <code class="docutils literal notranslate"><span class="pre">/login/mfa</span></code> for 6-digit code</p></li>
+<li><p>On success, tokens stored in <code class="docutils literal notranslate"><span class="pre">sessionStorage</span></code>, redirected to
+<code class="docutils literal notranslate"><span class="pre">/overview</span></code></p></li>
+<li><p>Subsequent visits check for valid token via <code class="docutils literal notranslate"><span class="pre">RequireAuth</span></code></p></li>
+<li><p><strong>Token refresh</strong>: If the API returns 401, the client transparently
+attempts <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/auth/refresh</span></code> before redirecting to login</p></li>
+</ol>
+</section>
+<section id="password-reset">
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">Password Reset</a><a class="headerlink" href="#password-reset" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>User enters email at <code class="docutils literal notranslate"><span class="pre">/forgot-password</span></code> → <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/auth/forgot-password</span></code></p></li>
+<li><p>Email received with reset code → user clicks through to
+<code class="docutils literal notranslate"><span class="pre">/reset-password?email=...</span></code></p></li>
+<li><p>User enters 6-digit OTP + new password + confirm password</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/auth/reset-password</span></code> → success → auto-redirect to login</p></li>
+</ol>
+</section>
+<section id="dashboard-overview-overview">
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">Dashboard Overview (<code class="docutils literal notranslate"><span class="pre">/overview</span></code>)</a><a class="headerlink" href="#dashboard-overview-overview" title="Link to this heading">¶</a></h3>
+<p>The landing page after login shows:</p>
+<ul class="simple">
+<li><p><strong>Stat Cards</strong>: Total Users, Total Sessions, Total Messages, API Keys
+(fetched from <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/admin/stats/org</span></code>)</p></li>
+<li><p><strong>Quick Actions</strong>: Buttons to ingest memory, create user, new session</p></li>
+<li><p><strong>Recent Activity</strong>: Last 5 audit log entries (<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/admin/audit-logs?limit=5</span></code>)
+with human-readable action labels (e.g. “Session created”, “Memory ingested”)</p></li>
+<li><p><strong>Daily Usage Summary</strong>: 7-day totals for messages, sessions, episodes</p></li>
+</ul>
+</section>
+<section id="projects">
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">Projects</a><a class="headerlink" href="#projects" title="Link to this heading">¶</a></h3>
+<section id="list-projects">
+<h4><a class="toc-backref" href="#id26" role="doc-backlink">List (<code class="docutils literal notranslate"><span class="pre">/projects</span></code>)</a><a class="headerlink" href="#list-projects" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Fetches all projects via <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/projects</span></code></p></li>
+<li><p>Displays project cards with name, description, member count, creation date</p></li>
+<li><p><strong>Pin to sidebar</strong>: Up to 3 projects can be pinned via <code class="docutils literal notranslate"><span class="pre">localStorage</span></code>
+(<code class="docutils literal notranslate"><span class="pre">usePinnedProjects</span></code> hook). Pinned projects appear in the sidebar for
+quick access.</p></li>
+<li><p><strong>Create Project</strong>: Modal dialog with name + description fields</p></li>
+<li><p>Empty, loading, and error states handled with shared components</p></li>
+</ul>
+</section>
+<section id="project-dashboard-projects-id">
+<h4><a class="toc-backref" href="#id27" role="doc-backlink">Project Dashboard (<code class="docutils literal notranslate"><span class="pre">/projects/[id]/</span></code>)</a><a class="headerlink" href="#project-dashboard-projects-id" title="Link to this heading">¶</a></h4>
+<p>Project-scoped routes are available once inside a project:</p>
+<ul>
+<li><p><strong>Sessions</strong> (<code class="docutils literal notranslate"><span class="pre">/projects/[id]/sessions</span></code>): List sessions with pagination,
+create/delete dialogs, status badges (active/closed), message/fact counts</p></li>
+<li><p><strong>Session Detail</strong> (<code class="docutils literal notranslate"><span class="pre">/projects/[id]/sessions/[sessionId]</span></code>): Metadata card
+(ID, creator, timestamps, message/fact counts) + tab navigation for
+Messages, Facts, Graph, Classifications, Extractions</p></li>
+<li><p><strong>Memory</strong> (<code class="docutils literal notranslate"><span class="pre">/projects/[id]/memory</span></code>): Three-tab interface:
+- <em>Ingest</em>: Paste messages (format <code class="docutils literal notranslate"><span class="pre">role:</span> <span class="pre">content</span></code> per line), submit to</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/projects/{id}/memory</span></code></p>
+</div></blockquote>
+<ul class="simple">
+<li><p><em>Context</em>: Query semantic context via
+<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/projects/{id}/context?query=...</span></code> with configurable result limit</p></li>
+<li><p><em>Search</em>: Hybrid search across episodes, facts, and entities with
+type-filter checkboxes and relevance scores</p></li>
+</ul>
+</li>
+<li><p><strong>Graph Explorer</strong> (<code class="docutils literal notranslate"><span class="pre">/projects/[id]/graph</span></code>): Interactive D3 force graph
+(see <a class="reference internal" href="#graph-visualization"><span class="std std-ref">Graph Visualization</span></a>)</p></li>
+<li><p><strong>Project Settings</strong> (<code class="docutils literal notranslate"><span class="pre">/projects/[id]/settings</span></code>): Edit name/description,
+archive project</p></li>
+<li><p><strong>API Keys</strong> (<code class="docutils literal notranslate"><span class="pre">/projects/[id]/settings/api-keys</span></code>): Create, view prefix,
+copy raw key (shown once), revoke</p></li>
+</ul>
+</section>
+</section>
+<section id="administration">
+<h3><a class="toc-backref" href="#id28" role="doc-backlink">Administration</a><a class="headerlink" href="#administration" title="Link to this heading">¶</a></h3>
+<section id="users-users">
+<h4><a class="toc-backref" href="#id29" role="doc-backlink">Users (<code class="docutils literal notranslate"><span class="pre">/users</span></code>)</a><a class="headerlink" href="#users-users" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Paginated user list with cursor-based pagination</p></li>
+<li><p>Create/Edit/Delete dialogs</p></li>
+<li><p>Copy user ID to clipboard</p></li>
+<li><p>Navigate to user detail page</p></li>
+</ul>
+</section>
+<section id="user-detail-users-id">
+<h4><a class="toc-backref" href="#id30" role="doc-backlink">User Detail (<code class="docutils literal notranslate"><span class="pre">/users/[id]</span></code>)</a><a class="headerlink" href="#user-detail-users-id" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Profile metadata card (ID, external ID, name, email, role, created date)</p></li>
+<li><p>Stats cards (messages, facts, sessions)</p></li>
+<li><p><strong>User Summary</strong>: LLM-generated profile of the user based on conversation
+history. Trigger generation via <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/v1/users/{id}/summary</span></code> with
+polling (5s interval, 2min timeout) until <code class="docutils literal notranslate"><span class="pre">updated_at</span></code> changes.</p></li>
+<li><p><strong>Summary Instructions</strong>: CRUD for custom instructions that guide summary
+generation. Instructions synced via <code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/v1/users/{id}/summary-instructions</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="settings">
+<h3><a class="toc-backref" href="#id31" role="doc-backlink">Settings</a><a class="headerlink" href="#settings" title="Link to this heading">¶</a></h3>
+<section id="system-settings-settings">
+<h4><a class="toc-backref" href="#id32" role="doc-backlink">System Settings (<code class="docutils literal notranslate"><span class="pre">/settings</span></code>)</a><a class="headerlink" href="#system-settings-settings" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p><strong>Profile</strong>: Edit name and email via <code class="docutils literal notranslate"><span class="pre">PATCH</span> <span class="pre">/v1/auth/me</span></code></p></li>
+<li><p><strong>Change Password</strong>: Current + new password with client-side validation</p></li>
+<li><p><strong>MFA Toggle</strong>: Enable/disable email-based MFA with password confirmation
+(and OTP for disable)</p></li>
+</ul>
+</section>
+<section id="administration-pages">
+<h4><a class="toc-backref" href="#id33" role="doc-backlink">Administration Pages</a><a class="headerlink" href="#administration-pages" title="Link to this heading">¶</a></h4>
+<p>All under <code class="docutils literal notranslate"><span class="pre">/settings/*</span></code>:</p>
+<ul class="simple">
+<li><p><strong>Extraction Schemas</strong> (<code class="docutils literal notranslate"><span class="pre">/settings/schemas</span></code>): CRUD for JSON schema-based
+extraction definitions</p></li>
+<li><p><strong>Classifications</strong> (<code class="docutils literal notranslate"><span class="pre">/settings/classifications</span></code>): View classification schemas</p></li>
+<li><p><strong>Extractions</strong> (<code class="docutils literal notranslate"><span class="pre">/settings/extractions</span></code>): View extracted data by schema</p></li>
+<li><p><strong>Extraction Instructions</strong> (<code class="docutils literal notranslate"><span class="pre">/settings/extraction-instructions</span></code>): Manage
+extraction instructions</p></li>
+<li><p><strong>Webhooks</strong> (<code class="docutils literal notranslate"><span class="pre">/settings/webhooks</span></code>): Create webhook endpoints with event
+type selection, view signing secret once, test delivery</p></li>
+<li><p><strong>Prompts</strong> (<code class="docutils literal notranslate"><span class="pre">/settings/prompts</span></code>): Full prompt template manager with
+version history, edit/customize, set default prompt for type</p></li>
+<li><p><strong>Org Config</strong> (<code class="docutils literal notranslate"><span class="pre">/settings/org-config</span></code>): Tabbed configuration for LLM,
+Embeddings, Graph, and Behaviour (same sections as onboarding)</p></li>
+</ul>
+</section>
+</section>
+<section id="monitoring-analytics">
+<h3><a class="toc-backref" href="#id34" role="doc-backlink">Monitoring &amp; Analytics</a><a class="headerlink" href="#monitoring-analytics" title="Link to this heading">¶</a></h3>
+<section id="analytics-analytics">
+<h4><a class="toc-backref" href="#id35" role="doc-backlink">Analytics (<code class="docutils literal notranslate"><span class="pre">/analytics</span></code>)</a><a class="headerlink" href="#analytics-analytics" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Stat cards for total messages, sessions, facts</p></li>
+<li><p><strong>Daily Usage Chart</strong>: Custom SVG bar chart with 7/30/90-day ranges.
+Renders stacked bars for messages and sessions, with hover tooltip showing
+exact values. Y-axis auto-scales with <code class="docutils literal notranslate"><span class="pre">niceMax</span></code> heuristic.</p></li>
+</ul>
+</section>
+<section id="monitoring-monitoring">
+<h4><a class="toc-backref" href="#id36" role="doc-backlink">Monitoring (<code class="docutils literal notranslate"><span class="pre">/monitoring</span></code>)</a><a class="headerlink" href="#monitoring-monitoring" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Real-time platform metrics auto-refreshing every 30 seconds</p></li>
+<li><p><strong>KPI Cards</strong>: Episodes added (24h), enrichment progress bar with
+colour-coded thresholds, error rate, queue depth</p></li>
+<li><p><strong>Latency Panel</strong>: p50/p95/p99 latency cards for overall API, context
+assembly, and graph search (colour-coded: green &lt;100ms, yellow &lt;500ms, red
+500ms+)</p></li>
+<li><p><strong>Scrape Targets Table</strong>: Prometheus scrape targets with health status,
+last scrape time, and error column</p></li>
+<li><p><strong>Status Bar</strong>: Overall system status, active requests, user count, request
+rate (2xx/5xx)</p></li>
+<li><p><strong>Prometheus Query</strong> (<code class="docutils literal notranslate"><span class="pre">/monitoring/query</span></code>): Ad-hoc PromQL query interface</p></li>
+</ul>
+</section>
+<section id="audit-log-audit">
+<h4><a class="toc-backref" href="#id37" role="doc-backlink">Audit Log (<code class="docutils literal notranslate"><span class="pre">/audit</span></code>)</a><a class="headerlink" href="#audit-log-audit" title="Link to this heading">¶</a></h4>
+<ul>
+<li><p>Server-side paginated (25 per page) audit log with:
+- Filter by action name, actor type (user/API key/system), status code group
+- Auto-refresh toggle (10s interval)
+- Columns: time, action (monospace), actor ID, actor type badge, status</p>
+<blockquote>
+<div><p>badge, HTTP method, path, IP address</p>
+</div></blockquote>
+</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="graph-visualization">
+<span id="id3"></span><h2><a class="toc-backref" href="#id38" role="doc-backlink">Graph Visualization</a><a class="headerlink" href="#graph-visualization" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">ForceGraph</span></code> component (<code class="docutils literal notranslate"><span class="pre">src/components/force-graph.tsx</span></code>) is the
+centerpiece of the Graph Explorer page. It is a 1044-line interactive D3.js
+force-directed graph.</p>
+<section id="types">
+<h3><a class="toc-backref" href="#id39" role="doc-backlink">Types</a><a class="headerlink" href="#types" title="Link to this heading">¶</a></h3>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="kd">interface</span><span class="w"> </span><span class="nx">GraphNodeData</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w">       </span><span class="c1">// &quot;person&quot;, &quot;organization&quot;, &quot;location&quot;, &quot;event&quot;, &quot;concept&quot;, &quot;community&quot;</span>
+<span class="w">  </span><span class="nx">summary</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">created_at</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">interface</span><span class="w"> </span><span class="nx">GraphEdgeData</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">source_id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">target_id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="kr">type</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w">       </span><span class="c1">// e.g. &quot;member_of&quot;, &quot;works_at&quot;, &quot;located_in&quot;</span>
+<span class="p">}</span>
+
+<span class="kd">interface</span><span class="w"> </span><span class="nx">ForceGraphProps</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">nodes</span><span class="o">:</span><span class="w"> </span><span class="kt">GraphNodeData</span><span class="p">[];</span>
+<span class="w">  </span><span class="nx">edges</span><span class="o">:</span><span class="w"> </span><span class="kt">GraphEdgeData</span><span class="p">[];</span>
+<span class="w">  </span><span class="nx">loading?</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">error?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">onRetry</span><span class="o">?:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">apiConfig</span><span class="o">:</span><span class="w"> </span><span class="kt">ApiConfig</span><span class="p">;</span><span class="w">           </span><span class="c1">// baseUrl, projectId, auth headers</span>
+<span class="w">  </span><span class="nx">userName?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">showFilter?</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">showControls?</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">showLegend?</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">height?</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">emptyMessage?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">emptyAction?</span><span class="o">:</span><span class="w"> </span><span class="kt">React.ReactNode</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="features">
+<h3><a class="toc-backref" href="#id40" role="doc-backlink">Features</a><a class="headerlink" href="#features" title="Link to this heading">¶</a></h3>
+<ol class="arabic">
+<li><p><strong>D3 Force Simulation</strong>
+- <code class="docutils literal notranslate"><span class="pre">forceSimulation</span></code> with <code class="docutils literal notranslate"><span class="pre">forceLink</span></code> (distance 120), <code class="docutils literal notranslate"><span class="pre">forceManyBody</span></code></p>
+<blockquote>
+<div><p>(strength -250), <code class="docutils literal notranslate"><span class="pre">forceCenter</span></code>, <code class="docutils literal notranslate"><span class="pre">forceCollide</span></code> (radius + 8px padding)</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Node radius proportional to degree (<code class="docutils literal notranslate"><span class="pre">5</span> <span class="pre">+</span> <span class="pre">sqrt(deg)</span> <span class="pre">*</span> <span class="pre">4</span></code>)</p></li>
+<li><p>Drag-and-drop with fixed-position support (<code class="docutils literal notranslate"><span class="pre">fx</span></code>/<code class="docutils literal notranslate"><span class="pre">fy</span></code>)</p></li>
+<li><p>Zoom/pan with <code class="docutils literal notranslate"><span class="pre">d3.zoom</span></code> (scale extent 0.15–5x)</p></li>
+<li><p>Auto zoom-to-fit on initial render</p></li>
+</ul>
+</li>
+<li><p><strong>Community Convex Hulls</strong>
+- Entities connected via <code class="docutils literal notranslate"><span class="pre">member_of</span></code> edges are grouped into coloured</p>
+<blockquote>
+<div><p>convex hull polygons using <code class="docutils literal notranslate"><span class="pre">d3.polygonHull</span></code></p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Hulls are expanded by 12px padding for visual breathing room</p></li>
+<li><p>Hovering a hull highlights member nodes and dims non-members</p></li>
+<li><p>Only communities with ≥3 visible members render hulls</p></li>
+</ul>
+</li>
+<li><p><strong>Search &amp; Filter</strong>
+- Text filter searches by node name and type
+- Two modes: <strong>Exact</strong> (only matching nodes) and <strong>Related</strong> (matching</p>
+<blockquote>
+<div><p>nodes + 1-hop neighbours)</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Real-time node/edge count display (filtered/total)</p></li>
+</ul>
+</li>
+<li><p><strong>Node Selection &amp; Detail Panel</strong>
+- Clicking a node opens a floating info panel
+- Panel fetches node detail from the API
+(<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/projects/{id}/graph/nodes/{nodeId}</span></code>) with metadata and
+relationships
+- Falls back to local data on API error
+- Clicking a neighbour name navigates to that node</p></li>
+<li><p><strong>Hover Interactions</strong>
+- Hovering a node highlights its connected edges (increased opacity/width)
+- Connected neighbours remain opaque while others dim to 20%
+- Edge labels (relationship type) shown on hover
+- Community hulls highlight on hover</p></li>
+<li><p><strong>Controls</strong>
+- Zoom in/out/reset buttons
+- Fullscreen toggle (Esc to exit)
+- Entity type legend (Person, Organization, Location, Event, Concept,</p>
+<blockquote>
+<div><p>Community) with colour swatches</p>
+</div></blockquote>
+</li>
+<li><p><strong>Empty/Error States</strong>
+- Loading spinner overlay
+- Error state with retry button
+- Empty state with contextual message and optional action</p></li>
+</ol>
+</section>
+<section id="node-colours">
+<h3><a class="toc-backref" href="#id41" role="doc-backlink">Node Colours</a><a class="headerlink" href="#node-colours" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Entity Type</p></th>
+<th class="head"><p>Colour</p></th>
+<th class="head"><p>Hex</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>person</p></td>
+<td><p>Deep blue</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#14488C</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>organization</p></td>
+<td><p>Medium blue</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#1453A6</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>location</p></td>
+<td><p>Light blue</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#8FAFD9</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>event</p></td>
+<td><p>Navy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#1747A6</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>concept</p></td>
+<td><p>Steel blue</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#6A8DB8</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>community</p></td>
+<td><p>Purple</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#7C3AED</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="graph-data-loading-projects-id-graph-page-tsx">
+<h3><a class="toc-backref" href="#id42" role="doc-backlink">Graph Data Loading (<code class="docutils literal notranslate"><span class="pre">/projects/[id]/graph/page.tsx</span></code>)</a><a class="headerlink" href="#graph-data-loading-projects-id-graph-page-tsx" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GraphExplorerPage</span></code> component:</p>
+<ol class="arabic simple">
+<li><p>Fetches up to 100 nodes via
+<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/projects/{projectId}/graph/nodes?limit=100</span></code></p></li>
+<li><p>Fetches edges for those node IDs via
+<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/projects/{projectId}/graph/edges?subject_ids=...&amp;limit=50</span></code></p></li>
+<li><p>Filters out self-loops and edges whose endpoints are not in the node set</p></li>
+<li><p>Passes the data (nodes + edges) to the <code class="docutils literal notranslate"><span class="pre">ForceGraph</span></code> component</p></li>
+</ol>
+</section>
+</section>
+<section id="state-management">
+<h2><a class="toc-backref" href="#id43" role="doc-backlink">State Management</a><a class="headerlink" href="#state-management" title="Link to this heading">¶</a></h2>
+<p>The frontend uses a lightweight state management approach without a global
+store library.</p>
+<section id="react-context">
+<h3><a class="toc-backref" href="#id44" role="doc-backlink">React Context</a><a class="headerlink" href="#react-context" title="Link to this heading">¶</a></h3>
+<section id="projectcontext-src-stores-project-context-tsx">
+<h4><a class="toc-backref" href="#id45" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">ProjectContext</span></code> (<code class="docutils literal notranslate"><span class="pre">src/stores/project-context.tsx</span></code>)</a><a class="headerlink" href="#projectcontext-src-stores-project-context-tsx" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Provides <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">project,</span> <span class="pre">loading,</span> <span class="pre">error,</span> <span class="pre">refetch</span> <span class="pre">}</span></code> to all pages nested inside
+<code class="docutils literal notranslate"><span class="pre">/projects/[id]/</span></code></p></li>
+<li><p>Automatically reads the <code class="docutils literal notranslate"><span class="pre">id</span></code> route parameter via <code class="docutils literal notranslate"><span class="pre">useParams()</span></code></p></li>
+<li><p>Fetches project metadata via <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/projects/{id}</span></code></p></li>
+<li><p>Handles 404 (sets <code class="docutils literal notranslate"><span class="pre">error</span> <span class="pre">=</span> <span class="pre">&quot;Project</span> <span class="pre">not</span> <span class="pre">found&quot;</span></code>) and other API errors</p></li>
+</ul>
+</section>
+</section>
+<section id="custom-hooks">
+<h3><a class="toc-backref" href="#id46" role="doc-backlink">Custom Hooks</a><a class="headerlink" href="#custom-hooks" title="Link to this heading">¶</a></h3>
+<section id="usepinnedprojects-src-hooks-use-pinned-projects-ts">
+<h4><a class="toc-backref" href="#id47" role="doc-backlink"><code class="docutils literal notranslate"><span class="pre">usePinnedProjects</span></code> (<code class="docutils literal notranslate"><span class="pre">src/hooks/use-pinned-projects.ts</span></code>)</a><a class="headerlink" href="#usepinnedprojects-src-hooks-use-pinned-projects-ts" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Manages up to 3 pinned projects stored in <code class="docutils literal notranslate"><span class="pre">localStorage</span></code></p></li>
+<li><p>Cross-component sync via custom <code class="docutils literal notranslate"><span class="pre">StorageEvent</span></code></p></li>
+<li><p>Exposes <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">pinned,</span> <span class="pre">togglePin,</span> <span class="pre">isPinned,</span> <span class="pre">isMaxPinned</span> <span class="pre">}</span></code></p></li>
+<li><p>Used by the sidebar to render pinned project shortcuts</p></li>
+</ul>
+</section>
+</section>
+<section id="local-component-state">
+<h3><a class="toc-backref" href="#id48" role="doc-backlink">Local Component State</a><a class="headerlink" href="#local-component-state" title="Link to this heading">¶</a></h3>
+<p>All other state (form data, dialogs, loading flags, pagination cursors) is
+managed with React <code class="docutils literal notranslate"><span class="pre">useState</span></code> and <code class="docutils literal notranslate"><span class="pre">useReducer</span></code> locally within each page
+component. There is no Redux, Zustand, or other global state library.</p>
+</section>
+</section>
+<section id="utility-functions">
+<h2><a class="toc-backref" href="#id49" role="doc-backlink">Utility Functions</a><a class="headerlink" href="#utility-functions" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">src/lib/utils.ts</span></code> provides shared helpers:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cn()</span></code> — Merges Tailwind classes with <code class="docutils literal notranslate"><span class="pre">tailwind-merge</span></code> + <code class="docutils literal notranslate"><span class="pre">clsx</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timeAgo()</span></code> / <code class="docutils literal notranslate"><span class="pre">formatDate()</span></code> / <code class="docutils literal notranslate"><span class="pre">smartTimestamp()</span></code> — Date/time
+formatting</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">truncateId()</span></code> — UUID truncation for display</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">copyToClipboard()</span></code> — Async clipboard API wrapper</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">actionLabel()</span></code> — Maps machine action names to human labels (e.g.
+<code class="docutils literal notranslate"><span class="pre">&quot;session.create&quot;</span></code> → <code class="docutils literal notranslate"><span class="pre">&quot;Session</span> <span class="pre">created&quot;</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">formatNumber()</span></code> — Locale-aware number formatting</p></li>
+</ul>
+</section>
+<section id="deployment">
+<h2><a class="toc-backref" href="#id50" role="doc-backlink">Deployment</a><a class="headerlink" href="#deployment" title="Link to this heading">¶</a></h2>
+<section id="docker">
+<h3><a class="toc-backref" href="#id51" role="doc-backlink">Docker</a><a class="headerlink" href="#docker" title="Link to this heading">¶</a></h3>
+<p>The frontend ships with a <strong>multi-stage Docker build</strong>:</p>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="c"># Stage 1: Builder (node:20-alpine)</span>
+<span class="k">COPY</span><span class="w"> </span>package.json<span class="w"> </span>package-lock.json<span class="w"> </span>./
+<span class="k">RUN</span><span class="w"> </span>npm<span class="w"> </span>ci<span class="w"> </span>--legacy-peer-deps
+<span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>.
+<span class="k">RUN</span><span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span>build
+
+<span class="c"># Stage 2: Runner (node:20-alpine)</span>
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>builder<span class="w"> </span>/app/.next/standalone<span class="w"> </span>./
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>builder<span class="w"> </span>/app/.next/static<span class="w"> </span>./.next/static
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>builder<span class="w"> </span>/app/public<span class="w"> </span>./public
+<span class="k">EXPOSE</span><span class="w"> </span><span class="s">3000</span>
+<span class="k">HEALTHCHECK</span><span class="w"> </span>--interval<span class="o">=</span>30s<span class="w"> </span>--timeout<span class="o">=</span>5s<span class="w"> </span>--start-period<span class="o">=</span>10s<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>CMD<span class="w"> </span>wget<span class="w"> </span>--no-verbose<span class="w"> </span>--tries<span class="o">=</span><span class="m">1</span><span class="w"> </span>--spider<span class="w"> </span>http://127.0.0.1:3000/<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;node&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;server.js&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Key points:</p>
+<ul class="simple">
+<li><p>Uses <code class="docutils literal notranslate"><span class="pre">output:</span> <span class="pre">&quot;standalone&quot;</span></code> in <code class="docutils literal notranslate"><span class="pre">next.config.ts</span></code> to produce a
+self-contained <code class="docutils literal notranslate"><span class="pre">server.js</span></code> with only required <code class="docutils literal notranslate"><span class="pre">node_modules</span></code></p></li>
+<li><p>Static assets (<code class="docutils literal notranslate"><span class="pre">.next/static</span></code>, <code class="docutils literal notranslate"><span class="pre">public/</span></code>) copied separately</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">NEXT_PUBLIC_API_URL</span></code> build arg defaults to <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (empty string),
+meaning the frontend uses <strong>relative URLs</strong> — API calls like
+<code class="docutils literal notranslate"><span class="pre">/v1/sessions</span></code> are proxied through the same nginx origin</p></li>
+</ul>
+</section>
+<section id="docker-compose">
+<h3><a class="toc-backref" href="#id52" role="doc-backlink">Docker Compose</a><a class="headerlink" href="#docker-compose" title="Link to this heading">¶</a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># deploy/docker-compose.yml</span>
+<span class="nt">networks</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">default</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openzync_network</span>
+
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">frontend</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span>
+<span class="w">      </span><span class="nt">dockerfile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ghcr.io/rohnsha0/openzync/frontend:latest</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;3000:3000&quot;</span>
+<span class="w">    </span><span class="nt">env_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.env</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+</pre></div>
+</div>
+<p>The compose file is standalone — it does not reference backend services. In
+production, the frontend and API are served through a shared nginx reverse
+proxy on the same VPS.</p>
+</section>
+<section id="ci-cd">
+<h3><a class="toc-backref" href="#id53" role="doc-backlink">CI/CD</a><a class="headerlink" href="#ci-cd" title="Link to this heading">¶</a></h3>
+<p>A GitHub Actions workflow (<code class="docutils literal notranslate"><span class="pre">.github/workflows/deploy.yml</span></code>) builds the Docker
+image and pushes it to GitHub Container Registry (<code class="docutils literal notranslate"><span class="pre">ghcr.io</span></code>).</p>
+</section>
+</section>
+<section id="environment-variables">
+<h2><a class="toc-backref" href="#id54" role="doc-backlink">Environment Variables</a><a class="headerlink" href="#environment-variables" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># .env.example</span>
+<span class="nv">NEXT_PUBLIC_API_URL</span><span class="o">=</span>http://localhost:8000
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">NEXT_PUBLIC_API_URL</span></code>: The base URL of the OpenZync API. In development
+this defaults to <code class="docutils literal notranslate"><span class="pre">http://localhost:8000</span></code>. In production it is typically
+<code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> (empty), relying on nginx to proxy <code class="docutils literal notranslate"><span class="pre">/v1/*</span></code> requests to the API
+backend.</p></li>
+</ul>
+</section>
+<section id="project-structure">
+<h2><a class="toc-backref" href="#id55" role="doc-backlink">Project Structure</a><a class="headerlink" href="#project-structure" title="Link to this heading">¶</a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>openzync-frontend/
+├── .env.example              # Environment variable template
+├── .github/workflows/        # GitHub Actions CI/CD
+├── deploy/
+│   └── docker-compose.yml    # Standalone deployment
+├── Dockerfile                # Multi-stage production build
+├── next.config.ts            # Next.js config (standalone output)
+├── package.json              # Dependencies &amp; scripts
+├── postcss.config.mjs        # PostCSS + Tailwind config
+├── tsconfig.json             # TypeScript config (strict, @/ alias)
+└── src/
+    ├── app/                  # Next.js App Router pages
+    │   ├── globals.css       # Design tokens, base styles, utility classes
+    │   ├── layout.tsx        # Root layout (fonts, theme)
+    │   ├── (dashboard)/      # Authenticated layout group
+    │   │   ├── layout.tsx    # Sidebar + topbar + breadcrumb shell
+    │   │   ├── require-auth.tsx
+    │   │   ├── overview/
+    │   │   ├── analytics/
+    │   │   ├── monitoring/
+    │   │   ├── projects/
+    │   │   ├── users/
+    │   │   ├── audit/
+    │   │   └── settings/
+    │   ├── login/
+    │   ├── signup/
+    │   ├── verify-email/
+    │   ├── forgot-password/
+    │   ├── reset-password/
+    │   └── onboarding/
+    ├── components/
+    │   ├── ui/               # Primitives: Button, Badge, Dialog, etc.
+    │   ├── shared/           # PageHeader, StatCard, EmptyState, etc.
+    │   ├── force-graph.tsx   # D3 force-directed graph
+    │   ├── breadcrumb.tsx    # Breadcrumb trail component
+    │   └── theme-provider.tsx
+    ├── hooks/
+    │   └── use-pinned-projects.ts
+    ├── lib/
+    │   ├── api-client.ts     # Centralized API client
+    │   └── utils.ts          # Shared utilities
+    └── stores/
+        └── project-context.tsx  # Project state provider
+</pre></div>
+</div>
+</section>
+<section id="cross-references">
+<h2><a class="toc-backref" href="#id56" role="doc-backlink">Cross-References</a><a class="headerlink" href="#cross-references" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><span class="xref std std-ref">api_layer</span> — OpenZync REST API (the backend that this frontend consumes)</p></li>
+<li><p><span class="xref std std-ref">auth</span> — Authentication architecture (JWT, MFA, refresh token flow)</p></li>
+<li><p><span class="xref std std-ref">graph_backends</span> — Graph backend configuration (PostgreSQL/pgvector,
+SurrealDB)</p></li>
+<li><p><span class="xref std std-ref">llm</span> — LLM provider configuration (OpenAI, Anthropic, etc.)</p></li>
+<li><p><span class="xref std std-ref">memory_context</span> — Memory ingestion, context assembly, hybrid search</p></li>
+<li><p><span class="xref std std-ref">workers</span> — Background job infrastructure (RQ workers for enrichment)</p></li>
+<li><p><span class="xref std std-ref">core</span> — Core platform concepts and data model</p></li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="infrastructure.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="mcp_server.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">MCP Server (FastMCP)</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Rohan Shaw
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">OpenZync Frontend</a><ul>
+<li><a class="reference internal" href="#tech-stack">Tech Stack</a></li>
+<li><a class="reference internal" href="#application-architecture">Application Architecture</a><ul>
+<li><a class="reference internal" href="#route-pattern">Route Pattern</a></li>
+<li><a class="reference internal" href="#layout-hierarchy">Layout Hierarchy</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#design-system">Design System</a><ul>
+<li><a class="reference internal" href="#theme-tokens">Theme Tokens</a></li>
+<li><a class="reference internal" href="#default-theme">Default Theme</a></li>
+<li><a class="reference internal" href="#reusable-css-patterns">Reusable CSS Patterns</a></li>
+<li><a class="reference internal" href="#component-library">Component Library</a><ul>
+<li><a class="reference internal" href="#ui-primitives-src-components-ui">UI Primitives (<code class="docutils literal notranslate"><span class="pre">src/components/ui/</span></code>)</a></li>
+<li><a class="reference internal" href="#shared-components-src-components-shared">Shared Components (<code class="docutils literal notranslate"><span class="pre">src/components/shared/</span></code>)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api-client-authentication">API Client &amp; Authentication</a><ul>
+<li><a class="reference internal" href="#centralized-api-client-src-lib-api-client-ts">Centralized API Client (<code class="docutils literal notranslate"><span class="pre">src/lib/api-client.ts</span></code>)</a></li>
+<li><a class="reference internal" href="#authentication-flow">Authentication Flow</a></li>
+<li><a class="reference internal" href="#session-token-storage">Session Token Storage</a></li>
+<li><a class="reference internal" href="#auth-guard-require-auth-tsx">Auth Guard (<code class="docutils literal notranslate"><span class="pre">require-auth.tsx</span></code>)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#user-flows">User Flows</a><ul>
+<li><a class="reference internal" href="#registration-onboarding">Registration &amp; Onboarding</a></li>
+<li><a class="reference internal" href="#login-flow">Login Flow</a></li>
+<li><a class="reference internal" href="#password-reset">Password Reset</a></li>
+<li><a class="reference internal" href="#dashboard-overview-overview">Dashboard Overview (<code class="docutils literal notranslate"><span class="pre">/overview</span></code>)</a></li>
+<li><a class="reference internal" href="#projects">Projects</a><ul>
+<li><a class="reference internal" href="#list-projects">List (<code class="docutils literal notranslate"><span class="pre">/projects</span></code>)</a></li>
+<li><a class="reference internal" href="#project-dashboard-projects-id">Project Dashboard (<code class="docutils literal notranslate"><span class="pre">/projects/[id]/</span></code>)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#administration">Administration</a><ul>
+<li><a class="reference internal" href="#users-users">Users (<code class="docutils literal notranslate"><span class="pre">/users</span></code>)</a></li>
+<li><a class="reference internal" href="#user-detail-users-id">User Detail (<code class="docutils literal notranslate"><span class="pre">/users/[id]</span></code>)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#settings">Settings</a><ul>
+<li><a class="reference internal" href="#system-settings-settings">System Settings (<code class="docutils literal notranslate"><span class="pre">/settings</span></code>)</a></li>
+<li><a class="reference internal" href="#administration-pages">Administration Pages</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#monitoring-analytics">Monitoring &amp; Analytics</a><ul>
+<li><a class="reference internal" href="#analytics-analytics">Analytics (<code class="docutils literal notranslate"><span class="pre">/analytics</span></code>)</a></li>
+<li><a class="reference internal" href="#monitoring-monitoring">Monitoring (<code class="docutils literal notranslate"><span class="pre">/monitoring</span></code>)</a></li>
+<li><a class="reference internal" href="#audit-log-audit">Audit Log (<code class="docutils literal notranslate"><span class="pre">/audit</span></code>)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#graph-visualization">Graph Visualization</a><ul>
+<li><a class="reference internal" href="#types">Types</a></li>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#node-colours">Node Colours</a></li>
+<li><a class="reference internal" href="#graph-data-loading-projects-id-graph-page-tsx">Graph Data Loading (<code class="docutils literal notranslate"><span class="pre">/projects/[id]/graph/page.tsx</span></code>)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#state-management">State Management</a><ul>
+<li><a class="reference internal" href="#react-context">React Context</a><ul>
+<li><a class="reference internal" href="#projectcontext-src-stores-project-context-tsx"><code class="docutils literal notranslate"><span class="pre">ProjectContext</span></code> (<code class="docutils literal notranslate"><span class="pre">src/stores/project-context.tsx</span></code>)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#custom-hooks">Custom Hooks</a><ul>
+<li><a class="reference internal" href="#usepinnedprojects-src-hooks-use-pinned-projects-ts"><code class="docutils literal notranslate"><span class="pre">usePinnedProjects</span></code> (<code class="docutils literal notranslate"><span class="pre">src/hooks/use-pinned-projects.ts</span></code>)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#local-component-state">Local Component State</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utility-functions">Utility Functions</a></li>
+<li><a class="reference internal" href="#deployment">Deployment</a><ul>
+<li><a class="reference internal" href="#docker">Docker</a></li>
+<li><a class="reference internal" href="#docker-compose">Docker Compose</a></li>
+<li><a class="reference internal" href="#ci-cd">CI/CD</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
+<li><a class="reference internal" href="#project-structure">Project Structure</a></li>
+<li><a class="reference internal" href="#cross-references">Cross-References</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

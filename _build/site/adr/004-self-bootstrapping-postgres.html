@@ -1,0 +1,702 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="core package" href="../api/core.html"><link rel="prev" title="ADR 003: OpenBao as Sole Source of Truth — Zero Fallback" href="003-openbao-zero-fallback.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials - OpenZync Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">OpenZync Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">OpenZync Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/contributing.html">Contributing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../domains/core.html">Core Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/llm.html">LLM Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/graph_backends.html">Graph Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/reranker.html">Re-ranking &amp; Community Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/reranker.html#community-detection">Community Detection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Domain Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../domains/auth.html">Authentication &amp; Authorization Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/memory_context.html">Memory &amp; Context Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/admin_webhooks.html">Admin &amp; Webhooks Domain</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API &amp; Workers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../domains/api_layer.html">API Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/workers.html">Worker System — ARQ Background Job Processing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SDK, MCP &amp; Frontend</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../domains/sdk_python.html">Python SDK (openzync)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/mcp_server.html">MCP Server (FastMCP)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../domains/frontend.html">OpenZync Frontend</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Infra</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../domains/infrastructure.html">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</a><input aria-label="Toggle navigation of Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture Decisions</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference (Auto-generated)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/core.html">core package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/routers.html">routers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/models.html">models package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/schemas.html">schemas package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/services.html">services package</a><input aria-label="Toggle navigation of services package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/services.api.html">services.api package</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/services.mcp.html">services.mcp package</a><input aria-label="Toggle navigation of services.mcp package" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.mcp.tools.html">services.mcp.tools package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.mcp.transport.html">services.mcp.transport package</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/services.worker.html">services.worker package</a><input aria-label="Toggle navigation of services.worker package" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.worker.prompts.html">services.worker.prompts package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/services.worker.tasks.html">services.worker.tasks package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/repositories.html">repositories package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/middleware.html">middleware package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/dependencies.html">dependencies package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/workers.html">workers package</a><input aria-label="Toggle navigation of workers package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/workers.tasks.html">workers.tasks package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api/utils.html">utils package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/packages.html">packages package</a><input aria-label="Toggle navigation of packages package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/packages.community.html">packages.community package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/packages.graph_backend.html">packages.graph_backend package</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/blob/main/docs/adr/004-self-bootstrapping-postgres.md?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/edit/main/docs/adr/004-self-bootstrapping-postgres.md" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="adr-004-self-bootstrapping-postgres-via-openbao-injected-credentials">
+<h1>ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials<a class="headerlink" href="#adr-004-self-bootstrapping-postgres-via-openbao-injected-credentials" title="Link to this heading">¶</a></h1>
+<p><strong>Status:</strong> Accepted (2026-07-11)<br />
+<strong>Supersedes:</strong> Manual <code class="docutils literal notranslate"><span class="pre">OZ_DATABASE_URL</span></code> env var + pre-deployment Alembic step</p>
+<hr class="docutils" />
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>The OpenZync docker-compose stack currently requires the operator to
+provide <code class="docutils literal notranslate"><span class="pre">OZ_DATABASE_URL</span></code> BEFORE deployment.  The init script
+(<code class="docutils literal notranslate"><span class="pre">init_openbao.sh</span></code>) writes that URL to OpenBao’s KV store blindly —
+it cannot verify the URL works because the database isn’t started
+yet.  This is a chicken-and-egg problem: the operator must know the
+database URL, the database password, AND bootstrap the database, all
+in the right order, all before <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.env</span></code> file currently holds three classes of secret that should
+not live together: the DB password (embedded in <code class="docutils literal notranslate"><span class="pre">OZ_DATABASE_URL</span></code>),
+the OpenBao bootstrap credentials (<code class="docutils literal notranslate"><span class="pre">OZ_OPENBAO_ROLE_ID</span></code> /
+<code class="docutils literal notranslate"><span class="pre">OZ_OPENBAO_SECRET_ID</span></code>), and the AppRole credentials for the api and
+worker, which the bootstrap script PRINTS to logs and the operator
+must then copy-paste into <code class="docutils literal notranslate"><span class="pre">.env</span></code> — error-prone and a security smell.
+The Alembic migration step is also a manual <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">migrate</span></code>
+invocation with no orchestration and no healthcheck.  The end
+result: a single <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span> <span class="pre">-d</span></code> does NOT produce a working
+OpenZync stack.  An operator must run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">bootstrap-openbao</span></code>,
+wait, copy the AppRole credentials, run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">migrate</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">up</span></code>.  This violates the spirit of ADR-003 (OpenBao-zero-
+fallback): the DB password still sits in <code class="docutils literal notranslate"><span class="pre">.env</span></code> alongside the
+OpenBao bootstrap credentials, and a successful boot still requires
+operator intervention between phases.</p>
+</section>
+<hr class="docutils" />
+<section id="decision">
+<h2>Decision<a class="headerlink" href="#decision" title="Link to this heading">¶</a></h2>
+<p><strong>Postgres becomes self-bootstrapping.</strong>  The database, its users,
+its passwords, and its migration step are all created and
+orchestrated INSIDE the docker-compose stack.  All secrets are
+written to OpenBao (never <code class="docutils literal notranslate"><span class="pre">.env</span></code>) and injected into the api and
+worker via OpenBao Agent sidecars.  A single <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span> <span class="pre">-d</span></code>
+produces a working OpenZync stack with zero operator intervention.</p>
+<section id="phased-startup-sequence">
+<h3>Phased startup sequence<a class="headerlink" href="#phased-startup-sequence" title="Link to this heading">¶</a></h3>
+<p>The stack boots in eight strictly-ordered phases.  Each phase has a
+hard dependency on the previous one; docker-compose
+<code class="docutils literal notranslate"><span class="pre">depends_on:</span> <span class="pre">condition:</span> <span class="pre">service_healthy</span></code> enforces the order at the
+orchestrator level (no race conditions, no “first request fails”
+surprises).</p>
+<ol class="arabic simple">
+<li><p><strong>Phase 1 — OpenBao bootstrap.</strong>  <code class="docutils literal notranslate"><span class="pre">openbao</span></code> starts first, seeded
+only with <code class="docutils literal notranslate"><span class="pre">BAO_STATIC_SEAL_KEY</span></code> from the deployment environment
+(Docker env, K8s secret — never <code class="docutils literal notranslate"><span class="pre">.env</span></code>).  The <code class="docutils literal notranslate"><span class="pre">openbao-init</span></code>
+sidecar waits for OpenBao’s healthcheck, initialises the Raft
+backend (if first run), unseals, enables the <code class="docutils literal notranslate"><span class="pre">secret/</span></code> (KV v2),
+<code class="docutils literal notranslate"><span class="pre">auth/approle/</span></code>, and <code class="docutils literal notranslate"><span class="pre">transit/</span></code> mounts, writes the two ACL
+policies from <code class="docutils literal notranslate"><span class="pre">infra/openbao/policies/*.hcl</span></code>, and creates the
+two AppRoles — <code class="docutils literal notranslate"><span class="pre">openzync-app</span></code> and <code class="docutils literal notranslate"><span class="pre">openzync-worker</span></code> — with the
+policies bound to each.</p></li>
+<li><p><strong>Phase 2 — System secrets (no DB).</strong>  <code class="docutils literal notranslate"><span class="pre">openbao-init</span></code> writes a
+single combined secret at <code class="docutils literal notranslate"><span class="pre">system/config/data/system</span></code> containing
+all non-DB system config as a flat object: <code class="docutils literal notranslate"><span class="pre">REDIS_URL</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code>, <code class="docutils literal notranslate"><span class="pre">WEBHOOK_SIGNING_SECRET</span></code>, <code class="docutils literal notranslate"><span class="pre">PROMETHEUS_URL</span></code>,
+<code class="docutils literal notranslate"><span class="pre">OTEL_EXPORTER_OTLP_ENDPOINT</span></code>, log level, rate limits, feature
+flags.  The <code class="docutils literal notranslate"><span class="pre">DATABASE_URL</span></code> key is intentionally omitted — it
+doesn’t exist yet.  This is the single seed point for all
+non-DB system config; future per-org config (ADR-005+) builds
+on this same mount.</p></li>
+<li><p><strong>Phase 3 — AppRole credentials for the Agent sidecars.</strong>  The
+api and worker AppRole <code class="docutils literal notranslate"><span class="pre">role_id</span></code> and <code class="docutils literal notranslate"><span class="pre">secret_id</span></code> values are
+written to four files in a shared docker volume
+(<code class="docutils literal notranslate"><span class="pre">openbao-init-data</span></code>): <code class="docutils literal notranslate"><span class="pre">/bao-init/api-role_id</span></code>,
+<code class="docutils literal notranslate"><span class="pre">/bao-init/api-secret_id</span></code>, <code class="docutils literal notranslate"><span class="pre">/bao-init/worker-role_id</span></code>,
+<code class="docutils literal notranslate"><span class="pre">/bao-init/worker-secret_id</span></code>.  Each file is <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">0600</span></code>.  The
+<code class="docutils literal notranslate"><span class="pre">openbao-agent-*</span></code> sidecars (Phase 8) read these at startup.
+The credentials never appear in <code class="docutils literal notranslate"><span class="pre">.env</span></code> and are never printed
+to logs.</p></li>
+<li><p><strong>Phase 4 — Postgres starts.</strong>  The <code class="docutils literal notranslate"><span class="pre">postgres</span></code> service starts
+(image: <code class="docutils literal notranslate"><span class="pre">pgvector/pgvector:pg15</span></code>, matching the RAG workload
+and pgvector extension requirements).  The superuser password
+is read from <code class="docutils literal notranslate"><span class="pre">POSTGRES_PASSWORD</span></code> in the deployment environment
+if present (allows CI / external-managed DBs); otherwise a
+random password is generated via <code class="docutils literal notranslate"><span class="pre">openssl</span> <span class="pre">rand</span> <span class="pre">-base64</span> <span class="pre">32</span></code> and
+held in container memory only.  This password is discarded in
+Phase 5 and is never written to disk or to OpenBao.</p></li>
+<li><p><strong>Phase 5 — DB users and least-privilege roles.</strong>  The
+<code class="docutils literal notranslate"><span class="pre">postgres-init</span></code> sidecar connects as the superuser, creates the
+<code class="docutils literal notranslate"><span class="pre">openzync</span></code> database, and creates two application roles with
+auto-generated passwords: <code class="docutils literal notranslate"><span class="pre">openzync_migrator</span></code> (owns the schema;
+DDL — used ONLY by Alembic) and <code class="docutils literal notranslate"><span class="pre">openzync_app</span></code> (CRUD on
+existing objects — used by api and worker at runtime).
+<code class="docutils literal notranslate"><span class="pre">GRANT</span></code> statements and <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">DEFAULT</span> <span class="pre">PRIVILEGES</span></code> are applied
+so any future table created by <code class="docutils literal notranslate"><span class="pre">openzync_migrator</span></code> is
+automatically readable and writable by <code class="docutils literal notranslate"><span class="pre">openzync_app</span></code>.  All
+passwords are generated with <code class="docutils literal notranslate"><span class="pre">openssl</span> <span class="pre">rand</span> <span class="pre">-base64</span> <span class="pre">32</span></code>.  The
+migrator and app passwords are written to
+<code class="docutils literal notranslate"><span class="pre">/bao-init/db-creds.json</span></code> (mode 0600).  The superuser password
+— whether inherited from <code class="docutils literal notranslate"><span class="pre">POSTGRES_PASSWORD</span></code> or freshly
+generated — is held in memory and discarded after Phase 5
+completes.</p></li>
+<li><p><strong>Phase 6 — Migrations.</strong>  The <code class="docutils literal notranslate"><span class="pre">postgres-migrate</span></code> service runs
+<code class="docutils literal notranslate"><span class="pre">alembic</span> <span class="pre">upgrade</span> <span class="pre">head</span></code> as the <code class="docutils literal notranslate"><span class="pre">openzync_migrator</span></code> user.  It
+uses the api image with a <code class="docutils literal notranslate"><span class="pre">command:</span> <span class="pre">[&quot;alembic&quot;,</span> <span class="pre">&quot;upgrade&quot;,</span> <span class="pre">&quot;head&quot;]</span></code> override — no separate Dockerfile, no separate
+dependency surface, no drift between “migrations” and
+“runtime” Python.  Migrations are idempotent and resumable
+via Alembic’s standard <code class="docutils literal notranslate"><span class="pre">alembic_version</span></code> table.</p></li>
+<li><p><strong>Phase 7 — DB credentials into OpenBao.</strong>  The
+<code class="docutils literal notranslate"><span class="pre">openbao-write-db</span></code> sidecar reads <code class="docutils literal notranslate"><span class="pre">db-creds.json</span></code>, constructs
+the <code class="docutils literal notranslate"><span class="pre">DATABASE_URL</span></code>
+(<code class="docutils literal notranslate"><span class="pre">postgresql+asyncpg://openzync_migrator:&lt;pw&gt;&#64;postgres:5432/openzync</span></code>),
+reads the existing <code class="docutils literal notranslate"><span class="pre">system</span></code> secret from OpenBao, MERGES in the
+new <code class="docutils literal notranslate"><span class="pre">DATABASE_URL</span></code> key, and writes the merged result back.
+Idempotency is enforced by a <code class="docutils literal notranslate"><span class="pre">db-creds-written</span></code> marker file in
+the shared volume — a re-run does not rotate the password.</p></li>
+<li><p><strong>Phase 8 — api + worker start with Agent sidecars.</strong>  Each
+service has an OpenBao Agent sidecar (<code class="docutils literal notranslate"><span class="pre">openbao-agent-api</span></code> and
+<code class="docutils literal notranslate"><span class="pre">openbao-agent-worker</span></code>) that authenticates to OpenBao via
+AppRole using the role_id + secret_id files from Phase 3.
+The Agent continuously renders the <code class="docutils literal notranslate"><span class="pre">system</span></code> secret to a tmpfs
+at <code class="docutils literal notranslate"><span class="pre">/openbao/agent/system.env</span></code> as a flat env file (KEY=VALUE
+per line).  Auto-token-rotation is enabled (default 5-minute
+refresh, no service interruption).  The api and worker
+entrypoint scripts (<code class="docutils literal notranslate"><span class="pre">entrypoint_api.sh</span></code>, <code class="docutils literal notranslate"><span class="pre">entrypoint_worker.sh</span></code>)
+<code class="docutils literal notranslate"><span class="pre">wait-for-file</span></code> on <code class="docutils literal notranslate"><span class="pre">system.env</span></code>, <code class="docutils literal notranslate"><span class="pre">source</span></code> it, and then <code class="docutils literal notranslate"><span class="pre">exec</span></code>
+uvicorn / ARQ respectively.  No secret ever appears on the
+command line or in process env outside the sourced env file.</p></li>
+</ol>
+<p>The end result: <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span> <span class="pre">-d</span></code> waits for the full chain
+(OpenBao → Postgres → migrations → DB-cred-injection → Agent
+render), and the api + worker only become ready after <code class="docutils literal notranslate"><span class="pre">system.env</span></code>
+is in place.  No manual <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">migrate</span></code>, no manual credential
+copy-paste, no <code class="docutils literal notranslate"><span class="pre">OZ_DATABASE_URL</span></code> to remember.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="consequences">
+<h2>Consequences<a class="headerlink" href="#consequences" title="Link to this heading">¶</a></h2>
+<section id="positive">
+<h3>Positive<a class="headerlink" href="#positive" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>One command, one result.</strong>  <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span> <span class="pre">-d</span></code> produces a
+fully working OpenZync stack with no operator intervention
+between phases.</p></li>
+<li><p><strong>No secrets in <code class="docutils literal notranslate"><span class="pre">.env</span></code>.</strong>  The DB password, AppRole <code class="docutils literal notranslate"><span class="pre">secret_id</span></code>s,
+and system signing keys all live in OpenBao.  <code class="docutils literal notranslate"><span class="pre">.env</span></code> is reduced
+to <code class="docutils literal notranslate"><span class="pre">BAO_STATIC_SEAL_KEY</span></code> (required) and <code class="docutils literal notranslate"><span class="pre">POSTGRES_PASSWORD</span></code>
+(optional) — both are deployment-environment concerns, not
+application secrets.</p></li>
+<li><p><strong>Agent auto-rotates tokens.</strong>  The OpenBao Agent sidecar
+refreshes its AppRole token every 5 minutes.  No long-lived
+tokens sit in container memory for the lifetime of a pod.</p></li>
+<li><p><strong>tmpfs-mounted secrets.</strong>  The rendered <code class="docutils literal notranslate"><span class="pre">system.env</span></code> lives on
+tmpfs (<code class="docutils literal notranslate"><span class="pre">/openbao/agent</span></code>) — never touches the host filesystem
+and is wiped on container restart.</p></li>
+<li><p><strong>Least-privilege DB roles.</strong>  The api/worker connect as
+<code class="docutils literal notranslate"><span class="pre">openzync_app</span></code> (CRUD only); only Alembic connects as
+<code class="docutils literal notranslate"><span class="pre">openzync_migrator</span></code>.  A compromised api/worker process cannot
+<code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">TABLE</span> <span class="pre">users</span></code>, even via SQL injection.</p></li>
+<li><p><strong>Idempotent re-runs.</strong>  <code class="docutils literal notranslate"><span class="pre">openbao-init</span></code>, <code class="docutils literal notranslate"><span class="pre">postgres-init</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">openbao-write-db</span></code> all use marker files to avoid re-seeding or
+rotating credentials on every <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span></code>.</p></li>
+</ul>
+</section>
+<section id="negative">
+<h3>Negative<a class="headerlink" href="#negative" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Slower initial boot.</strong>  The eight-phase chain takes ~60s
+end-to-end on a fresh stack (OpenBao ~5s, Postgres ~10s,
+migrations ~5–30s, DB-cred-injection ~2s, Agent render ~3s).
+Healthcheck-based <code class="docutils literal notranslate"><span class="pre">depends_on</span></code> is the primary mitigation.</p></li>
+<li><p><strong>Password rotation invalidates in-flight connections.</strong>  The
+<code class="docutils literal notranslate"><span class="pre">init_postgres.sh</span></code> script rotates the migrator and app
+passwords on every re-run that doesn’t find the
+<code class="docutils literal notranslate"><span class="pre">db-creds-written</span></code> marker.  Mitigation: SQLAlchemy pool with
+1-hour <code class="docutils literal notranslate"><span class="pre">pool_recycle</span></code> plus <code class="docutils literal notranslate"><span class="pre">restart:</span> <span class="pre">unless-stopped</span></code>.  For v1
+the recommended workflow is <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">down</span></code> before <code class="docutils literal notranslate"><span class="pre">up</span></code>;
+rolling deploys are out of scope.</p></li>
+<li><p><strong>OpenBao Agent memory footprint.</strong>  Each Agent sidecar adds
+~30 MB.  For a 2-service stack (api + worker) this is ~60 MB
+total — acceptable for the security benefit, but worth noting
+for resource-constrained deployments.</p></li>
+<li><p><strong>Agent template rendering is pull-based.</strong>  The Agent renders
+the <code class="docutils literal notranslate"><span class="pre">system</span></code> secret every 5 minutes (configurable via
+<code class="docutils literal notranslate"><span class="pre">template_config</span></code> in the Agent’s <code class="docutils literal notranslate"><span class="pre">.hcl</span></code>).  Any manual edit via
+<code class="docutils literal notranslate"><span class="pre">bao</span> <span class="pre">kv</span> <span class="pre">put</span> <span class="pre">secret/system/system</span></code> will be REVERTED.  Edit via
+the <code class="docutils literal notranslate"><span class="pre">openbao-init</span></code> sidecar’s seed script, or
+<code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">restart</span> <span class="pre">openbao-agent-*</span></code> to force a re-render.</p></li>
+</ul>
+</section>
+<section id="operational">
+<h3>Operational<a class="headerlink" href="#operational" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">db-creds.json</span></code> and AppRole files live in the
+<code class="docutils literal notranslate"><span class="pre">openbao-init-data</span></code> docker volume.  If that volume is destroyed
+(e.g. <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">volume</span> <span class="pre">rm</span> <span class="pre">openzync_openbao-init-data</span></code>), the
+AppRole credentials and current DB passwords are LOST.
+Recovery: re-run <code class="docutils literal notranslate"><span class="pre">openbao-init</span></code> to regenerate AppRole
+<code class="docutils literal notranslate"><span class="pre">secret_id</span></code>s (the AppRole definitions persist in OpenBao’s
+Raft storage), re-run <code class="docutils literal notranslate"><span class="pre">init_postgres.sh</span></code> to regenerate the DB
+users, then re-run <code class="docutils literal notranslate"><span class="pre">openbao-write-db</span></code> to push the new
+<code class="docutils literal notranslate"><span class="pre">DATABASE_URL</span></code> back into OpenBao.  The OpenBao Raft storage
+and <code class="docutils literal notranslate"><span class="pre">openbao-init-data</span></code> volume are the two pieces of state to
+back up for disaster recovery.</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="alternatives-considered">
+<h2>Alternatives Considered<a class="headerlink" href="#alternatives-considered" title="Link to this heading">¶</a></h2>
+<section id="a-keep-the-current-oz-database-url-from-env-approach">
+<h3>A. Keep the current <code class="docutils literal notranslate"><span class="pre">OZ_DATABASE_URL</span></code>-from-env approach<a class="headerlink" href="#a-keep-the-current-oz-database-url-from-env-approach" title="Link to this heading">¶</a></h3>
+<p>Rejected.  It requires the operator to know the database URL before
+deployment (chicken-and-egg with docker-compose), and the DB
+password sits in <code class="docutils literal notranslate"><span class="pre">.env</span></code> alongside the OpenBao bootstrap credentials
+— directly violating the spirit of ADR-003.  It also keeps the
+“copy-paste the AppRole credentials into <code class="docutils literal notranslate"><span class="pre">.env</span></code>” workflow, the
+single most common source of dev-time setup bugs in the current
+stack.</p>
+</section>
+<section id="b-use-a-single-combined-openzync-user-with-broad-ddl-crud">
+<h3>B. Use a single combined <code class="docutils literal notranslate"><span class="pre">openzync</span></code> user with broad DDL + CRUD<a class="headerlink" href="#b-use-a-single-combined-openzync-user-with-broad-ddl-crud" title="Link to this heading">¶</a></h3>
+<p>Rejected.  Violates principle of least-privilege — the api and
+worker do not need DDL rights at runtime.  A SQL-injection bug or
+malicious dependency should not be able to <code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">TABLE</span> <span class="pre">users</span></code> (or
+<code class="docutils literal notranslate"><span class="pre">DROP</span> <span class="pre">SCHEMA</span> <span class="pre">public</span> <span class="pre">CASCADE</span></code>).  Splitting migrator vs app is ~20
+extra lines of SQL for a meaningful security boundary.</p>
+</section>
+<section id="c-use-a-single-openzync-user-but-run-migrations-as-the-postgres-superuser">
+<h3>C. Use a single <code class="docutils literal notranslate"><span class="pre">openzync</span></code> user, but run migrations as the postgres superuser<a class="headerlink" href="#c-use-a-single-openzync-user-but-run-migrations-as-the-postgres-superuser" title="Link to this heading">¶</a></h3>
+<p>Rejected.  The superuser password would need to persist somewhere
+(<code class="docutils literal notranslate"><span class="pre">.env</span></code> or OpenBao) — putting us right back in the original
+problem, and the superuser blast radius is the entire Postgres
+instance (every database, every role), not just the <code class="docutils literal notranslate"><span class="pre">openzync</span></code>
+database.  A leaked superuser password is a full Postgres
+compromise, not a per-app compromise.</p>
+</section>
+<section id="d-use-the-openbao-database-secrets-engine-for-dynamic-short-lived-credentials">
+<h3>D. Use the OpenBao Database secrets engine for dynamic short-lived credentials<a class="headerlink" href="#d-use-the-openbao-database-secrets-engine-for-dynamic-short-lived-credentials" title="Link to this heading">¶</a></h3>
+<p>Considered advanced; rejected for v1.  The Database engine generates
+short-lived credentials on-demand (default 24h TTL).  However:
+(1) our actual password change frequency is roughly “per release” —
+longer than the 24h TTL — so the engine’s rotation cadence is
+SLOWER than our real change frequency, and the extra operational
+complexity (lease management, lease revocation on user delete,
+<code class="docutils literal notranslate"><span class="pre">revoke</span></code> on shutdown) isn’t justified for v1; (2) the engine
+requires a Postgres role-creation role to be granted to the OpenBao
+server — more privilege to delegate than the static-user pattern
+requires, and a privilege-escalation target if the OpenBao server
+itself is compromised; (3) dynamic DB credentials interact poorly
+with Alembic’s <code class="docutils literal notranslate"><span class="pre">alembic_version</span></code> table ownership model — Alembic
+assumes a stable connection identity for the migration role.
+Re-evaluate in ADR-005 once the v1 stack is stable.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>ADR-003: OpenBao as Sole Source of Truth — Zero Fallback</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">infra/openbao/agent/api.hcl</span></code>, <code class="docutils literal notranslate"><span class="pre">worker.hcl</span></code> — OpenBao Agent
+configuration (Phase 8)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">infra/openbao/policies/api.hcl</span></code>, <code class="docutils literal notranslate"><span class="pre">worker.hcl</span></code> — ACL policies
+(Phase 1)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scripts/init_openbao.sh</span></code> — Phases 1–3: OpenBao init, system
+secrets, AppRole file emission</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scripts/init_postgres.sh</span></code> — Phase 5: DB user / role creation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scripts/write_db_to_openbao.sh</span></code> — Phase 7: DB cred injection</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scripts/entrypoint_api.sh</span></code>, <code class="docutils literal notranslate"><span class="pre">scripts/entrypoint_worker.sh</span></code> —
+Phase 8: wait for <code class="docutils literal notranslate"><span class="pre">system.env</span></code>, source it, <code class="docutils literal notranslate"><span class="pre">exec</span></code> the process</p></li>
+<li><p>OpenBao Agent documentation:
+https://github.com/openbao/openbao/blob/main/website/content/docs/agent/index.md</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="migration-path">
+<h2>Migration Path<a class="headerlink" href="#migration-path" title="Link to this heading">¶</a></h2>
+<p>Done in this single release:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">scripts/init_postgres.sh</span></code> and <code class="docutils literal notranslate"><span class="pre">scripts/write_db_to_openbao.sh</span></code>
+added (Phases 5, 7).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">infra/openbao/agent/api.hcl</span></code>, <code class="docutils literal notranslate"><span class="pre">worker.hcl</span></code> and the matching
+<code class="docutils literal notranslate"><span class="pre">entrypoint_*.sh</span></code> scripts added (Phase 8).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">infra/openbao/policies/api.hcl</span></code>, <code class="docutils literal notranslate"><span class="pre">worker.hcl</span></code> added (Phase 1).</p></li>
+<li><p>docker-compose stack rewired with
+<code class="docutils literal notranslate"><span class="pre">depends_on:</span> <span class="pre">condition:</span> <span class="pre">service_healthy</span></code> for the eight-phase
+chain.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.env.example</span></code> reduced to <code class="docutils literal notranslate"><span class="pre">BAO_STATIC_SEAL_KEY</span></code> (required) and
+<code class="docutils literal notranslate"><span class="pre">POSTGRES_PASSWORD</span></code> (optional, CI-only).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">migrate</span></code> removed; migrations run inside the stack as
+<code class="docutils literal notranslate"><span class="pre">postgres-migrate</span></code>.</p></li>
+</ol>
+<p>No rollback path is provided — the manual <code class="docutils literal notranslate"><span class="pre">OZ_DATABASE_URL</span></code> and
+<code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">migrate</span></code> paths are deleted from the codebase.  To reverse,
+restore the relevant files from version control history, re-seed
+the OpenBao <code class="docutils literal notranslate"><span class="pre">system</span></code> secret with the old env-var values, and run
+<code class="docutils literal notranslate"><span class="pre">alembic</span> <span class="pre">upgrade</span> <span class="pre">head</span></code> manually against the existing Postgres.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../api/core.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">core package</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="003-openbao-zero-fallback.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Rohan Shaw
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a><ul>
+<li><a class="reference internal" href="#context">Context</a></li>
+<li><a class="reference internal" href="#decision">Decision</a><ul>
+<li><a class="reference internal" href="#phased-startup-sequence">Phased startup sequence</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#consequences">Consequences</a><ul>
+<li><a class="reference internal" href="#positive">Positive</a></li>
+<li><a class="reference internal" href="#negative">Negative</a></li>
+<li><a class="reference internal" href="#operational">Operational</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#alternatives-considered">Alternatives Considered</a><ul>
+<li><a class="reference internal" href="#a-keep-the-current-oz-database-url-from-env-approach">A. Keep the current <code class="docutils literal notranslate"><span class="pre">OZ_DATABASE_URL</span></code>-from-env approach</a></li>
+<li><a class="reference internal" href="#b-use-a-single-combined-openzync-user-with-broad-ddl-crud">B. Use a single combined <code class="docutils literal notranslate"><span class="pre">openzync</span></code> user with broad DDL + CRUD</a></li>
+<li><a class="reference internal" href="#c-use-a-single-openzync-user-but-run-migrations-as-the-postgres-superuser">C. Use a single <code class="docutils literal notranslate"><span class="pre">openzync</span></code> user, but run migrations as the postgres superuser</a></li>
+<li><a class="reference internal" href="#d-use-the-openbao-database-secrets-engine-for-dynamic-short-lived-credentials">D. Use the OpenBao Database secrets engine for dynamic short-lived credentials</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#migration-path">Migration Path</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=01f34227"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>

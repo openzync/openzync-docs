@@ -1,0 +1,912 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Overview" href="guides/overview.html">
+
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
+        <title>OpenZync Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="#"><div class="brand">OpenZync Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
+  
+  <span class="sidebar-brand-text">OpenZync Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guides/overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/architecture.html">Architecture Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/deployment.html">Deployment Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guides/contributing.html">Contributing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Core Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="domains/core.html">Core Infrastructure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="domains/llm.html">LLM Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="domains/graph_backends.html">Graph Backend Abstraction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="domains/reranker.html">Re-ranking &amp; Community Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="domains/reranker.html#community-detection">Community Detection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Domain Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="domains/auth.html">Authentication &amp; Authorization Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="domains/memory_context.html">Memory &amp; Context Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="domains/admin_webhooks.html">Admin &amp; Webhooks Domain</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API &amp; Workers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="domains/api_layer.html">API Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="domains/workers.html">Worker System — ARQ Background Job Processing</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">SDK, MCP &amp; Frontend</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="domains/sdk_python.html">Python SDK (openzync)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="domains/mcp_server.html">MCP Server (FastMCP)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="domains/frontend.html">OpenZync Frontend</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Infra</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="domains/infrastructure.html">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</a><input aria-label="Toggle navigation of Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture Decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference (Auto-generated)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/core.html">core package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/routers.html">routers package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/models.html">models package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/schemas.html">schemas package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/services.html">services package</a><input aria-label="Toggle navigation of services package" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/services.api.html">services.api package</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/services.mcp.html">services.mcp package</a><input aria-label="Toggle navigation of services.mcp package" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/services.mcp.tools.html">services.mcp.tools package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/services.mcp.transport.html">services.mcp.transport package</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="api/services.worker.html">services.worker package</a><input aria-label="Toggle navigation of services.worker package" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/services.worker.prompts.html">services.worker.prompts package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/services.worker.tasks.html">services.worker.tasks package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/repositories.html">repositories package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/middleware.html">middleware package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/dependencies.html">dependencies package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/workers.html">workers package</a><input aria-label="Toggle navigation of workers package" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/workers.tasks.html">workers.tasks package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/utils.html">utils package</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/packages.html">packages package</a><input aria-label="Toggle navigation of packages package" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/packages.community.html">packages.community package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/packages.graph_backend.html">packages.graph_backend package</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/blob/main/docs/index.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/rohnsha0/openzync/edit/main/docs/index.rst" rel="edit" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="welcome-to-openzync-s-documentation">
+<h1>Welcome to OpenZync’s documentation!<a class="headerlink" href="#welcome-to-openzync-s-documentation" title="Link to this heading">¶</a></h1>
+<p><strong>OpenZync</strong> is an open-source agent memory platform — persistent, queryable,
+graph-based memory for AI agents. It provides hybrid retrieval (semantic +
+graph), knowledge graphs with temporal queries, and multi-tenant isolation for
+production LLM applications.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>OpenZync is currently a <strong>monolith</strong> — all backend domains live in a single
+repository (<code class="docutils literal notranslate"><span class="pre">openzync-core</span></code>). Future work may decompose into separate
+microservices, but today everything shares a single FastAPI process, a
+single PostgreSQL database, and a single Redis instance.</p>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guides/overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guides/overview.html#what-is-openzync">What is OpenZync?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/overview.html#architecture">Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/overview.html#key-features">Key features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/overview.html#tech-stack">Tech stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/overview.html#related-documentation">Related documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guides/quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guides/quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/quickstart.html#clone-and-bootstrap">Clone and Bootstrap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/quickstart.html#boot-sequence-what-happens-in-those-60s">Boot Sequence — What Happens in Those 60s</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/quickstart.html#verify-the-installation">Verify the Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/quickstart.html#first-api-calls">First API Calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/quickstart.html#using-the-sdk">Using the SDK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/quickstart.html#using-the-dashboard">Using the Dashboard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/quickstart.html#development-setup">Development Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/quickstart.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guides/architecture.html">Architecture Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guides/architecture.html#repository-landscape">Repository Landscape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/architecture.html#high-level-architecture">High-Level Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/architecture.html#request-lifecycle">Request Lifecycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/architecture.html#async-enrichment-pipeline">Async Enrichment Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/architecture.html#context-retrieval-pipeline">Context Retrieval Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/architecture.html#multi-tenancy-model">Multi-Tenancy Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/architecture.html#openbao-secrets-architecture">OpenBao Secrets Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/architecture.html#infrastructure-stack">Infrastructure Stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/architecture.html#current-state-vs-target-architecture">Current State vs Target Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/architecture.html#cross-repo-dependencies">Cross-Repo Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guides/deployment.html">Deployment Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guides/deployment.html#environment-requirements">Environment requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/deployment.html#docker-compose-deployment-backend-stack">Docker Compose Deployment (Backend Stack)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/deployment.html#frontend-docker-deployment">Frontend Docker Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/deployment.html#kubernetes-helm-deployment">Kubernetes / Helm Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/deployment.html#database-migrations-alembic-runbook">Database Migrations (Alembic Runbook)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/deployment.html#monitoring-setup">Monitoring Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/deployment.html#production-considerations">Production Considerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/deployment.html#related-documentation">Related documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="guides/contributing.html">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guides/contributing.html#setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/contributing.html#running-tests">Running tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/contributing.html#code-style">Code style</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/contributing.html#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/contributing.html#pull-requests">Pull requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="guides/contributing.html#license">License</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Core Infrastructure</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="domains/core.html">Core Infrastructure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains/core.html#configuration-system">Configuration System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/core.html#database-layer">Database Layer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/core.html#redis-connection">Redis Connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/core.html#arq-worker-integration">ARQ Worker Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/core.html#exception-hierarchy">Exception Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/core.html#structured-logging">Structured Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/core.html#openbao-secrets-integration">OpenBao Secrets Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/core.html#event-system">Event System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/core.html#cursor-pagination">Cursor Pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/core.html#prompt-manifest">Prompt Manifest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/core.html#org-config">Org Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/core.html#additional-core-infrastructure">Additional Core Infrastructure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/core.html#design-principles">Design Principles</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="domains/llm.html">LLM Backend Abstraction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains/llm.html#abstract-interface-core-llm">Abstract Interface — <code class="docutils literal notranslate"><span class="pre">core.llm</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/llm.html#concrete-implementations-core-llm-backends">Concrete Implementations — <code class="docutils literal notranslate"><span class="pre">core.llm_backends</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/llm.html#design-patterns-architecture">Design Patterns &amp; Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/llm.html#adding-a-new-provider">Adding a New Provider</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="domains/graph_backends.html">Graph Backend Abstraction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains/graph_backends.html#backend-selection">Backend Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/graph_backends.html#graphbackenddispatcher">GraphBackendDispatcher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/graph_backends.html#graphbackend-interface">GraphBackend Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/graph_backends.html#error-handling">Error Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/graph_backends.html#postgresql-backend">PostgreSQL Backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/graph_backends.html#falkordb-backend">FalkorDB Backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/graph_backends.html#surrealdb-backend">SurrealDB Backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/graph_backends.html#adding-a-new-backend">Adding a New Backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/graph_backends.html#pagination-patterns">Pagination Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/graph_backends.html#constants">Constants</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="domains/reranker.html">Re-ranking &amp; Community Detection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains/reranker.html#reranker-abstraction">Reranker Abstraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/reranker.html#abstract-interface-packages-reranker-interface">Abstract Interface — <code class="docutils literal notranslate"><span class="pre">packages.reranker.interface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/reranker.html#implementation-sentencetransformersreranker">Implementation — SentenceTransformersReranker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/reranker.html#implementation-coherereranker">Implementation — CohereReranker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/reranker.html#config-driven-factory-packages-reranker-factory">Config-Driven Factory — <code class="docutils literal notranslate"><span class="pre">packages.reranker.factory</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="domains/reranker.html#community-detection">Community Detection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains/reranker.html#algorithms-packages-community-algorithms">Algorithms — <code class="docutils literal notranslate"><span class="pre">packages.community.algorithms</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/reranker.html#arq-worker-workers-tasks-summarise-community">ARQ Worker — <code class="docutils literal notranslate"><span class="pre">workers.tasks.summarise_community</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/reranker.html#trigger-mechanisms">Trigger Mechanisms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/reranker.html#result-storage-querying">Result Storage &amp; Querying</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/reranker.html#pydantic-schemas-schemas-graph">Pydantic Schemas — <code class="docutils literal notranslate"><span class="pre">schemas.graph</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/reranker.html#constants-thresholds">Constants &amp; Thresholds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/reranker.html#frontend-hull-visualization">Frontend Hull Visualization</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Domain Services</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="domains/auth.html">Authentication &amp; Authorization Domain</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#core-concepts">Core Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#configuration-settings">Configuration Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#models">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#end-to-end-authentication-flows">End-to-End Authentication Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#http-endpoints">HTTP Endpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#services">Services</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#pii-detection-redaction-service">PII Detection &amp; Redaction Service</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#middleware">Middleware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#fastapi-dependencies">FastAPI Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#utility-modules">Utility Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#exception-classes">Exception Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#repositories">Repositories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#schemas-pydantic">Schemas (Pydantic)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#security-considerations">Security Considerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/auth.html#todo-known-gaps">TODO / Known Gaps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="domains/memory_context.html">Memory &amp; Context Domain</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains/memory_context.html#end-to-end-pipeline-overview">End-to-End Pipeline Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/memory_context.html#data-model">Data Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/memory_context.html#ingestion-pipeline">Ingestion Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/memory_context.html#enrichment-pipeline">Enrichment Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/memory_context.html#graph-services">Graph Services</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/memory_context.html#context-retrieval-pipeline">Context Retrieval Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/memory_context.html#auxiliary-services">Auxiliary Services</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/memory_context.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/memory_context.html#error-handling-performance">Error Handling &amp; Performance</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="domains/admin_webhooks.html">Admin &amp; Webhooks Domain</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains/admin_webhooks.html#core-concepts">Core Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/admin_webhooks.html#data-models">Data Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/admin_webhooks.html#services">Services</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/admin_webhooks.html#api-endpoints">API Endpoints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/admin_webhooks.html#module-schemas.organizations">Key Schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/admin_webhooks.html#module-core.org_config">Core Infrastructure</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API &amp; Workers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="domains/api_layer.html">API Layer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains/api_layer.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/api_layer.html#application-factory">Application Factory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/api_layer.html#middleware-stack">Middleware Stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/api_layer.html#endpoint-reference-table">Endpoint Reference Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/api_layer.html#module-services.idempotency_service">Idempotency Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/api_layer.html#fastapi-dependencies">FastAPI Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/api_layer.html#module-schemas">Schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/api_layer.html#module-repositories">Repositories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/api_layer.html#module-core">Core Infrastructure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/api_layer.html#error-handling">Error Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/api_layer.html#api-layer-idempotency-design">Idempotency Design Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="domains/workers.html">Worker System — ARQ Background Job Processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#architecture-overview">Architecture Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#startup-sequence">Startup Sequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#container-entrypoint">Container Entrypoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#configuration-workersettings">Configuration — <code class="docutils literal notranslate"><span class="pre">WorkerSettings</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#arq-connection-management-core-arq">ARQ Connection Management — <code class="docutils literal notranslate"><span class="pre">core.arq</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#task-registry">Task Registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#enrichment-bitmask-system">Enrichment Bitmask System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#retry-decorator-with-retry">Retry Decorator — <code class="docutils literal notranslate"><span class="pre">with_retry</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#graph-backend-resolution-workers-backend">Graph Backend Resolution — <code class="docutils literal notranslate"><span class="pre">workers.backend</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#task-reference-workers-tasks">Task Reference — <code class="docutils literal notranslate"><span class="pre">workers/tasks/</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#idempotency-label">Idempotency Semantics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#enrichment-pipeline-flow">Enrichment Pipeline Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#scaling-model">Scaling Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#monitoring">Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/workers.html#adding-a-new-task">Adding a New Task</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">SDK, MCP &amp; Frontend</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="domains/sdk_python.html">Python SDK (openzync)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#authentication">Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#quickstart">Quickstart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#client-architecture">Client Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#module-openzync.memory">Resource: Memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#module-openzync.facts">Resource: Facts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#module-openzync.graph">Resource: Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#module-openzync.users">Resource: Users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#module-openzync.sessions">Resource: Sessions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#module-openzync.projects">Resource: Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#module-openzync._pagination">Pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#module-openzync.models">Model Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#module-openzync._errors">Exception Hierarchy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#module-openzync.integrations.langchain">LangChain Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#advanced-usage">Advanced Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/sdk_python.html#repository-layout">Repository Layout</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="domains/mcp_server.html">MCP Server (FastMCP)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains/mcp_server.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/mcp_server.html#repository-layout">Repository Layout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/mcp_server.html#server-lifecycle">Server Lifecycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/mcp_server.html#entry-point-cli">Entry Point &amp; CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/mcp_server.html#authentication-model">Authentication Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/mcp_server.html#available-mcp-tools">Available MCP Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/mcp_server.html#container-setup">Container Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/mcp_server.html#setup-connection">Setup &amp; Connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/mcp_server.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/mcp_server.html#tool-patterns-conventions">Tool Patterns &amp; Conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/mcp_server.html#cross-references">Cross-References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/mcp_server.html#repository-gaps">Repository Gaps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="domains/frontend.html">OpenZync Frontend</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains/frontend.html#tech-stack">Tech Stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/frontend.html#application-architecture">Application Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/frontend.html#design-system">Design System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/frontend.html#api-client-authentication">API Client &amp; Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/frontend.html#user-flows">User Flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/frontend.html#graph-visualization">Graph Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/frontend.html#state-management">State Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/frontend.html#utility-functions">Utility Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/frontend.html#deployment">Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/frontend.html#environment-variables">Environment Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/frontend.html#project-structure">Project Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/frontend.html#cross-references">Cross-References</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Deployment &amp; Infra</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="domains/infrastructure.html">Infrastructure — Docker Compose, OpenBao, Observability &amp; Helm</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="domains/infrastructure.html#quick-start">Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/infrastructure.html#docker-compose-backend-stack">Docker Compose Backend Stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/infrastructure.html#environment-variables">Environment Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/infrastructure.html#openbao-configuration">OpenBao Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/infrastructure.html#bootstrap-scripts">Bootstrap Scripts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/infrastructure.html#nginx-configuration">NGINX Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/infrastructure.html#observability-stack">Observability Stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/infrastructure.html#helm-chart">Helm Chart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/infrastructure.html#makefile-targets">Makefile Targets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/infrastructure.html#production-considerations">Production Considerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="domains/infrastructure.html#related-documentation">Related Documentation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Architecture Decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="adr/003-openbao-zero-fallback.html">ADR 003: OpenBao as Sole Source of Truth — Zero Fallback</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adr/003-openbao-zero-fallback.html#context">Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adr/003-openbao-zero-fallback.html#decision">Decision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adr/003-openbao-zero-fallback.html#consequences">Consequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adr/003-openbao-zero-fallback.html#alternatives-considered">Alternatives Considered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adr/003-openbao-zero-fallback.html#migration-path">Migration Path</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="adr/004-self-bootstrapping-postgres.html">ADR 004: Self-Bootstrapping Postgres via OpenBao-Injected Credentials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adr/004-self-bootstrapping-postgres.html#context">Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adr/004-self-bootstrapping-postgres.html#decision">Decision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adr/004-self-bootstrapping-postgres.html#consequences">Consequences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adr/004-self-bootstrapping-postgres.html#alternatives-considered">Alternatives Considered</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adr/004-self-bootstrapping-postgres.html#references">References</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adr/004-self-bootstrapping-postgres.html#migration-path">Migration Path</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API Reference (Auto-generated)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/core.html">core package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#core-arq-module">core.arq module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#core-config-module">core.config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#core-cursor-module">core.cursor module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#core-db-module">core.db module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#core-events-module">core.events module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#core-exceptions-module">core.exceptions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#core-graph-backend-module">core.graph_backend module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#core-llm-module">core.llm module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#core-llm-backends-module">core.llm_backends module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#core-logging-module">core.logging module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#core-org-config-module">core.org_config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#core-prompt-manifest-module">core.prompt_manifest module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#core-redis-module">core.redis module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/routers.html">routers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-admin-module">routers.admin module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-admin-metrics-module">routers.admin_metrics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-admin-org-config-module">routers.admin_org_config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-admin-organizations-module">routers.admin_organizations module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-admin-schemas-module">routers.admin_schemas module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-admin-stats-module">routers.admin_stats module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-admin-webhooks-module">routers.admin_webhooks module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-audit-log-module">routers.audit_log module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-auth-module">routers.auth module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-classifications-module">routers.classifications module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-context-module">routers.context module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-facts-module">routers.facts module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-graph-module">routers.graph module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-health-module">routers.health module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-memory-module">routers.memory module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-metrics-module">routers.metrics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-project-api-keys-module">routers.project_api_keys module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-projects-module">routers.projects module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-search-module">routers.search module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-sessions-module">routers.sessions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-structured-extractions-module">routers.structured_extractions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/routers.html#routers-users-module">routers.users module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/models.html">models package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-api-key-module">models.api_key module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-audit-log-module">models.audit_log module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-base-module">models.base module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-custom-instruction-module">models.custom_instruction module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-dialog-classification-module">models.dialog_classification module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-episode-module">models.episode module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-extraction-schema-module">models.extraction_schema module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-fact-module">models.fact module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-graph-entity-module">models.graph_entity module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-llm-usage-module">models.llm_usage module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-organization-module">models.organization module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-project-module">models.project module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-project-member-module">models.project_member module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-prompt-template-module">models.prompt_template module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-refresh-token-module">models.refresh_token module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-session-module">models.session module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-structured-extraction-module">models.structured_extraction module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-user-module">models.user module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/models.html#models-webhook-module">models.webhook module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/schemas.html">schemas package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-admin-metrics-module">schemas.admin_metrics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-admin-stats-module">schemas.admin_stats module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-api-keys-module">schemas.api_keys module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-audit-log-module">schemas.audit_log module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-auth-module">schemas.auth module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-classifications-module">schemas.classifications module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-common-module">schemas.common module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-context-module">schemas.context module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-custom-instructions-module">schemas.custom_instructions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-extraction-schemas-module">schemas.extraction_schemas module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-facts-module">schemas.facts module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-graph-module">schemas.graph module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-health-module">schemas.health module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-llm-outputs-module">schemas.llm_outputs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-mappers-module">schemas.mappers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-memory-module">schemas.memory module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-organization-config-module">schemas.organization_config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-organizations-module">schemas.organizations module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-pii-module">schemas.pii module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-projects-module">schemas.projects module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-prompt-templates-module">schemas.prompt_templates module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-sessions-module">schemas.sessions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-structured-extractions-module">schemas.structured_extractions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-user-summary-module">schemas.user_summary module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-users-module">schemas.users module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/schemas.html#schemas-webhook-module">schemas.webhook module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/services.html">services package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/services.api.html">services.api package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/services.api.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/services.api.html#services-api-asgi-module">services.api.asgi module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/services.api.html#services-api-main-module">services.api.main module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api/services.mcp.html">services.mcp package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/services.mcp.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/services.mcp.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/services.mcp.html#services-mcp-server-module">services.mcp.server module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api/services.worker.html">services.worker package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/services.worker.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/services.worker.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/services.worker.html#services-worker-prompt-renderer-module">services.worker.prompt_renderer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/services.worker.html#services-worker-worker-module">services.worker.worker module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/services.worker.html#services-worker-worker-settings-module">services.worker.worker_settings module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-api-key-service-module">services.api_key_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-audit-log-service-module">services.audit_log_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#module-services.auth_service">services.auth_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-cache-service-module">services.cache_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-classification-service-module">services.classification_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-context-formatter-module">services.context_formatter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-context-service-module">services.context_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-custom-instruction-service-module">services.custom_instruction_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-fact-service-module">services.fact_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-graph-service-module">services.graph_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-hybrid-retriever-module">services.hybrid_retriever module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-idempotency-service-module">services.idempotency_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-memory-service-module">services.memory_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-metrics-service-module">services.metrics_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-org-config-service-module">services.org_config_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-organization-service-module">services.organization_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-pii-service-module">services.pii_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-project-service-module">services.project_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-schema-service-module">services.schema_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-session-service-module">services.session_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-structured-extraction-service-module">services.structured_extraction_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-user-service-module">services.user_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-user-summary-service-module">services.user_summary_service module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/services.html#services-webhook-service-module">services.webhook_service module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/repositories.html">repositories package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-api-key-repository-module">repositories.api_key_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-audit-log-repository-module">repositories.audit_log_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-auth-repository-module">repositories.auth_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-custom-instruction-repository-module">repositories.custom_instruction_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-dialog-classification-repository-module">repositories.dialog_classification_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-entity-repository-module">repositories.entity_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-episode-repository-module">repositories.episode_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-extraction-schema-repository-module">repositories.extraction_schema_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-fact-repository-module">repositories.fact_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-organization-repository-module">repositories.organization_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-project-repository-module">repositories.project_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-prompt-template-repository-module">repositories.prompt_template_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-session-repository-module">repositories.session_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-structured-extraction-repository-module">repositories.structured_extraction_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-user-repository-module">repositories.user_repository module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/repositories.html#repositories-webhook-repository-module">repositories.webhook_repository module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/middleware.html">middleware package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/middleware.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/middleware.html#middleware-audit-module">middleware.audit module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/middleware.html#middleware-auth-module">middleware.auth module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/middleware.html#middleware-auth-throttle-module">middleware.auth_throttle module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/middleware.html#middleware-logging-module">middleware.logging module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/middleware.html#middleware-metrics-module">middleware.metrics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/middleware.html#middleware-rate-limit-module">middleware.rate_limit module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/middleware.html#middleware-request-id-module">middleware.request_id module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/middleware.html#middleware-tracing-module">middleware.tracing module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/dependencies.html">dependencies package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/dependencies.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dependencies.html#dependencies-auth-module">dependencies.auth module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dependencies.html#dependencies-db-module">dependencies.db module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dependencies.html#dependencies-org-config-module">dependencies.org_config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dependencies.html#dependencies-project-auth-module">dependencies.project_auth module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/dependencies.html#dependencies-services-module">dependencies.services module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/workers.html">workers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/workers.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/workers.tasks.html">workers.tasks package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/workers.tasks.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/workers.tasks.html#workers-tasks-base-module">workers.tasks.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/workers.tasks.html#workers-tasks-classify-dialog-module">workers.tasks.classify_dialog module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/workers.tasks.html#workers-tasks-embed-episode-module">workers.tasks.embed_episode module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/workers.tasks.html#workers-tasks-embed-fact-module">workers.tasks.embed_fact module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/workers.tasks.html#workers-tasks-extract-entities-module">workers.tasks.extract_entities module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/workers.tasks.html#workers-tasks-extract-facts-module">workers.tasks.extract_facts module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/workers.tasks.html#workers-tasks-extract-structured-module">workers.tasks.extract_structured module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/workers.tasks.html#workers-tasks-generate-user-summary-module">workers.tasks.generate_user_summary module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/workers.tasks.html#workers-tasks-ingest-business-data-module">workers.tasks.ingest_business_data module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/workers.tasks.html#workers-tasks-link-entities-to-episode-module">workers.tasks.link_entities_to_episode module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/workers.tasks.html#workers-tasks-merge-duplicate-entities-module">workers.tasks.merge_duplicate_entities module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/workers.tasks.html#workers-tasks-summarise-community-module">workers.tasks.summarise_community module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/utils.html">utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/utils.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/utils.html#utils-crypto-module">utils.crypto module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/utils.html#utils-password-module">utils.password module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/packages.html">packages package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/packages.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/packages.community.html">packages.community package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/packages.community.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/packages.community.html#packages-community-algorithms-module">packages.community.algorithms module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api/packages.graph_backend.html">packages.graph_backend package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api/packages.graph_backend.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/packages.graph_backend.html#packages-graph-backend-interface-module">packages.graph_backend.interface module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api/packages.graph_backend.html#packages-graph-backend-postgres-module">packages.graph_backend.postgres module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="guides/overview.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Overview</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Rohan Shaw
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=01f34227"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    </body>
+</html>
