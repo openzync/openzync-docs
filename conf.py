@@ -30,13 +30,23 @@ version = "0.1.0"
 
 # ── General configuration ─────────────────────────────────────────────────────
 
-# Mock imports that are unavailable at doc-build time (e.g., SDK package
-# dependencies that aren't installed in the docs environment).
+# Mock imports that are unavailable at doc-build time.
+# TODO: remove openzync-core entries when the repo goes public (~6h);
+#       then uncomment the pip install in .readthedocs.yaml.
 autodoc_mock_imports = [
-    "openzync",  # SDK — not guaranteed at doc-build
-    "services.mcp",  # exists as a separate repo (openzync-mcp), not in the monolith
-    "services.api.asgi",  # runs asyncio.run(_bootstrap()) at module level — needs env vars
-    "services.api.main",  # calls create_app() at module level — needs runtime config
+    "openzync",
+    "config",
+    "core",
+    "dependencies",
+    "middleware",
+    "models",
+    "packages",
+    "repositories",
+    "routers",
+    "schemas",
+    "services",
+    "utils",
+    "workers",
 ]
 
 extensions = [
