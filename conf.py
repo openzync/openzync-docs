@@ -22,9 +22,9 @@ sys.path.insert(0, _src_dir)
 # ── Project information ───────────────────────────────────────────────────────
 
 project = "openzync"
-copyright = "2024, Rohan Shaw"  # noqa: A001
-author = "Rohan Shaw"
+copyright = "2024, Rohan Shaw and Nikita Prasad"  # noqa: A001
 
+author = "Rohan Shaw and Nikita Prasad"
 release = "0.1.0"
 version = "0.1.0"
 
