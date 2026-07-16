@@ -1815,6 +1815,111 @@ then re-run ``openbao-write-db`` (pushes new ``DATABASE_URL`` to OpenBao).
 
 ---
 
+Troubleshooting & Known Issues
+-------------------------------
+
+This section documents issues encountered during deployment and operation,
+organized by subsystem.
+
+OpenBao Namespace & Auth
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+
+   * - Issue
+     - Root Cause
+     - Fix
+
+   * - Namespace creation (``sys/namespaces/*``) returns 403
+     - OpenBao restricts ``/sys/namespaces`` to the **root namespace**
+       (see `OpenBao docs — Restricted API paths <https://openbao.org/docs/concepts/namespaces/#restricted-api-paths>`_).
+       The API's AppRole token operates in the ``system/`` child namespace.
+     - ``OpenBaoClient`` reads the root token from
+       ``/openbao-bootstrap/root-token`` and uses it for
+       ``create_namespace()``. Regular operations continue using the
+       AppRole token.
+
+   * - KV engine mount (``sys/mounts/*``) returns "namespace not found"
+     - Same restriction: ``/sys/mounts`` is also root-namespace-only.
+     - ``enable_kv_v2()`` accepts ``use_root_token=True`` to use the
+       root token for mount operations.
+
+   * - ``X-Vault-Namespace: org_<uuid>/`` returns "namespace not found"
+       even though the namespace exists under ``system/``
+     - ``X-Vault-Namespace`` resolves relative to the **root namespace**,
+       not the token's namespace. ``org_<uuid>/`` does not exist at root
+       level — it is a child of ``system/``.
+     - ``_org_ns()`` now returns the full absolute path
+       (``system/org_<uuid>/``) by prepending ``self._namespace``.
+       All KV/config/transit operations use this full path.
+
+   * - ``_ns_or_none`` suppresses ``X-Vault-Namespace`` header
+     - The helper returned ``None`` when ``self._namespace == ns``
+       (both ``"system/"``), which removed the namespace header and
+       caused 403 on all system config requests.
+     - Removed ``_ns_or_none``; ``read_system_config`` and
+       ``write_system_config`` pass ``self._namespace`` directly.
+
+   * - Worker settings not found after system config key rename
+     - ``SYSTEM_KEY_MAPPING`` keys were changed from lowercase
+       (``database_url``) to uppercase ``OZ_*`` (``OZ_DATABASE_URL``),
+       but ``worker_settings.py`` still used the old lowercase keys.
+     - Updated ``_WORKER_KEYS``, ``_FIELD_OVERRIDES``, and
+       ``_INT_FIELDS`` to match the new ``OZ_*`` key format.
+
+Application Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+
+   * - Issue
+     - Root Cause
+     - Fix
+
+   * - SMTP email fails with "start_tls and use_tls not compatible"
+     - Both ``SMTP_USE_TLS`` and ``SMTP_START_TLS`` defaulted to
+       ``True``, but they are mutually exclusive options.
+     - Changed ``SMTP_USE_TLS`` default to ``False`` (STARTTLS
+       on port 587 is the modern default).
+
+   * - ``WEBHOOK_SIGNING_SECRET`` fails Pydantic ``min_length=32``
+     - A short test value (17 chars) was in the system config.
+     - Regenerated with ``secrets.token_urlsafe(32)`` and updated
+       in OpenBao KV.
+
+   * - Resend email fails with "domain not verified"
+     - Resend requires domain verification before sending to
+       external recipients. The free tier only allows sending to
+       the account email via ``resend.dev``.
+     - Either verify the domain in the Resend dashboard
+       (``resend.com/domains``), or use ``noreply@resend.dev``
+       as the ``SMTP_FROM_ADDR`` during development.
+
+Infrastructure & Deployment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+
+   * - Issue
+     - Root Cause
+     - Fix
+
+   * - Frontend admin API calls (``/admin/org/config``) return 404
+     - Nginx only routes ``/v1/*`` to the API backend.
+       ``/admin/*`` hits the frontend (Next.js) which has no
+       matching route.
+     - Added ``location /admin/ { proxy_pass $api_upstream; ... }``
+       to both ``openzync.conf`` and ``openzync.ssl.conf``.
+
+   * - Docker HEALTHCHECK shows ``(unhealthy)`` on running containers
+     - HEALTHCHECK uses ``wget --spider`` but ``wget`` is not
+       installed in Python ``slim`` or Node ``alpine`` images.
+     - Replaced with ``python3 -c "import urllib.request; ..."``
+       (API) or use a ``node``-based healthcheck (frontend).
+
 Related Documentation
 ---------------------
 

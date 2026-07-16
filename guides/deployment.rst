@@ -552,6 +552,55 @@ PostgreSQL
   ``maintenance_work_mem`` for ``CREATE INDEX CONCURRENTLY`` on pgvector
   HNSW indexes.
 
+Known Deployment Pitfalls
+---------------------------
+
+.. important::
+
+   The following issues are **blockers** that will prevent a fresh deployment
+   from starting.  They are documented here so operators can diagnose and
+   resolve them quickly.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Symptom
+     - Root Cause
+     - Resolution
+
+   * - API returns ``OpenBaoAuthError: [sys/namespaces/*] permission denied``
+     - ``/sys/namespaces`` is restricted to the **root namespace** — the
+       API's AppRole token (in ``system/``) cannot create namespaces.
+     - Ensure ``/openbao-bootstrap/root-token`` is mounted in the API
+       container. ``OpenBaoClient.create_namespace()`` reads it
+       automatically and uses the root token for namespace creation.
+
+   * - API returns ``OpenBaoSecretNotFoundError: [sys/mounts/config] namespace not found``
+     - ``/sys/mounts`` is also root-namespace-only; the AppRole token
+       cannot enable secrets engines in child namespaces.
+     - ``create_org_namespace()`` passes ``use_root_token=True`` to
+       ``enable_kv_v2()`` — no manual intervention needed.
+
+   * - AppRole token returns ``namespace not found`` on child namespace operations
+     - ``X-Vault-Namespace`` resolves **from root**, not from the token's
+       namespace. Use the full path ``system/org_<uuid>/``, not just
+       ``org_<uuid>/``.
+     - ``_org_ns()`` returns ``system/org_<uuid>/`` automatically.
+       Verify no code path calls ``_headers()`` with a bare
+       ``org_<uuid>`` value.
+
+   * - Container shows ``(unhealthy)`` but logs show the app is running
+     - HEALTHCHECK uses ``wget`` which is not installed in the image.
+     - The fix has been applied to the API Dockerfile (using
+       ``python3 -c``). For custom images, ensure the healthcheck
+       command is available in the base image.
+
+   * - Frontend settings pages return 404
+     - Nginx only routes ``/v1/*`` to the API; ``/admin/*`` hits the
+       frontend.
+     - Add ``location /admin/ { proxy_pass $api_upstream; ... }``
+       to the nginx configuration.
+
 Related documentation
 ---------------------
 
