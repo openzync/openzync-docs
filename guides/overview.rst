@@ -52,8 +52,7 @@ The system is built as a **FastAPI** application with:
   resolved per-organisation at runtime.
 - **OpenBao** (Vault-compatible secrets manager) as the **sole source of
   truth** for all runtime configuration and secrets.  See
-  :doc:`/domains/infrastructure` and :doc:`/adr/003-openbao-zero-fallback` for
-  the architectural rationale.
+  :doc:`/domains/infrastructure` for the architectural rationale.
 - **ARQ worker pool** with **high- and low-priority queues** for background
   tasks: entity extraction, fact extraction, dialog classification, embedding
   computation, episode enrichment, entity merging, and user summarisation.

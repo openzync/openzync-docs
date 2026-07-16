@@ -35,8 +35,7 @@ Before deploying OpenZync, ensure the following infrastructure is available:
      - Runtime for the API server and ARQ worker.
    * - **OpenBao**
      - 2.5+ (Vault-compatible)
-     - Required for secrets management.  See
-       :doc:`/adr/003-openbao-zero-fallback` for the architectural rationale.
+      - Required for secrets management.  See ADR-003 for the architectural rationale.
    * - **Docker**
      - 24+ (for Compose deployment)
      - Required for the Docker Compose stack.
@@ -607,10 +606,6 @@ Related documentation
 - :doc:`/domains/infrastructure` — Full infrastructure reference (service
   graph, OpenBao configuration, NGINX, observability, Helm chart, Makefile
   targets, production considerations)
-- :doc:`/adr/003-openbao-zero-fallback` — Architecture decision for OpenBao
-  as sole source of truth
-- :doc:`/adr/004-self-bootstrapping-postgres` — Architecture decision for the
-  self-bootstrapping Postgres credential flow
 - :doc:`/domains/core` — Configuration system (``BootstrapSettings``,
   ``Settings``), async DB/Redis/ARQ connection management
 - :doc:`/domains/workers` — ARQ worker architecture and task registry

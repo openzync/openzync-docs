@@ -322,8 +322,7 @@ See :doc:`/domains/auth` for details.
 OpenBao Secrets Architecture
 ----------------------------
 
-OpenZync implements a **zero-fallback secrets architecture** (documented in
-`ADR-003 <../adr/003-openbao-zero-fallback.html>`__):
+OpenZync implements a **zero-fallback secrets architecture**:
 
 .. code-block:: text
 

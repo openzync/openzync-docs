@@ -9,9 +9,7 @@ Infrastructure — Docker Compose, OpenBao, Observability & Helm
 
    The infrastructure follows a **zero-fallback secrets model**: OpenBao is the
    exclusive source of truth for all runtime configuration.  Environment
-   variables are used only for bootstrap credentials.  See :doc:`/adr/003-openbao-zero-fallback`
-   and :doc:`/adr/004-self-bootstrapping-postgres` for the architectural
-   rationale.
+   variables are used only for bootstrap credentials.  See ADR-003 and ADR-004 for the architectural rationale.
 
 .. contents:: Sections
    :local:
@@ -1966,18 +1964,10 @@ Infrastructure & Deployment
 Related Documentation
 ---------------------
 
-* :doc:`/adr/003-openbao-zero-fallback` — Architecture decision for OpenBao as
-  sole source of truth.
-* :doc:`/adr/004-self-bootstrapping-postgres` — Architecture decision for the
-  self-bootstrapping Postgres credential flow.
 * :doc:`/domains/core` — The Python ``core.config`` module (``BootstrapSettings``
   and ``Settings``).
 * :doc:`/domains/workers` — The ARQ background worker service.
 * :doc:`/domains/api_layer` — The FastAPI application layer.
 * :doc:`/guides/deployment` — Deployment guide and checklist.
 
-.. toctree::
-   :hidden:
 
-   /adr/003-openbao-zero-fallback
-   /adr/004-self-bootstrapping-postgres

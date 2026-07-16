@@ -63,13 +63,6 @@ production LLM applications.
    domains/infrastructure
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Architecture Decisions
-
-   adr/003-openbao-zero-fallback
-   adr/004-self-bootstrapping-postgres
-
-.. toctree::
    :maxdepth: 4
    :caption: API Reference (Auto-generated)
 
