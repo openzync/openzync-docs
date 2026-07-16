@@ -1276,12 +1276,26 @@ this does **not** use an OpenBao Agent sidecar.  Flow:
 NGINX Configuration
 -------------------
 
-The ``infra/nginx/`` directory contains three files:
+The ``infra/nginx/`` directory contains:
 
-* ``nginx.conf`` — base configuration
-* ``conf.d/openzync.conf`` — HTTP reverse proxy (IP-based, no TLS)
-* ``conf.d/openzync.ssl.conf`` — HTTPS reverse proxy with Cloudflare origin
-  certificate
+* ``nginx.conf`` — base configuration (tracked in git)
+* ``templates/openzync.conf`` — HTTP reverse proxy **template** (tracked in git,
+  must be manually copied to ``conf.d/`` to activate)
+* ``templates/openzync.ssl.conf`` — HTTPS reverse proxy **template** with
+  Cloudflare origin certificate (tracked in git, requires origin certs in
+  ``/etc/nginx/certs/`` to activate)
+* ``conf.d/`` — active site configs bind-mounted into the nginx container.
+  **Not deployed by CI.**  Contents managed manually by the admin.
+
+.. important::
+
+   The ``templates/`` directory contains reference site configs.  CI never
+   writes to ``conf.d/`` — doing so would recreate directory inodes and break
+   the Docker bind mount (see :ref:`nginx-bind-mount-stale` below).  To
+   activate a config for the first time::
+
+      cp infra/nginx/templates/openzync.conf infra/nginx/conf.d/
+      docker restart infra-nginx-1
 
 Base Configuration (nginx.conf)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1919,6 +1933,35 @@ Infrastructure & Deployment
        installed in Python ``slim`` or Node ``alpine`` images.
      - Replaced with ``python3 -c "import urllib.request; ..."``
        (API) or use a ``node``-based healthcheck (frontend).
+
+   * - Cloudflare returns ``521 Web Server Is Down``
+     - nginx is stuck in a restart loop.  Common causes:
+
+       * SSL config with ``listen 443 ssl`` referencing non-existent certs
+         (``origin-cert.pem`` / ``origin-key.pem``).
+       * CI deployment replaced ``conf.d/`` directory, breaking the Docker
+         bind mount inode — container has an empty ``conf.d/`` with no
+         server blocks (see :ref:`nginx-bind-mount-stale`).
+
+     - Disable the SSL config (rename to ``.disabled``), remove and
+       recreate the nginx container, and verify HTTP works.  Since the
+       templates/ migration, CI no longer touches ``conf.d/``, so this
+       should be a one-time recovery.
+
+   * - .. _nginx-bind-mount-stale:
+
+       nginx ``conf.d/`` is empty inside container despite files existing
+       on the host
+     - Docker bind mounts bind to the **inode** at container creation
+       time.  If the host directory is deleted and recreated (e.g. a
+       ``git pull`` that replaces it, or ``mv`` + ``mkdir``), the
+       container still sees the old (now empty) directory.  This is a
+       known Docker limitation with bind mounts — ``docker inspect``
+       shows the correct source path but the content is stale.
+     - Stop and remove the container (``docker rm -f``), then create a
+       new one.  The new bind mount captures the current inode.
+       Alternatively, use ``docker compose down && docker compose up -d``
+       for services defined in a compose file.
 
 Related Documentation
 ---------------------
