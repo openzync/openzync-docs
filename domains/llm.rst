@@ -61,11 +61,11 @@ Data Types
 
       :value: ``"anthropic"``
 
-   Note that ``"openrouter"`` is **not** in this enum — it is registered
-   directly with :class:`LLMBackendRegistry` under the name ``"openrouter"``
-   without a corresponding enum member.  This is a
-   TODO: needs author clarification — either add the enum member or document
-   the intentional divergence.
+   .. versionchanged:: 0.6.0
+
+      ``OPENROUTER`` was added to this enum.  Previously ``"openrouter"``
+      was only registered with :class:`LLMBackendRegistry` without a
+      corresponding enum member.
 
 .. class:: TokenUsage
 
@@ -441,7 +441,7 @@ Abstract Backend — :class:`LLMBackend`
           (e.g. ``model`` to override the embedding model).
       :rtype: EmbeddingResponse
       :raises NotImplementedError: If the provider does not support
-          embeddings (Anthropic, OpenRouter).
+          embeddings (Anthropic).
 
       Generate embeddings for one or more text strings.  Returns a
       standardised :class:`EmbeddingResponse` containing vectors and
@@ -976,11 +976,30 @@ OpenRouterBackend
    API.  Uses an OpenAI-compatible client pointed at
    ``https://openrouter.ai/api/v1``.
 
-   .. warning::
+   .. versionchanged:: 0.6.0
 
-      Embeddings are **not supported** — calling :meth:`embed` raises
-      :class:`NotImplementedError` and :attr:`embedding_dim` raises
-      :class:`NotImplementedError`.
+      Embeddings are now supported.  OpenRouter proxies the
+      ``/v1/embeddings`` endpoint via the same OpenAI-compatible client.
+      The model name and dimension are configured separately from the chat
+      model via ``org_config.embedding_model`` and ``org_config.embedding_dim``.
+
+   .. attribute:: embedding_dim
+
+      :type: int
+      :value: ``0``
+
+      Returns ``0`` because the dimension is dynamic per model.  Set the
+      expected dimension via ``org_config.embedding_dim`` — it is validated
+      at runtime in the worker tasks and used for the pgvector column cast
+      in :class:`~services.hybrid_retriever.HybridRetriever`.
+
+   ``embed`` supported kwargs:
+
+   * ``model`` — the embedding model name (required).  Passed from
+     ``org_config.embedding_model`` at call time.
+
+   Raises :class:`~core.exceptions.LLMConfigurationError` if no ``model``
+   kwarg is provided.
 
    .. attribute:: BASE_URL
 
@@ -1387,7 +1406,8 @@ To add a new LLM provider (e.g. Google Gemini, Cohere, Mistral AI):
            GEMINI = "gemini"  # new
 
    If you skip this step, the provider will still work via the registry but
-   will not have an enum member — this is the current state of OpenRouter.
+   will not have an enum member — this was the original state of OpenRouter
+   before ``OPENROUTER`` was added to the enum in v0.6.0.
 
 5. **Check optional dependencies** — if the new provider requires a
    third-party SDK, make sure the import is inside the constructor
