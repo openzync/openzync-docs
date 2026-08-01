@@ -4,7 +4,7 @@ MCP Server (FastMCP)
 .. note::
 
    This document covers the **OpenZync MCP Server** at
-   ``/home/rohan-linkai/code/personal/openzync/openzync-mcp/`` — an
+   ``/home/rohnsha0/code/personal/openzync/openzync-mcp/`` — an
    independent package (``openzync_mcp``) that exposes OpenZync's memory
    capabilities as LLM-accessible tools via the `Model Context Protocol
    (MCP) <https://spec.modelcontextprotocol.io>`_.
@@ -68,7 +68,7 @@ Repository Layout
 -----------------
 
 The MCP server lives in its own repository at
-``/home/rohan-linkai/code/personal/openzync/openzync-mcp/``::
+``/home/rohnsha0/code/personal/openzync/openzync-mcp/``::
 
    openzync-mcp/
    └── openzync_mcp/
@@ -988,7 +988,7 @@ Repository Gaps
 ---------------
 
 The following files are missing from the MCP server repository
-(``/home/rohan-linkai/code/personal/openzync/openzync-mcp/``):
+(``/home/rohnsha0/code/personal/openzync/openzync-mcp/``):
 
 .. list-table::
    :header-rows: 1

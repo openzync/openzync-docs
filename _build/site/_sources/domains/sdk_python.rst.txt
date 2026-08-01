@@ -4,7 +4,7 @@ Python SDK (openzync)
 .. note::
 
    This document covers the **OpenZync Python SDK** at
-   ``/home/rohan-linkai/code/personal/openzync/openzync-sdk-python/`` — the
+   ``/home/rohnsha0/code/personal/openzync/openzync-sdk-python/`` — the
    official Python client library for the OpenZync API.  The SDK is an
    installable ``pip`` package (``openzync``) that wraps all OpenZync REST
    endpoints behind typed, async-first clients.

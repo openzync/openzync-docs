@@ -13,7 +13,6 @@ Subpackages
    :maxdepth: 4
 
    services.api
-   services.mcp
    services.worker
 
 Submodules

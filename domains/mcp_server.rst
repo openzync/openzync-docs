@@ -4,15 +4,16 @@ MCP Server (FastMCP)
 .. note::
 
    This document covers the **OpenZync MCP Server** at
-   ``/home/rohan-linkai/code/personal/openzync/openzync-mcp/`` — an
+   ``/home/rohnsha0/code/projects/openzync/openzync-mcp/`` — an
    independent package (``openzync_mcp``) that exposes OpenZync's memory
    capabilities as LLM-accessible tools via the `Model Context Protocol
    (MCP) <https://spec.modelcontextprotocol.io>`_.
 
    The MCP server **replaces** the previous custom JSON-RPC 2.0
-   implementation that lived in ``services.mcp`` inside the
-   ``openzync-core`` monolith (see :doc:`../api/services.mcp` for the
-   legacy API docs).  The new server is built on `FastMCP
+   implementation that lived in the ``openzync-core`` monolith.  That
+   legacy service has since been **removed from the monolith** and its
+   API reference docs have been deleted from this documentation tree.
+   The new server is built on `FastMCP
    <https://gofastmcp.com>`_, which handles protocol compliance, transport
    negotiation, schema generation, and input validation automatically.
 
@@ -67,34 +68,79 @@ agent with persistent, queryable memory.
 Repository Layout
 -----------------
 
-The MCP server lives in its own repository at
-``/home/rohan-linkai/code/personal/openzync/openzync-mcp/``::
+The MCP server lives in its own standalone git repository at
+``/home/rohnsha0/code/projects/openzync/openzync-mcp/``::
 
    openzync-mcp/
-   └── openzync_mcp/
-       ├── __init__.py
-       ├── __main__.py          # Entry point with CLI arg parsing
-       ├── server.py            # FastMCP server singleton + lifespan
-       ├── Dockerfile           # Production container definition
-       └── tools/
-           ├── __init__.py
-           ├── memory.py        # add_memory, get_context, search_memory, delete_memory
-           ├── facts.py         # add_fact, list_facts
-           ├── graph.py         # get_user_graph
-           ├── sessions.py      # list_sessions
-           └── users.py         # create_user
+   ├── LICENSE                     # Apache-2.0
+   ├── Makefile                    # dev commands (install / lint / test / docker-build)
+   ├── README.md                   # quick start, Claude Desktop config, architecture
+   ├── pyproject.toml              # package metadata, dependencies, pytest/ruff config
+   ├── .dockerignore               # excludes .env / .venv / .git from the image build
+   ├── .gitignore                  # Python + secrets ignore rules
+   ├── .gitlab-ci.yml              # legacy CI definition — NOT active (see CI/CD below)
+   ├── .github/
+   │   └── workflows/
+   │       └── deploy.yml          # GitHub Actions: build → push → VPS deploy
+   ├── deploy/
+   │   └── mcp-docker-compose.yml  # VPS compose file (distinct name, see CI/CD below)
+   ├── tests/                      # 42 unit tests against a mocked SDK client
+   │   ├── conftest.py             #   mock client + in-process Client(mcp) fixtures
+   │   ├── test_memory.py
+   │   ├── test_facts.py
+   │   ├── test_graph.py
+   │   ├── test_sessions.py
+   │   ├── test_users.py
+   │   ├── test_lifespan.py
+   │   ├── test_main.py
+   │   └── test_tool_failures.py
+   ├── openzync_mcp/
+   │   ├── __init__.py
+   │   ├── __main__.py             # entry point with CLI arg parsing
+   │   ├── server.py               # FastMCP server singleton + lifespan
+   │   ├── Dockerfile              # multi-stage production container definition
+   │   └── tools/
+   │       ├── __init__.py
+   │       ├── memory.py           # add_memory, get_context, search_memory, delete_memory
+   │       ├── facts.py            # add_fact, list_facts
+   │       ├── graph.py            # get_user_graph
+   │       ├── sessions.py         # list_sessions
+   │       └── users.py            # create_user
 
-**Files not present** (noted as gaps):
+All packaging, documentation, and deployment artifacts (``pyproject.toml``,
+``LICENSE``, ``README.md``, ``.gitignore``, ``tests/``, ``.github/``,
+``deploy/``) are now present — the earlier "repository gaps" no longer
+exist.
 
-* ``pyproject.toml`` — missing.  The Dockerfile builds from a ``setup.py``
-  or a separate project config that is not in this repository.
-* ``LICENSE`` — missing from the repository root (may be inherited from the
-  parent project).
-* ``README`` — missing.
-* ``.gitignore`` — missing.
+.. rubric:: Dependencies
 
-These are packaging/documentation gaps.  See :ref:`mcp-repo-gaps` for
-details.
+Declared in ``pyproject.toml`` (package version ``0.1.0``, Python
+``>=3.11``, Apache-2.0):
+
+.. list-table::
+   :header-rows: 1
+
+   * - Dependency
+     - Constraint
+     - Purpose
+   * - ``mcp``
+     - ``>=1.0.0``
+     - Model Context Protocol SDK (types, protocol primitives).
+   * - ``fastmcp``
+     - ``>=3.2.0``
+     - MCP server framework — transports, schema generation, lifespan.
+   * - ``httpx``
+     - ``>=0.27.0``
+     - Async HTTP client used by the SDK.
+   * - ``openzync``
+     - ``>=1.0.0b2``
+     - OpenZync Python SDK (``AsyncOpenZync``) from PyPI.
+
+Dev extras (``[project.optional-dependencies].dev``): ``pytest>=8.0.0``,
+``pytest-asyncio>=0.24.0``, ``pytest-cov>=5.0.0``.  Linting is via
+``ruff`` (line length 100, target ``py311``), driven through the
+``Makefile`` (``make install``, ``make lint``, ``make test``,
+``make test-coverage``, ``make docker-build``).
 
 
 Server Lifecycle
@@ -117,18 +163,22 @@ The server is a singleton :class:`FastMCP` instance created at import time::
 The lifespan function (``openzync_lifespan``) manages the SDK client:
 
 #. Reads ``OPENZYN_API_KEY`` and ``OPENZYN_BASE_URL`` from environment
-   variables (set by ``__main__.py`` before starting the server).
-#. Creates an ``AsyncOpenZync`` client if one is not already injected (for
-   test support).
+   variables (set by ``__main__.py`` before starting the server).  If
+   ``OPENZYN_BASE_URL`` is unset, it defaults to
+   ``http://localhost:8000``.
+#. Creates an ``AsyncOpenZync`` client **lazily** — only if one was not
+   already injected (for test support) *and* an API key is present.
 #. Yields the client in the lifespan context dict, accessible to tool
    handlers via ``ctx.lifespan_context["client"]``.
-#. On shutdown, closes the SDK client.
+#. On shutdown, closes the SDK client **only if the lifespan created it**
+   and resets ``server._oz_client`` to ``None``.
 
 .. rubric:: Test Injection Hook
 
 For unit tests, pre-set ``server._oz_client`` with a mock client before
-creating ``Client(mcp)``.  The lifespan will use the pre-set client as-is
-and will **not** close it on shutdown (the test fixture owns the lifecycle).
+creating ``Client(mcp)``.  The lifespan will use the pre-set client as-is,
+will **not** create a real one, and will **not** close it on shutdown (the
+test fixture owns the lifecycle).
 
 
 Entry Point & CLI
@@ -148,7 +198,7 @@ arguments:
    * - ``--transport``
      - ``stdio``
      - Transport protocol.  Choices: ``stdio``, ``sse``, ``http``.
-     - ``--host``
+   * - ``--host``
      - ``0.0.0.0``
      - Bind address (used for ``sse`` and ``http`` transports only).
    * - ``--port``
@@ -159,7 +209,7 @@ arguments:
      - OpenZync API key.  Required — the server will exit with an error
        if neither the argument nor the env var is set.
    * - ``--base-url``
-     - ``http://localhost:8000``
+     - ``OPENZYN_BASE_URL`` env var, else ``http://localhost:8000``
      - OpenZync API base URL.  Set to the production URL when deploying.
 
 **Logging**: All logging goes to **stderr** (stdout is reserved for the
@@ -176,7 +226,12 @@ Usage examples::
        --base-url https://api.openzync.com
 
    # Run with SSE transport (legacy)
-   python -m openzync_mcp --transport sse --port 8100
+   python -m openzync_mcp --transport sse --port 8100 \
+       --api-key oz_live_abc123
+
+The package version is ``0.1.0`` (also the ``FastMCP`` version string);
+the current release tag is ``v1.0.0b1`` (see :ref:`mcp-cicd` for how tags
+drive deployments).
 
 
 Authentication Model
@@ -223,7 +278,7 @@ authentication is handled at the OpenZync API level via the API key.
 Available MCP Tools
 -------------------
 
-The MCP server exposes **8 tools** across 5 domains:
+The MCP server exposes **9 tools** across 5 domains:
 
 .. list-table::
    :header-rows: 1
@@ -285,7 +340,8 @@ add_memory
 ~~~~~~~~~~
 
 **Purpose**: Persist conversation messages as episodes and enqueue async
-enrichment (entity extraction, fact extraction, embedding, classification).
+enrichment (entity extraction, fact extraction, embedding, classification,
+and structured extraction).
 
 .. list-table:: Input Parameters
    :header-rows: 1
@@ -329,8 +385,8 @@ enrichment (entity extraction, fact extraction, embedding, classification).
      }
    }
 
-**Backend mapping**: Calls ``POST /v1/projects/{project_id}/memory`` on the
-OpenZync API.
+**Backend mapping**: Calls the SDK's ``memory.ingest`` method, which maps
+to ``POST /v1/projects/{project_id}/memory`` on the OpenZync API.
 
 **Errors**:
 
@@ -382,8 +438,8 @@ formatted for LLM consumption.
      }
    }
 
-**Backend mapping**: Calls ``GET /v1/projects/{project_id}/context`` on the
-OpenZync API.
+**Backend mapping**: Calls the SDK's ``memory.get_context`` method, which
+maps to ``GET /v1/projects/{project_id}/context`` on the OpenZync API.
 
 **Retrieval pipeline** (see :doc:`memory_context` for details):
 
@@ -452,7 +508,7 @@ Returns ``"No results found."`` if no matches.
      }
    }
 
-**Backend mapping**: Calls the OpenZync graph search endpoint with the
+**Backend mapping**: Calls the SDK's ``graph.search`` method with the
 specified types.
 
 **Errors**:
@@ -491,8 +547,8 @@ marked inactive but preserved for a 30-day grace period before hard-purge.
      }
    }
 
-**Backend mapping**: Calls ``DELETE /v1/projects/{project_id}/memory`` on
-the OpenZync API.
+**Backend mapping**: Calls the SDK's ``memory.delete`` method, which maps
+to ``DELETE /v1/projects/{project_id}/memory`` on the OpenZync API.
 
 **Warning**: This operation:
 
@@ -558,8 +614,8 @@ async embedding.
      }
    }
 
-**Backend mapping**: Calls ``POST /v1/projects/{project_id}/facts`` on the
-OpenZync API.
+**Backend mapping**: Calls the SDK's ``facts.add`` method, which maps to
+``POST /v1/projects/{project_id}/facts`` on the OpenZync API.
 
 **Errors**:
 
@@ -612,7 +668,7 @@ Returns ``"No facts found."`` if no matches.
      }
    }
 
-**Backend mapping**: Calls the OpenZync graph search endpoint scoped to
+**Backend mapping**: Calls the SDK's ``graph.search`` method scoped to
 ``types="facts"``.
 
 **Errors**:
@@ -673,7 +729,8 @@ Returns ``"No entities found in the graph."`` if the graph is empty.
      }
    }
 
-**Backend mapping**: Calls the OpenZync graph nodes and edges endpoints.
+**Backend mapping**: Calls the SDK's ``graph.nodes`` and ``graph.edges``
+methods (the OpenZync graph nodes and edges endpoints).
 
 **Edge-fetch behaviour**:
 
@@ -682,6 +739,12 @@ Returns ``"No entities found in the graph."`` if the graph is empty.
 * Partial failures are handled gracefully — failed entity edge fetches
   are skipped with a warning logged.
 * Edges are deduplicated by ``(source_id, target_id, type)``.
+
+**SDK contract gotcha**: ``client.graph.nodes()`` wraps items in
+``GraphNode`` objects (attribute access), but ``client.graph.edges()``
+yields **raw dicts** — the tool therefore uses dict access
+(``edge["source_id"]``, not ``edge.source_id``).  See
+:ref:`mcp-testing` for how the tests mirror this contract.
 
 **Errors**:
 
@@ -748,7 +811,10 @@ Returns ``"No sessions found."`` if the project has no sessions.
      }
    }
 
-**Backend mapping**: Calls the OpenZync sessions list endpoint.
+**Backend mapping**: Calls the SDK's ``sessions.list`` method, which maps
+to the OpenZync sessions list endpoint.  The response is a dict carrying
+the session rows under ``"data"`` or ``"items"`` plus ``next_cursor`` /
+``has_more`` pagination keys.
 
 **Errors**:
 
@@ -797,8 +863,8 @@ end-users within an organization and are identified by a caller-chosen
      }
    }
 
-**Backend mapping**: Calls ``POST /v1/users`` on the OpenZync API (or the
-equivalent SDK method).
+**Backend mapping**: Calls the SDK's ``users.create`` method, which maps to
+``POST /v1/users`` on the OpenZync API.
 
 **Errors**:
 
@@ -810,27 +876,47 @@ equivalent SDK method).
 Container Setup
 ---------------
 
-The Docker image uses a multi-stage build for a minimal production image:
-
-.. code-block:: dockerfile
+The Docker image (``openzync_mcp/Dockerfile``) uses a multi-stage build
+for a minimal production image::
 
    FROM python:3.12-slim AS builder
    WORKDIR /app
-   COPY pyproject.toml .
+
+   # setuptools editable builds need the package source present, and
+   # setuptools validates README.md at build time — copy all three.
+   COPY pyproject.toml README.md openzync_mcp/ ./
    RUN pip install --no-cache-dir --user -e .
 
    FROM python:3.12-slim AS runtime
    WORKDIR /app
+
+   # Copy installed packages from builder.
    COPY --from=builder /root/.local /root/.local
+
+   # Copy application source.
+   # ⚠️ this also copies .env / .venv / .git — excluded by the repo-root
+   #    .dockerignore (same pattern as openzync-core).
    COPY . .
+
    ENV PATH=/root/.local/bin:$PATH \
        PYTHONUNBUFFERED=1 \
        PYTHONDONTWRITEBYTECODE=1
+
    EXPOSE 8100
+
+   # TCP probe, not HTTP: a bare GET /mcp returns 406 (Streamable HTTP
+   # requires Accept: application/json, text/event-stream), so an HTTP
+   # probe would mark a healthy container unhealthy.  A socket connect
+   # only checks the port is up.
+   HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
+       CMD python3 -c "import socket; socket.create_connection(('127.0.0.1', 8100), 5).close()" || exit 1
+
    CMD ["python", "-m", "openzync_mcp", "--transport", "http", \
         "--host", "0.0.0.0", "--port", "8100"]
 
-**Build & run**::
+**Build & run** (build context is the **repo root** — the image is built
+from the standalone ``openzync-mcp`` repo, and the ``openzync`` SDK comes
+from PyPI as a regular dependency)::
 
    docker build -t openzync-mcp:latest -f openzync_mcp/Dockerfile .
    docker run -p 8100:8100 --env-file .env openzync-mcp:latest
@@ -840,6 +926,175 @@ The container expects:
 * ``OPENZYN_API_KEY`` — required at runtime.
 * ``OPENZYN_BASE_URL`` — defaults to ``http://localhost:8000`` (set to
   the actual API URL in production).
+
+.. note::
+
+   The repo-root ``.dockerignore`` excludes ``.env``, ``.venv``, and
+   ``.git`` from the build context — the runtime stage's ``COPY . .``
+   therefore does not leak real API keys into the image.
+
+.. note::
+
+   The **TCP** healthcheck is deliberate: a bare ``GET /mcp`` returns
+   HTTP **406** because Streamable HTTP requires the
+   ``Accept: application/json, text/event-stream`` header.  The socket
+   probe only verifies the port is listening, so a healthy container is
+   not marked unhealthy.  A real ``/health`` route would be the fuller
+   fix.
+
+
+.. _mcp-cicd:
+
+CI/CD & Deployment
+------------------
+
+The **active** pipeline is the GitHub Actions workflow
+``.github/workflows/deploy.yml``.  (The repo also carries a
+``.gitlab-ci.yml`` for lint/test/build — it is **not** the pipeline in
+use; deployments happen via GitHub Actions tag pushes.)
+
+**Triggers**:
+
+* Tag push matching ``v*`` (e.g. ``v1.0.0b1``) — build + push + deploy
+  (release).
+* ``workflow_dispatch`` — build + push + deploy (manual).
+
+**Job steps** (single ``build-and-deploy`` job on ``ubuntu-latest``):
+
+#. ``actions/checkout@v4`` — checkout the repo.
+#. ``docker/setup-buildx-action@v3`` + ``docker/login-action@v3`` —
+   authenticate to ``ghcr.io`` with ``${{ secrets.GITHUB_TOKEN }}``.
+#. **Build & push** — tag the image ``ghcr.io/openzync/openzync-mcp:$TAG``
+   where ``$TAG`` is the git tag (``refs/tags/v*``) or the ``GITHUB_SHA``
+   on manual dispatch; additionally tag ``:latest`` and push all tags:
+
+   .. code-block:: bash
+
+      docker build -t ghcr.io/openzync/openzync-mcp:$TAG -f openzync_mcp/Dockerfile .
+      docker tag ghcr.io/openzync/openzync-mcp:$TAG ghcr.io/openzync/openzync-mcp:latest
+      docker push --all-tags ghcr.io/openzync/openzync-mcp
+
+#. **Upload deployment files** — write ``VPS_SSH_KEY`` to
+   ``~/.ssh/id_ed25519``, ``ssh``-mkdir ``/home/deploy/openzync/deploy``
+   on the VPS, then ``scp`` a tarball of ``deploy/mcp-docker-compose.yml``.
+   The compose file keeps its distinct name
+   (``mcp-docker-compose.yml``, **not** ``docker-compose.yml``) so it
+   never clobbers the frontend's compose file in the same ``deploy/``
+   directory.
+#. **Deploy via SSH** (``appleboy/ssh-action@v1.0.3``) with
+   ``GHCR_PAT``, ``OPENZYN_API_KEY``, ``OPENZYN_BASE_URL`` passed as envs:
+
+   .. code-block:: bash
+
+      cd /home/deploy/openzync
+      tar xzf deploy-files.tar.gz && rm deploy-files.tar.gz
+
+      # Authenticate to ghcr.io with the PAT
+      echo "$GHCR_PAT" | docker login ghcr.io -u rohnsha0 --password-stdin
+
+      # Write the MCP env file (separate from the frontend .env)
+      cat > deploy/mcp.env << ENVEOF
+      OPENZYN_API_KEY=$OPENZYN_API_KEY
+      OPENZYN_BASE_URL=$OPENZYN_BASE_URL
+      ENVEOF
+
+      # Pull the latest image and restart the container
+      docker compose -f deploy/mcp-docker-compose.yml pull mcp
+      docker compose -f deploy/mcp-docker-compose.yml up -d mcp
+
+**Deploy target**: ``/home/deploy/openzync`` on the VPS.  The compose
+file pins the image to ``ghcr.io/openzync/openzync-mcp:latest``, sets
+``container_name: openzync-mcp``, reads ``deploy/mcp.env`` (written by CI
+from repo secrets), binds ``127.0.0.1:8100:8100``, and restarts unless
+stopped.
+
+.. list-table:: Required repository secrets
+   :header-rows: 1
+
+   * - Secret
+     - Purpose
+   * - ``VPS_HOST``
+     - VPS IP/hostname to deploy to.
+   * - ``VPS_USER``
+     - SSH user on the VPS (``deploy``).
+   * - ``VPS_SSH_KEY``
+     - ed25519 private key for VPS SSH access (upload + deploy steps).
+   * - ``GHCR_PAT``
+     - PAT with ``packages:write`` — used to ``docker login ghcr.io`` on
+       the VPS so it can pull the image.
+   * - ``OPENZYN_API_KEY``
+     - OpenZync API key written to ``deploy/mcp.env`` for the container.
+   * - ``OPENZYN_BASE_URL``
+     - OpenZync API base URL (e.g. ``https://app.openzync.tech``) written
+       to ``deploy/mcp.env``.
+
+.. rubric:: Production deployment note
+
+On the VPS the container is bound to **``127.0.0.1:8100`` only** — it is
+reachable from the VPS itself or via an SSH tunnel
+(``ssh -L 8100:127.0.0.1:8100 deploy@<host>``), but is **not** exposed
+publicly.  A reverse-proxy route (e.g. an nginx location forwarding to
+``127.0.0.1:8100``) is a follow-up if external MCP clients need to reach
+the server directly.
+
+
+.. _mcp-testing:
+
+Testing
+-------
+
+The test suite (``tests/``) contains **42 unit tests** with **97.87%**
+line coverage (per the CI coverage artifact) and is **ruff-clean**.  No
+live services are required — the SDK client is fully mocked, so the
+suite runs anywhere.
+
+**Test pattern**:
+
+#. ``tests/conftest.py`` builds a ``MagicMock`` SDK client with
+   ``AsyncMock`` sub-clients for each domain (``memory``, ``graph``,
+   ``facts``, ``sessions``, ``users``).
+#. The mock is injected via the lifespan hook — ``mcp._oz_client =
+   mock_client`` — before ``Client(mcp)`` is created.  The server
+   lifespan picks it up without creating a real client and does **not**
+   close it on shutdown (the fixture owns its lifecycle).
+#. Tests drive the server **in-process** via ``Client(mcp)`` from
+   ``fastmcp.client``, calling tools exactly as an MCP client would
+   (``client.call_tool(...)``) and asserting on the formatted string
+   results.
+
+**SDK contract gotcha** (mirrored by the mocks): ``client.graph.edges()``
+yields **raw dicts**, not ``GraphEdge`` objects (unlike ``nodes()``,
+which wraps ``GraphNode``).  The ``get_user_graph`` tool therefore does
+dict access, and the tests' ``make_edge_dict()`` helper reproduces the
+exact dict shape — the mocks must mirror the real SDK contract or they
+certify a crash path green.  The ``AsyncIterable`` helper is used for
+``graph.nodes()`` because the tool ``await``-s the call and then
+``async for``-iterates it.
+
+.. code-block:: python
+
+   from unittest.mock import AsyncMock
+   from openzync_mcp.server import mcp
+
+   # Pre-set a mock client — the lifespan will use it as-is
+   mock_client = AsyncMock()
+   mock_client.memory.ingest = AsyncMock(return_value=...)
+   mcp._oz_client = mock_client
+
+   # Now create the in-process MCP test client
+   from fastmcp.client import Client
+
+   client = Client(mcp)
+   result = await client.call_tool("add_memory", arguments={...})
+
+.. note::
+
+   When ``_oz_client`` is pre-set, the lifespan does **not** create a new
+   client and does **not** close it on shutdown — the test fixture owns
+   the lifecycle.
+
+Run the suite with ``make test`` (or ``make test-coverage``, which fails
+the build under 80% coverage).
 
 
 Setup & Connection
@@ -858,12 +1113,11 @@ entry to your Claude Desktop configuration:
      "mcpServers": {
        "openzync": {
          "command": "python",
-         "args": [
-           "-m",
-           "openzync_mcp",
-           "--api-key",
-           "oz_live_YOUR_API_KEY"
-         ]
+         "args": ["-m", "openzync_mcp", "--transport", "stdio"],
+         "env": {
+           "OPENZYN_API_KEY": "oz_live_your_api_key_here",
+           "OPENZYN_BASE_URL": "http://localhost:8000"
+         }
        }
      }
    }
@@ -884,7 +1138,7 @@ HTTP transport::
 
 Then connect from any MCP client::
 
-   from mcp import Client
+   from fastmcp.client import Client
 
    async with Client("http://localhost:8100/mcp") as client:
        result = await client.call_tool(
@@ -895,32 +1149,6 @@ Then connect from any MCP client::
            },
        )
        print(result.content)
-
-
-Testing
--------
-
-The server includes a test injection hook for the SDK client.  In unit
-tests, pre-set ``server._oz_client`` before creating ``Client(mcp)``::
-
-   from unittest.mock import AsyncMock
-   from openzync_mcp.server import mcp
-
-   # Pre-set a mock client — the lifespan will use it as-is
-   mock_client = AsyncMock()
-   mock_client.memory.ingest = AsyncMock(return_value=...)
-   mcp._oz_client = mock_client
-
-   # Now create the MCP test client
-   from fastmcp import Client
-   client = Client(mcp)
-   result = await client.call_tool("add_memory", arguments={...})
-
-.. note::
-
-   When ``_oz_client`` is pre-set, the lifespan does **not** create a new
-   client and does **not** close it on shutdown — the test fixture owns
-   the lifecycle.
 
 
 Tool Patterns & Conventions
@@ -951,7 +1179,8 @@ ValueError`` — no silent truncation or coercion::
 
 **Timing**
 
-Every tool measures wall-clock time and includes it in success/error logs.
+Every tool measures wall-clock time (``time.monotonic()``) and includes
+the duration in success/error logs.
 
 **No silent fallback**
 
@@ -976,46 +1205,4 @@ Cross-References
 * :doc:`api_layer` — the full REST API that the SDK wraps.
 * :doc:`workers` — the ARQ background workers that process enrichment
   tasks after ingestion.
-* :doc:`../api/services.mcp` — legacy MCP service docs (the previous
-  custom JSON-RPC implementation in the monolith).
-* :doc:`../api/services.mcp.tools` — API reference for the tool modules.
 * :doc:`core` — configuration and dependency injection patterns.
-
-
-.. _mcp-repo-gaps:
-
-Repository Gaps
----------------
-
-The following files are missing from the MCP server repository
-(``/home/rohan-linkai/code/personal/openzync/openzync-mcp/``):
-
-.. list-table::
-   :header-rows: 1
-
-   * - File
-     - Impact
-     - Recommendation
-   * - ``pyproject.toml``
-     - The Dockerfile references ``pyproject.toml`` for ``pip install -e .``,
-       but the file is not present in the repository.  The build process
-       may rely on a parent project's config or an unpublished
-       ``setup.py``.
-     - Add ``pyproject.toml`` with project metadata,
-       dependencies, and entry point configuration.
-   * - ``LICENSE``
-     - Legal status is unclear — no license file in the repository.
-     - Add a license file matching the parent project (Apache 2.0 /
-       MIT).
-   * - ``README``
-     - No documentation in the repository about what this is, how to
-       build it, or how to contribute.
-     - Add a ``README.md`` covering build, run, and development
-       setup.
-   * - ``.gitignore``
-     - No gitignore means generated artifacts (``__pycache__``,
-       ``*.egg-info``, ``.venv``) may be accidentally committed.
-     - Add a standard Python ``.gitignore``.
-
-These are packaging gaps only — the runtime code is functional and
-self-contained.

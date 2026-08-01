@@ -4,7 +4,7 @@ Memory & Context Domain
 .. note::
 
    This document covers the Memory & Context domain within the
-   ``openzync-core`` monolith at ``/home/rohan-linkai/code/personal/openzync/openzync-core/``.
+   ``openzync-core`` monolith at ``/home/rohnsha0/code/personal/openzync/openzync-core/``.
    Every module, class, method, and endpoint described here has been verified
    against the actual source code at commit time.
 
