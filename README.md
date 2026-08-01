@@ -52,13 +52,13 @@ Auto-generated reference from docstrings for all core, routers, models, schemas,
 pip install -r requirements.txt
 
 # Build the docs
-make html
+sphinx-build -b html . _build/html
 
 # Open in browser
 open _build/html/index.html
 
 # Auto-reload on changes
-make live
+sphinx-autobuild . _build/html
 ```
 
 ## Structure
@@ -90,7 +90,7 @@ openzync-docs/
 │   ├── mcp_server.md
 │   └── frontend.md
 ├── api/                    # Auto-generated API reference
-└── _build/                 # Build artifacts (gitignored)
+└── _build/                 # Build artifacts (gitignored — built dynamically by ReadTheDocs)
 ```
 
 The `conf.py` imports `openzync-core` packages at build time for autodoc by adding the sibling `openzync-core/` directory to `sys.path`.

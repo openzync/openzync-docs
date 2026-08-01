@@ -1,0 +1,9 @@
+# ── Build artifacts ───────────────────────────────────────────────────────────
+# Sphinx output is built dynamically by ReadTheDocs on every push.
+# Local builds should never be committed — they drift stale.
+_build/
+
+# ── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+.venv/
