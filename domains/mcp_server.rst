@@ -361,10 +361,9 @@ and structured extraction).
        (``"user"`` | ``"assistant"`` | ``"system"`` | ``"tool"``)
        and ``content`` (message body).  1–1000 messages per call.
    * - ``session_id``
-     - ``string | null``
-     - No
-     - Optional session external ID.  If omitted, a
-       ``__default__`` session is auto-created.
+     - ``string``
+     - Yes
+     - Session external ID — required.  Must reference an existing session.
 
 **Output**: A confirmation string with the job ID and episode count::
 
@@ -583,9 +582,9 @@ async embedding.
        ``predicate``, and ``object`` keys.  Optional
        ``confidence`` (float, default 1.0).  Max 500 per call.
    * - ``session_id``
-     - ``string | null``
-     - No
-     - Optional session external ID for attribution.
+     - ``string``
+     - Yes
+     - Session external ID — required.  Must reference an existing session.
 
 **Output**: A confirmation string with accepted count and job ID::
 

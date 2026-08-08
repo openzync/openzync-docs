@@ -58,8 +58,9 @@ Organizations have a billing plan (``free``, ``pro``, ``enterprise``) enforced
 by a ``CheckConstraint`` on the ``plan`` column.
 
 **Projects** are logical workspaces within an organization.  API keys are scoped
-to a single project, not to the entire organization.  At bootstrap time a
-default project is created automatically.
+to a single project, not to the entire organization.  The bootstrap endpoint
+creates the organization only — projects and API keys are created afterwards
+via authenticated endpoints.
 
 **Users** are identities scoped to an organization.  Dashboard users authenticate
 via JWT; SDK clients authenticate via project-scoped API keys
@@ -640,28 +641,25 @@ OrganizationService
 
    Business logic for organization bootstrap and management.  Separated from
    main domain services because the bootstrap flow (creating the first
-   organization + API key) has no authentication requirement and runs before
+   organization) has no authentication requirement and runs before
    any user exists.
 
    .. method:: create_organization(payload: CreateOrgRequest) -> CreateOrgResponse
 
-      Create a new organization with a default project and admin API key.
-      Performs a single atomic transaction:
+      Create a new organization.  Performs a single atomic transaction:
 
       1. Creates an ``Organization`` record.
-      2. Creates a default project scoped to the organization.
-      3. Generates a ``oz_live_`` API key scoped to the default project.
-      4. Seeds default prompt templates for the new org.
-      5. Bootstrap OpenBao namespace + default config (non-fatal — failures
-         are logged but do not prevent org creation).
-      6. Commits everything atomically.
+      2. Seeds default prompt templates for the new org.
+      3. Bootstraps the OpenBao namespace + default config (non-fatal —
+         failures are logged but do not prevent org creation).
+      4. Commits everything atomically.
 
-      The raw API key is returned **exactly once** in the response — only the
-      salted SHA-256 hash is persisted.
+      No default project and no API key are created — both are created
+      afterwards through authenticated endpoints.
 
       :param payload: Organization name and optional plan.
       :type payload: :class:`schemas.organizations.CreateOrgRequest`
-      :returns: Org details and the raw API key.
+      :returns: Org details.
       :rtype: :class:`schemas.organizations.CreateOrgResponse`
 
    .. method:: _load_org_defaults() -> dict[str, Any]
@@ -1035,14 +1033,13 @@ Router prefix: ``/admin``, tags: ``Admin``
 
    **POST /admin/organizations** (status 201)
 
-   Create a new organization and generate an admin API key.  This is a
-   bootstrap endpoint for initial setup.  It performs a single atomic
-   transaction:
+   Create a new organization.  This is a bootstrap endpoint for initial
+   setup.  It performs a single atomic transaction:
 
    1. Creates a new ``Organization`` record.
-   2. Generates a ``oz_live_`` API key with ``read``, ``write``, and
-      ``admin`` scopes.
-   3. Returns the raw API key — this is the **only** time it is visible.
+
+   No default project and no API key are created — API keys are created
+   later via the authenticated per-project endpoints.
 
    **Security notes:**
 
@@ -1050,8 +1047,6 @@ Router prefix: ``/admin``, tags: ``Admin``
      first-use flow before any API keys exist.
    * In production, disable this endpoint or gate it behind a
      deployment-time secret environment variable.
-   * The raw key is returned exactly once and is **not** persisted.
-     Only the salted SHA-256 hash is stored.
 
 Admin — Organization Management (Prompts & Custom Instructions)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1534,13 +1529,9 @@ Key Schemas
 
       Name of the organization.  ``str``.
 
-   .. attribute:: api_key
-
-      Full API key string (shown once — not persisted).  ``str``.
-
-   .. attribute:: api_key_prefix
-
-      Prefix identifying the key type (``oz_live_``).  ``str``.
+   The response contains no API key — the endpoint creates an organization
+   only.  API keys are generated later via the authenticated per-project
+   endpoints (``POST /v1/projects/{project_id}/api-keys``).
 
    .. attribute:: api_key_name
 

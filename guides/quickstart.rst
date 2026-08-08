@@ -453,10 +453,13 @@ Quick-start example:
            base_url="http://localhost:8000",
        ) as client:
            # 1. Ingest messages
-           resp = await client.memory.ingest([
-               {"role": "user", "content": "My name is Bob and I work at Initech."},
-               {"role": "assistant", "content": "Hello Bob!"},
-           ])
+           resp = await client.memory.ingest(
+               messages=[
+                   {"role": "user", "content": "My name is Bob and I work at Initech."},
+                   {"role": "assistant", "content": "Hello Bob!"},
+               ],
+               session_id="conv-001",
+           )
            print(f"Ingested {resp.episode_count} episode(s)")
 
            # 2. Retrieve context for an LLM prompt

@@ -789,8 +789,8 @@ Prefix: ``/v1/projects/{project_id}/memory``
      - **Ingest messages** into project memory. Accepts up to 1000 messages.
        Returns 202 immediately with a ``Location`` header for job tracking.
        Supports ``Idempotency-Key`` header (48h cache). Each message content
-       limited to 64KB UTF-8. ``session_id`` is optional (auto-creates
-       ``__default__`` session).
+        limited to 64KB UTF-8. ``session_id`` is required and must
+        reference an existing session (no default session is auto-created).
    * - ``DELETE``
      - ``/v1/projects/{project_id}/memory``
      - Project Member
@@ -912,9 +912,10 @@ Prefix: ``/v1/projects/{project_id}/facts``
    * - ``POST``
      - ``/v1/projects/{project_id}/facts``
      - Project Member
-     - **Ingest business fact triples** (subject-predicate-object). Max 500
-       triples per request. Returns 202 with job_id. ``session_id`` is optional.
-       ``content`` auto-generated if omitted.
+      - **Ingest business fact triples** (subject-predicate-object). Max 500
+        triples per request. Returns 202 with job_id. ``session_id`` is
+        required and must reference an existing session.
+        ``content`` auto-generated if omitted.
 
 Knowledge Graph
 ===============
@@ -1076,7 +1077,7 @@ Prefix: ``/admin``
    * - ``POST``
      - ``/admin/organizations``
      - **Public** (bootstrap)
-     - Create a new organization and generate an admin API key. One-shot
+     - Create a new organization (no default project, no API key).  One-shot
        bootstrap endpoint intended for first-use flows. Should be disabled in
        production.
 

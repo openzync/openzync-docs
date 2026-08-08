@@ -132,10 +132,13 @@ Ingest conversation messages and retrieve context in a few lines:
    async def main() -> None:
        async with AsyncOpenZync(api_key="oz_live_...") as client:
            # 1. Ingest messages
-           resp = await client.memory.ingest([
-               {"role": "user", "content": "My name is Alice and I work at Acme Corp."},
-               {"role": "assistant", "content": "Nice to meet you, Alice!"},
-           ])
+           resp = await client.memory.ingest(
+               messages=[
+                   {"role": "user", "content": "My name is Alice and I work at Acme Corp."},
+                   {"role": "assistant", "content": "Nice to meet you, Alice!"},
+               ],
+               session_id="conv-001",
+           )
            print(f"Ingested {resp.episode_count} episode(s)  job={resp.job_id}")
 
            # 2. Retrieve context for an LLM
@@ -215,7 +218,7 @@ and retrieves context for LLM injection.
 
    Async client for memory operations.
 
-   .. method:: ingest(messages, session_id=None, idempotency_key=None, blobs=None)
+   .. method:: ingest(messages, session_id, idempotency_key=None, blobs=None)
 
       Ingest conversation messages into a project's memory.
 
@@ -225,9 +228,9 @@ and retrieves context for LLM injection.
           may carry a ``blobs`` array (see :class:`openzync.models.memory.BlobMetadata`)
           referencing uploaded files by positional index.
       :type messages: list[Message | dict]
-      :param session_id: Optional session external ID.  When provided,
-          messages are associated with the given session for later retrieval.
-      :type session_id: str | None
+      :param session_id: Required session external ID.  Messages are
+          associated with the given session for later retrieval.
+      :type session_id: str
       :param idempotency_key: Optional idempotency key sent as the
           ``Idempotency-Key`` header.  Replays of the same key within the
           deduplication window are silently ignored.
@@ -248,19 +251,25 @@ and retrieves context for LLM injection.
       .. code-block:: python
 
          # Ingest with dict messages
-         resp = await client.memory.ingest([
-             {"role": "system", "content": "You are a helpful assistant."},
-             {"role": "user", "content": "What is the capital of France?"},
-             {"role": "assistant", "content": "The capital of France is Paris."},
-         ])
+         resp = await client.memory.ingest(
+             messages=[
+                 {"role": "system", "content": "You are a helpful assistant."},
+                 {"role": "user", "content": "What is the capital of France?"},
+                 {"role": "assistant", "content": "The capital of France is Paris."},
+             ],
+             session_id="conv-001",
+         )
 
          # Ingest with Message objects
          from openzync.models import Message
 
-         resp = await client.memory.ingest([
-             Message(role="user", content="Hello"),
-             Message(role="assistant", content="Hi there!"),
-         ])
+         resp = await client.memory.ingest(
+             messages=[
+                 Message(role="user", content="Hello"),
+                 Message(role="assistant", content="Hi there!"),
+             ],
+             session_id="conv-001",
+         )
 
          # Ingest with session association and idempotency key
          resp = await client.memory.ingest(
@@ -295,6 +304,7 @@ and retrieves context for LLM injection.
                         ],
                     }
                 ],
+                session_id="conv-001",
                 blobs=[("report.pdf", pdf_bytes, "application/pdf")],
             )
             print(f"Uploaded {resp.blob_count} blob(s), job={resp.job_id}")
@@ -357,7 +367,7 @@ into a project's knowledge graph.
 
    Async client for business fact operations.
 
-   .. method:: add(facts, session_id=None)
+   .. method:: add(facts, session_id)
 
       Ingest a batch of fact triples into the knowledge graph.
 
@@ -366,9 +376,9 @@ into a project's knowledge graph.
           ``subject``, ``predicate``, ``object`` keys (``content`` and
           ``confidence`` are optional).  Max 500 facts.
       :type facts: list[FactTriple | dict]
-      :param session_id: Optional session external ID to associate the facts
+      :param session_id: Required session external ID to associate the facts
           with a conversation session.
-      :type session_id: str | None
+      :type session_id: str
       :returns: :class:`FactBatchResponse` with ``job_id``,
           ``accepted_count``, ``status``, and ``message``.
       :rtype: FactBatchResponse
@@ -376,25 +386,31 @@ into a project's knowledge graph.
       .. code-block:: python
 
          # Ingest with dicts
-         resp = await client.facts.add([
-             {"subject": "Alice", "predicate": "works_for", "object": "Acme Corp"},
-             {"subject": "Acme Corp", "predicate": "headquartered_in", "object": "San Francisco"},
-             {
-                 "subject": "Alice",
-                 "predicate": "has_role",
-                 "object": "Project Lead",
-                 "content": "Alice is the project lead for Project Orion",
-                 "confidence": 0.95,
-             },
-         ])
+         resp = await client.facts.add(
+             facts=[
+                 {"subject": "Alice", "predicate": "works_for", "object": "Acme Corp"},
+                 {"subject": "Acme Corp", "predicate": "headquartered_in", "object": "San Francisco"},
+                 {
+                     "subject": "Alice",
+                     "predicate": "has_role",
+                     "object": "Project Lead",
+                     "content": "Alice is the project lead for Project Orion",
+                     "confidence": 0.95,
+                 },
+             ],
+             session_id="conv-001",
+         )
          print(f"Accepted {resp.accepted_count} facts  job={resp.job_id}")
 
          # Ingest with FactTriple objects
          from openzync.models import FactTriple
 
-         resp = await client.facts.add([
-             FactTriple(subject="Bob", predicate="reports_to", object="Alice"),
-         ])
+         resp = await client.facts.add(
+             facts=[
+                 FactTriple(subject="Bob", predicate="reports_to", object="Alice"),
+             ],
+             session_id="conv-001",
+         )
 
       .. note::
 
@@ -1894,9 +1910,10 @@ Error handling patterns
 
    async with AsyncOpenZync(api_key="...") as client:
        try:
-           resp = await client.memory.ingest([
-               {"role": "user", "content": "Hello"},
-           ])
+            resp = await client.memory.ingest(
+                messages=[{"role": "user", "content": "Hello"}],
+                session_id="conv-001",
+            )
        except AuthenticationError:
            print("Check your API key")
        except ValidationError as err:

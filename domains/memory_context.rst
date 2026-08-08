@@ -43,7 +43,7 @@ End-to-End Pipeline Overview
     │  POST /memory                                                      │
     │    │                                                               │
     │    ├─ 1. Idempotency check (Redis key, 48h TTL)                    │
-    │    ├─ 2. Resolve or auto-create session                            │
+    │    ├─ 2. Resolve session (required)                               │
     │    ├─ 3. Content-hash dedup (SHA-256 of payload)                    │
     │    ├─ 4. Batch-insert episodes (Episodes table)                    │
     │    ├─ 5. [Optional] PII redaction via PIIService                   │
@@ -898,10 +898,9 @@ Memory Ingestion
          previous response immediately.  The router also enforces the
          255-char ceiling on the key itself (a 422, not a 500).
 
-      #. **Resolve or create session** — if ``session_external_id`` is
-         provided, the session is looked up by external ID (with UUID
-         fallback).  If ``None``, a ``__default__`` session is auto-created
-         using ``INSERT ... ON CONFLICT DO NOTHING`` for race safety.
+      #. **Resolve session** — ``session_external_id`` is required.  The
+         session is looked up by external ID (with UUID fallback for
+         backward compatibility) and must already exist in the project.
 
       #. **Content hash computation** — SHA-256 of
          ``(project_id, session_id, sorted messages)`` computed via
@@ -953,8 +952,8 @@ Memory Ingestion
       :param org_id: The authenticated organization UUID.
       :param project_id: The project UUID.
       :param created_by: The authenticated user UUID for attribution.
-      :param session_external_id: Optional session external ID.
-         ``None`` → auto-create ``__default__`` session.
+      :param session_external_id: Required session external ID.  The
+         session must already exist within the project.
       :param messages: List of validated :class:`~schemas.memory.Message`
          objects.  1–1000 messages per request.
       :param uploaded_blobs: Optional list of uploaded file handles from a
@@ -1051,9 +1050,8 @@ Memory Ingestion
         with callers that pass the session's internal UUID).  Raises
         ``NotFoundError`` if no match.
 
-      * **Without** ``session_external_id``: gets or creates the
-        ``__default__`` session.  Uses ``INSERT ... ON CONFLICT DO NOTHING``
-        for race safety across concurrent requests.
+      * **Without** ``session_external_id``: the request is rejected — the
+        session is required and no default session is auto-created.
 
    .. rubric:: API Schema
 
@@ -1087,8 +1085,8 @@ Memory Ingestion
 
       Request body for ``POST /v1/projects/{project_id}/memory``.
 
-      :param session_id: Optional session external ID.  ``None`` →
-         auto-create ``__default__``.
+      :param session_id: Required session external ID.  Omitted or null
+         values are rejected with HTTP 422.
       :param messages: List of :class:`Message`, 1–1000 items.
 
    .. class:: IngestMemoryResponse
@@ -1214,14 +1212,14 @@ Fact Ingestion
    deduplicates via content hash, persists to the ``facts`` table, and
    enqueues embedding tasks.
 
-   .. method:: async ingest_facts(org_id, project_id, created_by, facts, session_external_id=None) -> FactBatchResponse
+   .. method:: async ingest_facts(org_id, project_id, created_by, facts, session_external_id) -> FactBatchResponse
 
       Flow:
 
       #. Compute batch content hash (SHA-256 of ``(project_id, sorted facts)``).
       #. Check Redis for dedup — hit returns existing ``job_id``.
-      #. Resolve session if ``session_external_id`` provided (raises
-         ``NotFoundError`` if not found).
+      #. Resolve session — ``session_external_id`` is required (raises
+         ``NotFoundError`` if no matching session exists).
       #. Early return for empty fact lists.
       #. Persist facts via ``FactInvalidationService.ingest_with_supersession``
          — conflicting active facts are superseded (closed via
@@ -1236,14 +1234,14 @@ Fact Ingestion
       :param project_id: The project UUID.
       :param created_by: The authenticated user UUID.
       :param facts: List of :class:`~schemas.facts.FactTriple` objects.
-      :param session_external_id: Optional session external ID.
+      :param session_external_id: Required session external ID.
 
       :returns: A :class:`~schemas.facts.FactBatchResponse` with
          ``job_id``, ``accepted_count``, ``superseded_count``, ``status``,
          and ``message``.
 
-      :raises NotFoundError: If ``session_external_id`` is provided but
-         no matching session exists.
+      :raises NotFoundError: If no matching session exists for
+         ``session_external_id``.
 
       HTTP adapter: ``routers.facts.ingest_facts`` — ``POST /v1/projects/{project_id}/facts``
       Returns ``202 Accepted``.
@@ -1274,7 +1272,7 @@ Fact Ingestion
 
    .. class:: FactBatchRequest
 
-      :param session_id: Optional session external ID.
+      :param session_id: Required session external ID.
       :param facts: List of :class:`FactTriple`, 1–500 items.
 
    .. class:: FactBatchResponse
@@ -1423,8 +1421,7 @@ Session Management
       ``repo.batch_get_stats()`` for N+1 prevention.
 
       :param include_closed: If ``True``, include closed sessions.
-         By default returns only open, non-deleted sessions (excluding
-         ``__default__``).
+         By default returns only open, non-deleted sessions.
 
       :raises ValidationError: If ``limit`` is outside 1–200.
 
