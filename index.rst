@@ -78,6 +78,13 @@ production LLM applications.
    api/utils
    api/packages
 
+.. toctree::
+   :maxdepth: 1
+   :caption: ADRs
+
+   adr/005-fact-supersession
+   adr/006-graph-edge-invalidation-sync
+
 Indices and tables
 ==================
 

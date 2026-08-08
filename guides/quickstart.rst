@@ -364,6 +364,13 @@ Expected response:
 The ``job_id`` can be used to poll the enrichment status at
 ``/v1/projects/{project_id}/memory/jobs/{job_id}``.
 
+.. note::
+
+   The same endpoint accepts **file attachments** (images, PDFs, documents)
+   via ``multipart/form-data`` — see :ref:`Blob Attachments
+   <memory-blob-attachments>` in the memory domain reference for the
+   multipart contract, limits, and the SDK ``blobs`` parameter.
+
 Step 4 — Retrieve context
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

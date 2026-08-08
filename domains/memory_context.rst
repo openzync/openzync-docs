@@ -889,13 +889,14 @@ Memory Ingestion
 
    .. rubric:: Public Methods
 
-   .. method:: async ingest(org_id, project_id, created_by, session_external_id, messages, idempotency_key=None) -> IngestMemoryResponse
+   .. method:: async ingest(org_id, project_id, created_by, session_external_id, messages, uploaded_blobs=None, idempotency_key=None, body_hash=None) -> IngestMemoryResponse
 
-      The core ingestion flow with 11 steps:
+      The core ingestion flow with 14 steps:
 
       #. **Idempotency check** — if ``idempotency_key`` is provided, Redis
          is checked for a cached response (48h TTL).  A hit returns the
-         previous response immediately.
+         previous response immediately.  The router also enforces the
+         255-char ceiling on the key itself (a 422, not a 500).
 
       #. **Resolve or create session** — if ``session_external_id`` is
          provided, the session is looked up by external ID (with UUID
@@ -904,7 +905,7 @@ Memory Ingestion
 
       #. **Content hash computation** — SHA-256 of
          ``(project_id, session_id, sorted messages)`` computed via
-         ``_compute_content_hash``.
+         ``IdempotencyService.compute_content_hash``.
 
       #. **Content dedup check** — Redis is checked for the content hash.
          A hit returns the existing ``job_id``.
@@ -922,6 +923,12 @@ Memory Ingestion
       #. **Batch insertion** — ``episode_repo.batch_create()`` inserts all
          episodes in a single round-trip.
 
+      #. **Blob upload & record persistence** — if ``uploaded_blobs`` is
+         present, each blob is uploaded to S3-compatible storage and an
+         ``episode_blobs`` record is created per episode
+         (``EpisodeBlobRepository.batch_create``).  See
+         :ref:`Blob Attachments <memory-blob-attachments>`.
+
       #. **Commit** — the database transaction is committed so that
          enrichment workers can see the episodes immediately.
 
@@ -935,6 +942,9 @@ Memory Ingestion
          * ``link_entities_to_episode`` on ``low`` queue — links
            extracted entities back to the episode.
 
+         When blobs are present, an additional ``extract_blob_text`` task
+         is enqueued per blob on the ``low`` queue.
+
       #. **Cache & invalidate** — stores the idempotency key and content
          hash in Redis, invalidates the project's context cache
          (``SCAN ctx:{org}:{project}:*`` + ``DEL``), and emits webhook
@@ -947,10 +957,16 @@ Memory Ingestion
          ``None`` → auto-create ``__default__`` session.
       :param messages: List of validated :class:`~schemas.memory.Message`
          objects.  1–1000 messages per request.
+      :param uploaded_blobs: Optional list of uploaded file handles from a
+         multipart request, indexed by ``BlobMetadata.blob_id`` in each
+         message.
       :param idempotency_key: Optional ``Idempotency-Key`` header value.
+      :param body_hash: Optional SHA-256 of the canonical request body,
+         pre-computed by the router for idempotency-key body matching.
 
       :returns: An :class:`~schemas.memory.IngestMemoryResponse` with
-         ``job_id``, ``episode_count``, ``status``, and ``message``.
+         ``job_id``, ``episode_count``, ``blob_count``, ``status``, and
+         ``message``.
 
       :raises NotFoundError: If a specific ``session_external_id`` is
          provided but no matching session exists.
@@ -1053,6 +1069,19 @@ Memory Ingestion
       :param created_at: Optional ISO-8601 timestamp (server-assigned if
          omitted).
       :param metadata: Optional caller-defined key-value pairs.
+      :param blobs: Optional list of :class:`BlobMetadata` references to
+         uploaded file attachments (default ``[]``).
+
+   .. class:: BlobMetadata
+
+      A reference to one uploaded file in a multipart request.  Each
+      reference points at the uploaded file by positional index.
+
+      :param blob_id: Zero-based index into the uploaded file fields
+         (``blob_0``, ``blob_1``, ...).  Must be non-negative.
+      :param mime_type: MIME type of the file, max 128 chars.  Trimmed,
+         lower-cased, and validated non-empty.
+      :param file_name: Original filename, max 512 chars.
 
    .. class:: IngestMemoryRequest
 
@@ -1066,6 +1095,7 @@ Memory Ingestion
 
       :param job_id: UUID string for tracking the enrichment job.
       :param episode_count: Number of episodes ingested.
+      :param blob_count: Number of file attachments ingested.
       :param status: Always ``"accepted"``.
       :param message: Status message.
 
@@ -1074,6 +1104,103 @@ Memory Ingestion
       :param status: ``"deleted"``
       :param episodes_deleted: Count of soft-deleted episodes.
       :param facts_deleted: Count of soft-deleted facts.
+
+
+.. _memory-blob-attachments:
+
+Blob Attachments
+~~~~~~~~~~~~~~~~
+
+.. module:: services.blob_storage_service
+
+Message ingestion supports optional file attachments — images, PDFs, and
+documents — uploaded alongside the messages as ``multipart/form-data``.
+Each attachment ("blob") is stored in S3-compatible object storage, a
+record is persisted per episode in the ``episode_blobs`` table, and a
+background worker extracts text from the blob to feed enrichment.
+
+.. rubric:: Multipart Contract
+
+The request is always ``multipart/form-data`` — even for text-only calls.
+Two kinds of form fields are accepted:
+
+* ``data`` — a JSON-encoded :class:`~schemas.memory.IngestMemoryRequest`.
+  Each message may carry a ``blobs`` array of :class:`BlobMetadata`
+  references, where ``blob_id`` is the zero-based index into the uploaded
+  file fields.
+* ``blob_0``, ``blob_1``, ... — the binary file fields.  The field names
+  are not significant; files are matched to ``blob_id`` by **positional
+  index** in the order they appear.
+
+Example::
+
+   --boundary
+   Content-Disposition: form-data; name="data"
+   Content-Type: application/json
+
+   {"session_id": "abc", "messages": [{"role": "user", "content": "See attached", "blobs": [{"blob_id": 0, "mime_type": "image/png", "file_name": "shot.png"}]}]}
+   --boundary
+   Content-Disposition: form-data; name="blob_0"; filename="shot.png"
+   Content-Type: image/png
+
+   <binary>
+   --boundary--
+
+.. rubric:: Reference Integrity Validation
+
+The router validates blob references against the uploaded files and
+rejects mismatches with ``422 Unprocessable Content``:
+
+* ``blob_id`` must be non-negative.
+* Every referenced ``blob_id`` must have a corresponding uploaded file.
+* Every uploaded file must be referenced by at least one message.
+
+.. rubric:: Limits
+
+* Per-message content: max **64KB** (UTF-8 bytes).
+* Blobs per message: ``MAX_BLOBS_PER_MESSAGE`` (default **10**).
+* Blobs per request: ``MAX_BLOBS_PER_REQUEST`` (default **50**).
+* Per-blob byte size: org-configurable via ``max_blob_size_mb``
+  (default **50MB**, ``BlobStorageConfig.max_blob_bytes``).
+
+Exceeding a blob size limit raises ``PayloadTooLargeError`` → ``413
+Payload Too Large``.
+
+.. rubric:: Storage
+
+Blob storage is S3-compatible and configured per-org (endpoint, bucket,
+credentials, size limit) via ``OrgConfigBase.to_blob_storage_config()`` —
+the docker-compose default points at MinIO (``http://minio:9000``,
+bucket ``openzync-blobs``).  The ``BlobStorageService`` orchestrates the
+upload and persists one ``EpisodeBlob`` record per blob per episode via
+``EpisodeBlobRepository.batch_create()``.  Each record carries the S3
+key, MIME type, original filename, and content SHA-256.
+
+.. rubric:: Blob Text Extraction
+
+.. module:: workers.tasks.extract_blob_text
+
+.. function:: async extract_blob_text(ctx, *, blob_id, org_id, project_id, episode_id, storage_key, mime_type, file_name="", trace_id="")
+
+   Low-priority ARQ task that downloads a blob from S3, extracts text by
+   MIME type, and stores it on the ``episode_blobs.extracted_text``
+   column.  Sets the ``ENRICHMENT_BLOB_TEXT`` bit (bit 7) on the
+   episode's enrichment_status on success.
+
+   MIME dispatch:
+
+   * ``text/*`` — direct UTF-8 decode.
+   * ``application/pdf`` — PyMuPDF (``fitz``) page-text extraction.
+   * ``application/vnd.openxmlformats-officedocument.wordprocessingml.document``
+     and ``application/msword`` — python-docx paragraph extraction.
+   * ``image/*`` — Tesseract OCR (``pytesseract`` + Pillow) offloaded via
+     ``asyncio.to_thread``.
+   * unknown types — magic-based MIME detection, then skip.
+
+   The task is idempotent: it checks the ``ENRICHMENT_BLOB_TEXT`` bit
+   before running and skips if already set.  Extracted text participates
+   in the standard enrichment pipeline; unsupported types simply produce
+   no text (the ``extracted_text`` column stays ``NULL``).
 
 
 Fact Ingestion
@@ -1096,7 +1223,11 @@ Fact Ingestion
       #. Resolve session if ``session_external_id`` provided (raises
          ``NotFoundError`` if not found).
       #. Early return for empty fact lists.
-      #. Bulk-insert facts into PostgreSQL via ``fact_repo.batch_create()``.
+      #. Persist facts via ``FactInvalidationService.ingest_with_supersession``
+         — conflicting active facts are superseded (closed via
+         ``valid_to``) and the new facts inserted in the **same
+         transaction**; identical-content duplicates are skipped
+         idempotently.  See :ref:`Fact Supersession <memory-fact-supersession>`.
       #. Enqueue ``embed_fact`` ARQ tasks for each fact (one task per fact).
       #. Cache content hash in Redis (48h TTL).
       #. Emit ``FACT_EXTRACTED`` webhook event.
@@ -1108,7 +1239,8 @@ Fact Ingestion
       :param session_external_id: Optional session external ID.
 
       :returns: A :class:`~schemas.facts.FactBatchResponse` with
-         ``job_id``, ``accepted_count``, ``status``, and ``message``.
+         ``job_id``, ``accepted_count``, ``superseded_count``, ``status``,
+         and ``message``.
 
       :raises NotFoundError: If ``session_external_id`` is provided but
          no matching session exists.
@@ -1149,6 +1281,9 @@ Fact Ingestion
 
       :param job_id: UUID string for tracking.
       :param accepted_count: Number of facts accepted.
+      :param superseded_count: Number of previously-active facts
+         invalidated by supersession in this batch.  Zero when no
+         conflicts occurred.
       :param status: Always ``"accepted"``.
       :param message: Human-readable message.
 
@@ -1164,6 +1299,77 @@ Fact Ingestion
       :param subject_type/object_type: ``"literal"`` or ``"entity"``.
       :param subject_entity_id/object_entity_id: Resolved entity UUIDs.
       :param created_at: Fact creation timestamp.
+
+
+.. _memory-fact-supersession:
+
+Fact Supersession
+~~~~~~~~~~~~~~~~~
+
+.. module:: services.fact_invalidation_service
+
+Facts are temporal assertions: each row carries a validity window
+(``valid_from`` / ``valid_to``, ``NULL`` = open-ended) plus an
+``invalid_at`` retraction marker.  When a new fact **conflicts** with an
+already-active one, the system does not delete the old fact — it
+**supersedes** it: the old fact's ``valid_to`` is set to ``now`` and the
+new fact is inserted with ``valid_from = now``, in the **same
+transaction**.  This replaces the previous three-way-inconsistent
+behaviour (extraction worker silently drops, API rejects with 409,
+cross-episode conflicts coexist) with a single state machine.
+
+.. rubric:: Conflict Identity
+
+Conflict matching is **form-flexible** — the incoming assertion
+supersedes every candidate where:
+
+* **Entity match** — both sides carry both entity UUIDs and they are
+  equal (preserves disambiguation of distinct same-named entities), or
+* **Name match** — the normalized ``(subject, predicate, object)``
+  strings are equal and at least one side lacks the fully-resolved
+  entity form (lets string-form API writers and entity-form extraction
+  writers of the same triple supersede each other).
+
+Normalization (``normalize_identity_term``) lowercases and strips
+punctuation — kept byte-identical to the extraction pipeline's
+``_match_entity`` canonicalization so every write path agrees on what
+"same triple" means.
+
+.. rubric:: Supersede, Don't Delete
+
+* **Idempotent retries** — a conflicting active fact with **identical
+  content** causes the insert to be skipped entirely
+  (``batch_create_or_skip``), making ARQ worker retries idempotent.
+  In-batch duplicates of the same (identity, content) pair also collapse.
+* **Same transaction** — ``FactInvalidationService`` never commits; the
+  caller's transaction is the single commit point.  A rolled-back
+  transaction undoes the whole batch including supersessions.
+* **Concurrency** — writers take a PostgreSQL advisory xact lock per
+  distinct conflict identity (``lock_conflict_identities``) before the
+  conflict scan, plus ``SELECT ... FOR UPDATE`` on candidates.  ``FOR
+  UPDATE`` cannot lock a non-existent row, so the advisory lock
+  serializes the scan+insert: two concurrent writers for the same
+  identity never coexist silently.
+
+.. rubric:: Post-Commit Side Effects
+
+Supersession side effects fire only after the caller's transaction
+commits (session ``after_commit`` hook) — a rollback emits nothing:
+
+* ``superseded_count`` reflected in the :class:`~schemas.facts.FactBatchResponse`
+  of the write endpoint.
+* ``FACT_SUPERSEDED`` webhook event per superseded fact → successor
+  transition.
+* Project context-cache purge.
+* Prometheus counter ``openzync_facts_superseded_total``.
+* Graph-edge expiry synchronised into the graph backends per ADR 006.
+
+.. rubric:: Design References
+
+* ``adr/005-fact-supersession.md`` — conflict identity, state machine,
+  effective-at predicate.
+* ``adr/006-graph-edge-invalidation-sync.md`` — edge expiry derived from
+  supersession events (D1 rule) and reconciliation.
 
 
 Session Management

@@ -78,59 +78,32 @@ High-Level Architecture
 The system follows a **layered monolith** pattern with an async background
 worker tier:
 
-.. code-block:: text
+.. mermaid::
 
-    ┌──────────────────────────────────────────────────────────────────┐
-    │                        Client Layer                              │
-    │  (Frontend / SDK / MCP / curl)                                  │
-    └────────────────────┬───────────────────────────────────────────-┘
-                         │ HTTP (REST)
-                         ▼
-    ┌──────────────────────────────────────────────────────────────────┐
-    │                    FastAPI Application (openzync-core)            │
-    │                                                                   │
-    │  ┌──────────────────┐   ┌──────────────────┐                     │
-    │  │   Middleware      │   │    Routers        │                    │
-    │  │  • RateLimit      │   │  • auth/          │                    │
-    │  │  • Auth (JWT/AK)  │──▶│  • memory/        │                    │
-    │  │  • Logging        │   │  • context/       │                    │
-    │  │  • Audit          │   │  • search/        │                    │
-    │  │  • CORS           │   │  • graph/         │                    │
-    │  │  • RequestID      │   │  • admin/         │                    │
-    │  └──────────────────┘   │  • webhooks/       │                    │
-    │                          │  • health/         │                    │
-    │                          └─────────┬──────────┘                    │
-    │                                    │                              │
-    │                          ┌─────────▼──────────┐                    │
-    │                          │    Services         │                    │
-    │                          │  (business logic)   │                    │
-    │                          └─────────┬──────────┘                    │
-    │                                    │                              │
-    │                          ┌─────────▼──────────┐                    │
-    │                          │   Repositories     │                    │
-    │                          │  (DB access)       │                    │
-    │                          └─────────┬──────────┘                    │
-    │                                    │                              │
-    └────────────────────────────────────┼──────────────────────────────┘
-                                         │
-                    ┌────────────────────┼────────────────────┐
-                    │                    │                    │
-                    ▼                    ▼                    ▼
-            ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐
-            │  PostgreSQL   │  │    Redis     │  │     OpenBao       │
-            │  + pgvector   │  │  (cache +    │  │  (secrets +       │
-            │  (primary DB) │  │   queues)    │  │   config)         │
-            └──────────────┘  └──────────────┘  └──────────────────┘
-                                         │
-                                         │ ARQ job queue
-                                         ▼
-                               ┌──────────────────────┐
-                               │    ARQ Workers        │
-                               │  (background tasks)   │
-                               │  • enrichment         │
-                               │  • webhook delivery   │
-                               │  • community detection│
-                               └──────────────────────┘
+   flowchart LR
+       subgraph Clients["Client Layer"]
+           Frontend["Frontend"]
+           SDK["SDK"]
+           MCP["MCP"]
+           Curl["curl"]
+       end
+
+       subgraph API["FastAPI Application (openzync-core)"]
+           Middleware["Middleware<br/>RateLimit, Auth, Logging,<br/>Audit, CORS, RequestID"]
+           Routers["Routers<br/>auth, memory, context, search,<br/>graph, admin, webhooks, health"]
+           Services["Services<br/>(business logic)"]
+           Repositories["Repositories<br/>(DB access)"]
+           Middleware --> Routers --> Services --> Repositories
+       end
+
+       Clients -->|HTTP REST| Middleware
+
+       Repositories --> PG[("PostgreSQL 15<br/>+ pgvector<br/>(primary DB)")]
+       Repositories --> Redis[("Redis<br/>(cache + queues)")]
+       Repositories --> Bao["OpenBao<br/>(secrets + config)"]
+
+       Redis -->|ARQ job queue| Workers["ARQ Workers<br/>enrichment, webhook delivery,<br/>community detection"]
+       Workers --> PG
 
 **Key design decisions:**
 
@@ -151,31 +124,45 @@ Request Lifecycle
 
 Tracing a ``POST /v1/projects/{project_id}/memory`` request:
 
-1. **HTTP request** arrives at the ASGI server (uvicorn).
-2. **Middleware stack** processes the request in order:
-   #. ``MetricsMiddleware`` — records RED metrics (request rate, errors, duration).
-   #. ``CORSMiddleware`` — validates ``Origin`` against ``CORS_ORIGINS``.
-   #. ``RequestIDMiddleware`` — generates or propagates ``X-Request-ID``.
-   #. ``LoggingMiddleware`` — binds ``request_id`` to structlog context.
-   #. ``TracingMiddleware`` — creates an OTLP span for the request.
-   #. ``RateLimitMiddleware`` — checks IP-based rate limit (Redis sorted set).
-   #. ``AuthMiddleware`` — validates JWT or API key, resolves user + org.
-   #. ``AuditMiddleware`` — queues an audit event after the response.
-   #. ``TrustedHostMiddleware`` — validates ``Host`` header.
-   #. ``GZipMiddleware`` — compresses responses for clients that accept gzip.
-3. **Router** matches the path and calls the handler in ``routers/memory.py``.
-4. **Router handler** validates the request body via Pydantic
-   (``IngestMemoryRequest``), extracts path params (``project_id``), calls
-   ``MemoryService.ingest()``.
-5. **MemoryService** (service layer):
-   - Checks project membership
-   - Applies content-dedup idempotency (SHA-256 hash of message content)
-   - Creates ``Episode`` records in PostgreSQL
-   - Enqueues ARQ enrichment jobs (classify, extract entities/facts, embed)
-   - Invalidates context cache for the project
-   - Returns an ``IngestMemoryResponse`` with job tracking info
-6. **Response** flows back through the middleware stack.
-7. **Background** — ARQ workers pick up enrichment jobs and process them asynchronously.
+.. mermaid::
+
+   sequenceDiagram
+       autonumber
+       participant Client
+       participant Middleware as Middleware stack (10)
+       participant Router
+       participant MemoryService
+       participant Repository
+       participant Redis as Redis (queues + cache)
+       participant Workers as ARQ Workers
+
+       Client->>Middleware: POST /v1/projects/{project_id}/memory
+       Middleware->>Middleware: rate limit, auth (JWT/API key), request ID, audit
+       Middleware->>Router: forward validated request
+       Router->>MemoryService: ingest(payload)
+       MemoryService->>Repository: check project membership
+       Repository-->>MemoryService: member
+       MemoryService->>Repository: content-dedup (SHA-256 hash)
+       MemoryService->>Repository: create Episode
+       Repository-->>MemoryService: Episode created
+       MemoryService->>Redis: enqueue ARQ enrichment jobs
+       MemoryService->>Redis: invalidate context cache
+       MemoryService-->>Router: IngestMemoryResponse
+       Router-->>Middleware: HTTP response
+       Middleware-->>Client: 201 Created
+
+       Note over Client,Workers: Background
+       Redis->>Workers: enrichment jobs (classify, entities/facts, embed)
+       Workers->>Repository: persist results to PostgreSQL
+
+The middleware stack runs in order: ``MetricsMiddleware`` (RED metrics),
+``CORSMiddleware`` (origin validation), ``RequestIDMiddleware`` (generates or
+propagates ``X-Request-ID``), ``LoggingMiddleware`` (binds ``request_id`` to
+structlog context), ``TracingMiddleware`` (OTLP span),
+``RateLimitMiddleware`` (IP-based, Redis sorted set), ``AuthMiddleware``
+(validates JWT or API key, resolves user + org), ``AuditMiddleware`` (queues
+an audit event after the response), ``TrustedHostMiddleware`` (validates
+``Host`` header), ``GZipMiddleware`` (compresses responses).
 
 The full lifecycle is documented in :doc:`/domains/api_layer` and
 :doc:`/domains/memory_context`.
@@ -187,24 +174,19 @@ Async Enrichment Pipeline
 The enrichment pipeline transforms raw conversation messages into a structured
 knowledge graph:
 
-.. code-block:: text
+.. mermaid::
 
-    ┌─────────────┐
-    │ POST /memory │  →  persist Episode  →  enqueue jobs
-    └──────┬──────┘
-           │
-           ▼
-    ┌──────────────────┐
-    │  ARQ Worker Pool  │  (high-priority queue)
-    │                   │
-    │  1. classify_dialog ────────→ DialogClassification
-    │  2. extract_entities ───────→ GraphEntity nodes
-    │  3. extract_facts ──────────→ Fact + Relation edges
-    │  4. embed_episode ──────────→ pgvector embedding
-    │  5. embed_facts ────────────→ pgvector embedding
-    │  6. link_entities_to_episode → temporal edges + observations
-    │  7. reconcile_enrichment (cron) → safety net
-    └──────────────────┘
+   stateDiagram-v2
+       [*] --> ingested: POST /memory persists Episode
+       ingested --> queued: enqueue ARQ jobs
+       queued --> classifying: classify_dialog
+       classifying --> entities_extracted: extract_entities → GraphEntity nodes
+       entities_extracted --> facts_extracted: extract_facts → Fact + Relation edges
+       facts_extracted --> embedded: embed_episode / embed_facts → pgvector
+       embedded --> graph_synced: link_entities_to_episode → temporal edges + observations
+       graph_synced --> reconciled: reconcile_enrichment (cron safety net)
+       reconciled --> queued: re-queue stuck episodes
+       reconciled --> [*]: enrichment complete
 
 Each task checks and sets a bit in the episode's ``enrichment_status`` bitmask:
 
@@ -283,24 +265,17 @@ Multi-Tenancy Model
 
 OpenZync uses a three-level hierarchy for data isolation:
 
-.. code-block:: text
+.. mermaid::
 
-    Organization
-        │
-        ├── Users (dashboard + API auth)
-        │      │
-        │      └── Projects (data isolation boundary)
-        │             │
-        │             ├── Episodes (conversations)
-        │             ├── Knowledge graph (entities, facts)
-        │             ├── Sessions (LLM interaction sessions)
-        │             └── Webhook subscriptions
-        │
-        └── Org Config (per-organization settings)
-               ├── LLM backend + model
-               ├── Graph backend selection
-               ├── Embedding model
-               └── Feature flags
+   erDiagram
+       Organization ||--o{ User : has
+       Organization ||--o{ Project : owns
+       Organization ||--o{ OrgConfig : has
+       Project ||--o{ Episode : contains
+       Project ||--o{ GraphEntity : "knowledge graph (entities)"
+       Project ||--o{ Fact : "knowledge graph (facts)"
+       Project ||--o{ Session : has
+       Project ||--o{ WebhookSubscription : has
 
 - **Organization** — billing and administrative boundary.  Has its own
   OpenBao namespace for per-org secrets (LLM API keys).

@@ -57,6 +57,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
     "sphinx.ext.autosummary",
+    "sphinxcontrib.mermaid",
 ]
 
 # MyST (Markdown) config — enables .md files in toctrees
@@ -114,6 +115,14 @@ html_theme = "furo"
 html_static_path = ["_static"]
 html_title = "OpenZync Documentation"
 html_logo = None  # set to a path relative to docs/ if you have a logo
+html_css_files = ["mermaid.css"]
+
+# sphinxcontrib-mermaid — client-side rendering via the Mermaid CDN
+# (mermaid_output_format = "raw" avoids requiring node/mermaid-cli at build time)
+mermaid_version = "11.12.1"
+mermaid_output_format = "raw"
+mermaid_light_theme = "default"
+mermaid_dark_theme = "dark"  # Furo supports dark mode
 
 # Furo theme options
 # https://pradyunsg.me/furo/customisation/

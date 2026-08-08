@@ -215,13 +215,15 @@ and retrieves context for LLM injection.
 
    Async client for memory operations.
 
-   .. method:: ingest(messages, session_id=None, idempotency_key=None)
+   .. method:: ingest(messages, session_id=None, idempotency_key=None, blobs=None)
 
       Ingest conversation messages into a project's memory.
 
       :param messages: List of message objects.  Each can be a
           :class:`openzync.models.memory.Message` instance or a plain ``dict``
-          with ``role`` and ``content`` keys.  Max 1000 messages.
+          with ``role`` and ``content`` keys.  Max 1000 messages.  Messages
+          may carry a ``blobs`` array (see :class:`openzync.models.memory.BlobMetadata`)
+          referencing uploaded files by positional index.
       :type messages: list[Message | dict]
       :param session_id: Optional session external ID.  When provided,
           messages are associated with the given session for later retrieval.
@@ -230,8 +232,14 @@ and retrieves context for LLM injection.
           ``Idempotency-Key`` header.  Replays of the same key within the
           deduplication window are silently ignored.
       :type idempotency_key: str | None
+      :param blobs: Optional list of ``(filename, data, mime_type)`` tuples
+          to attach as file uploads.  When provided, the request is sent as
+          ``multipart/form-data`` with the JSON payload in a ``data`` field
+          and each blob as a file field.  Reference them from messages via
+          :class:`openzync.models.memory.BlobMetadata`.
+      :type blobs: list[tuple[str, bytes, str]] | None
       :returns: :class:`IngestMemoryResponse` with ``job_id``, ``episode_count``,
-          ``status``, and ``message`` fields.
+          ``blob_count``, ``status``, and ``message`` fields.
       :rtype: IngestMemoryResponse
       :raises AuthenticationError: Invalid or missing API key.
       :raises ValidationError: Request payload failed validation.
@@ -260,6 +268,43 @@ and retrieves context for LLM injection.
              session_id="conv-001",
              idempotency_key="req-abc-123",
          )
+
+      .. note::
+
+         **Blob ingestion** — pass ``blobs`` as ``(filename, data,
+         mime_type)`` tuples and reference them per message:
+
+         .. code-block:: python
+
+            from openzync.models import BlobMetadata
+
+            with open("report.pdf", "rb") as fh:
+                pdf_bytes = fh.read()
+
+            resp = await client.memory.ingest(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": "See the attached report.",
+                        "blobs": [
+                            BlobMetadata(
+                                blob_id=0,
+                                mime_type="application/pdf",
+                                file_name="report.pdf",
+                            )
+                        ],
+                    }
+                ],
+                blobs=[("report.pdf", pdf_bytes, "application/pdf")],
+            )
+            print(f"Uploaded {resp.blob_count} blob(s), job={resp.job_id}")
+
+         ``blob_id`` is the zero-based index into the ``blobs`` tuple list.
+         Limits: 10 blobs per message, 50 per request, per-blob size capped
+         by the org's ``max_blob_size_mb`` (default 50MB).  Extracted text
+         from PDFs/DOCX/text files and OCR of images feeds the enrichment
+         pipeline.  See :doc:`/domains/memory_context` for the full
+         multipart contract.
 
    .. method:: get_context(query, limit=20)
 
@@ -356,6 +401,17 @@ into a project's knowledge graph.
          Facts are processed asynchronously.  The ``job_id`` can be used to
          track enrichment progress.  ``accepted_count`` reflects how many
          facts passed basic validation.
+
+      .. note::
+
+         **Supersession** — conflicting facts are superseded, not dropped:
+         the server closes the previous fact's validity window (``valid_to``)
+         and inserts the new fact in the same transaction, returning a
+         ``superseded_count`` in the response body.  The current SDK model
+         (:class:`openzync.models.facts.FactBatchResponse`) does not yet
+         surface this field — a client reading the raw JSON response can
+         observe it.  See :doc:`/domains/memory_context` for the full
+         supersession semantics.
 
 Resource: Graph
 ---------------
@@ -1018,6 +1074,37 @@ Memory models
 
       Caller-defined metadata.  Defaults to ``{}``.
 
+   .. attribute:: blobs
+
+      :type: list[BlobMetadata]
+
+      References to uploaded file attachments.  Defaults to ``[]``.
+
+.. class:: BlobMetadata
+
+   Metadata referencing an uploaded blob in a multipart request.
+
+   .. attribute:: blob_id
+
+      :type: int
+      :ge: 0
+
+      Index into the uploaded blobs list.  Must be non-negative.
+
+   .. attribute:: mime_type
+
+      :type: str
+      :max_length: 128
+
+      MIME type of the file.
+
+   .. attribute:: file_name
+
+      :type: str
+      :max_length: 512
+
+      Original filename.
+
 .. class:: IngestMemoryRequest
 
    Request body for ``POST /v1/projects/{project_id}/memory``.
@@ -1047,6 +1134,12 @@ Memory models
       :type: int
 
       Number of episodes ingested.
+
+   .. attribute:: blob_count
+
+      :type: int
+
+      Number of blob files uploaded.
 
    .. attribute:: status
 

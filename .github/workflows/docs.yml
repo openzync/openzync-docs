@@ -1,0 +1,68 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# OpenZync — Docs build + mermaid render gate
+# ──────────────────────────────────────────────────────────────────────────────
+# Guards against the silent regression where sphinxcontrib-mermaid was missing
+# from requirements.txt and the published site shipped ZERO rendered diagrams
+# (Sphinx emitted "unknown directive" warnings swallowed by fail_on_warning: false).
+#
+# This gate asserts that the Sphinx HTML build actually rendered mermaid
+# diagrams — a missing extension now fails CI loudly instead of shipping a
+# broken docs site.
+#
+# NOTE: The path filter keeps this tight to openzync-docs/ plus the READMEs
+# that embed mermaid (rendered natively by GitHub, not by Sphinx — they are
+# NOT counted by the gate).
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "openzync-docs/**"
+      - "openzync-core/README.md"
+      - "openzync-mcp/README.md"
+  pull_request:
+    paths:
+      - "openzync-docs/**"
+      - "openzync-core/README.md"
+      - "openzync-mcp/README.md"
+
+permissions:
+  contents: read
+
+jobs:
+  # ═════════════════════════════════════════════════════════════════════════════
+  # BUILD + MERMAID GATE
+  # ═════════════════════════════════════════════════════════════════════════════
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r openzync-docs/requirements.txt
+      - name: Build Sphinx HTML
+        # TODO: flip to -W (fail_on_warning) once docstring warnings are
+        # cleaned up — .readthedocs.yaml keeps fail_on_warning: false today,
+        # so we don't block on unrelated warnings here either.
+        run: sphinx-build -b html openzync-docs openzync-docs/_build/ci --keep-going
+      - name: Assert mermaid diagrams rendered
+        shell: bash
+        run: |
+          COUNT=$(grep -ro 'class="mermaid"' openzync-docs/_build/ci | wc -l)
+          echo "mermaid diagrams rendered: $COUNT"
+          if [ "$COUNT" -lt 10 ]; then
+            echo "::error::Expected >= 10 rendered mermaid diagrams from the Sphinx build (auth x2 + mcp_server x2 + architecture x4 + adr x2). README mermaid renders natively on GitHub and is not counted. Got $COUNT."
+            exit 1
+          fi
+      - name: Upload built docs for inspection
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-html
+          path: openzync-docs/_build/ci
