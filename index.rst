@@ -84,6 +84,7 @@ production LLM applications.
 
    adr/005-fact-supersession
    adr/006-graph-edge-invalidation-sync
+   adr/007-unified-org-permission-model
 
 Indices and tables
 ==================

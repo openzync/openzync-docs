@@ -78,9 +78,9 @@ After successful authentication, the middleware sets the following keys on
      - ``"jwt"``
      - ``"api_key"``
      - ``str``
-   * - ``api_key_scopes``
-     - ``["read", "write", "admin"]``
-     - Key's scopes
+   * - ``permissions``
+     - User's DB permissions (``users.permissions``)
+     - Key's permissions (``api_keys.permissions``)
      - ``list[str]``
    * - ``api_key_project_id``
      - ``None``
@@ -134,6 +134,9 @@ different attributes set:
    * - ``role``
      - ``"admin"`` or ``"member"``
      - ``"member"`` (default)
+   * - ``permissions``
+     - Member defaults + optional grants
+     - Member defaults (``["project:read", "project:write"]``)
    * - ``is_email_verified``
      - Relevant
      - Typically ``False``
@@ -147,6 +150,81 @@ different attributes set:
 The ``User`` model (``models/user.py``) unifies both kinds via nullable
 fields.
 
+
+Permission Model
+----------------
+
+Authorization uses a single org-scoped permission vocabulary (see
+`ADR 007 <../adr/007-unified-org-permission-model.html>`_), replacing the
+previous ``users.role`` checks, ``project_members.role`` owner checks, and
+``api_keys.scopes`` + ``require_scope`` bridge.  One dependency factory —
+``require_permission`` — enforces it for JWT and API-key auth identically.
+
+Org-Scoped Permissions
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+
+   * - Permission
+     - Grants
+   * - ``project:read``
+     - Read projects and their memory, context, search, and graph data
+   * - ``project:write``
+     - Write project data (ingest, sessions, facts)
+   * - ``project:manage``
+     - Project lifecycle — create, archive, delete, project settings
+   * - ``configuration:read``
+     - Read org/project configuration
+   * - ``configuration:write``
+     - Modify org/project configuration
+   * - ``members:read``
+     - List org/project members
+   * - ``members:write``
+     - Add/remove members and change member permissions
+
+Permissions are org-scoped.  Project membership
+(``require_project_membership``) remains the project-scope gate; the
+permission set decides what a member may do within that scope.
+
+Admin Wildcard
+~~~~~~~~~~~~~~
+
+Org ``admin`` and platform ``superadmin`` roles are represented by an
+**empty permissions array** — ``[]`` means *all permissions*.  There is no
+wildcard string.
+
+Member Defaults
+~~~~~~~~~~~~~~~
+
+Every new user gets the member defaults **materialized** in
+``users.permissions``:
+
+.. code-block:: text
+
+   member defaults = {project:read, project:write}
+
+Optional grants are appended to the array.  Defaults are stored, not
+derived.
+
+API-Key Unification
+~~~~~~~~~~~~~~~~~~~
+
+API keys carry the same permission strings in ``api_keys.permissions``
+(renamed from ``scopes``).  Legacy scope values are remapped by migration:
+``read`` → ``project:read``, ``write`` → ``project:write``, ``admin`` and
+``admin:write`` → empty array (wildcard).  This rename is a **BREAKING
+change** for SDK/MCP consumers.
+
+Enforcement
+~~~~~~~~~~~
+
+* Roles are **DB-verified** (``users.role`` / ``project_members.role``),
+  never trusted from JWT claims.
+* Permissions are cached in Redis for 60 s; grant/revoke must invalidate
+  the cache entry.
+* **Fail-closed** — any infrastructure error (Redis/DB unavailable)
+  resolves to *deny*.
 
 Configuration Settings
 ----------------------
@@ -224,6 +302,11 @@ Module: ``models/user.py``
       * - ``role``
         - ``String(50)``
         - User role — ``"admin"``, ``"member"``. Default: ``"member"``
+      * - ``permissions``
+        - ``ARRAY(String)``
+        - Org-scoped permissions.  Default: member defaults
+          ``["project:read", "project:write"]``; optional grants are
+          appended.  Empty array = admin wildcard (all permissions)
       * - ``password_hash``
         - ``Text | None``
         - bcrypt hash; set only for dashboard users
@@ -300,9 +383,12 @@ Module: ``models/api_key.py``
       * - ``name``
         - ``Text | None``
         - Optional label
-      * - ``scopes``
+      * - ``permissions``
         - ``ARRAY(String)``
-        - Permission scopes. Default: ``["read", "write"]``
+        - Org-scoped permissions (renamed from ``scopes``).  Default:
+          member defaults ``["project:read", "project:write"]``.  Empty
+          array = admin wildcard.  Legacy values (``read``, ``write``,
+          ``admin``, ``admin:write``) are remapped by migration
       * - ``last_used_at``
         - ``DateTime \| None``
         - Timestamp of most recent authentication
@@ -366,7 +452,7 @@ Module: ``models/project.py``
 .. class:: Project(TimestampMixin, Base)
 
    A collaborative project workspace within an organisation.  Groups sessions,
-   facts, graph knowledge, and API key scopes.
+   facts, graph knowledge, and API key permissions.
 
    .. list-table::
       :header-rows: 1
@@ -427,7 +513,9 @@ Module: ``models/project_member.py``
         - User; ``ON DELETE CASCADE``
       * - ``role``
         - ``String(20)``
-        - ``"owner"`` or ``"member"``. Default: ``"member"``
+        - ``"owner"`` or ``"member"``. Default: ``"member"``.
+          **Display-only** — no longer an authorization input (see
+          ADR 007)
 
    Constraints:
 
@@ -724,7 +812,7 @@ API Key Authentication Flow
        AuthMiddleware->>AuthMiddleware: compute_lookup_hash(raw_key)
        AuthMiddleware->>RedisCache: GET auth:key:{lookup_hash}
        alt Cache hit
-           RedisCache-->>AuthMiddleware: cached {org_id, scopes, ...}
+           RedisCache-->>AuthMiddleware: cached {org_id, permissions, ...}
            AuthMiddleware->>AuthMiddleware: set request.state
            AuthMiddleware-->>Client: → Route handler
        else Cache miss
@@ -1532,7 +1620,7 @@ for downstream middleware and route handlers.
    #. Required claims: ``sub`` (user_id), ``org_id``, ``type`` (must be
       ``"access"``).
    #. Sets ``request.state``: ``auth_type="jwt"``, ``user_id``, ``org_id``,
-      ``role``, ``api_key_scopes=["read", "write", "admin"]``.
+      ``role``, ``permissions`` (from ``users.permissions``, DB-verified).
 
    **API Key (SDK clients):**
 
@@ -1544,7 +1632,7 @@ for downstream middleware and route handlers.
    #. Verifies the salted SHA-256 hash.
    #. Checks revocation and expiration.
    #. Sets ``request.state``: ``auth_type="api_key"``, ``org_id``,
-      ``api_key_scopes``, ``api_key_project_id``, ``user_id`` (from
+      ``permissions``, ``api_key_project_id``, ``user_id`` (from
       ``created_by``).
    #. Updates ``last_used_at`` (fire-and-forget).
    #. Caches the result in Redis (fire-and-forget).
@@ -1629,7 +1717,7 @@ FastAPI Dependencies
 
 Module: ``dependencies/auth.py``
 
-Six dependency levels for use in route handlers:
+Five dependency levels for use in route handlers:
 
 .. function:: get_org_id(request, credentials=None)
 
@@ -1650,24 +1738,31 @@ Six dependency levels for use in route handlers:
 
    Mandatory auth.  Works with both API keys and JWT tokens.
 
-.. function:: require_scope(required_scope)
+.. function:: require_permission(permission)
 
-   :param str required_scope: The scope the API key must possess (e.g.
-       ``"admin:write"``, ``"sessions:read"``).
+   :param str permission: The org-scoped permission required (e.g.
+       ``"project:manage"``, ``"configuration:write"``).
    :returns: A dependency callable that returns ``org_id``.
-   :raises HTTPException 403: If the API key lacks the required scope.
+   :raises HTTPException 403: If the authenticated principal lacks the
+       required permission.
    :raises HTTPException 401: If not authenticated.
 
-   Dependency factory.  JWT-authenticated dashboard users implicitly have
-   all scopes.
+   Dependency factory.  Handles JWT and API-key auth identically: JWT
+   users are checked against ``users.permissions``, API keys against
+   ``api_keys.permissions`` (both DB-verified, Redis-cached 60 s,
+   fail-closed).  An empty permissions array (admin/superadmin wildcard)
+   passes every check.
 
    Usage::
 
-       @router.post("/admin/orgs")
-       async def admin_action(
-           org_id: str = Depends(require_scope("admin:write")),
+       @router.post("/projects/{project_id}/archive")
+       async def archive_project(
+           org_id: str = Depends(require_permission("project:manage")),
        ):
            ...
+
+   Replaces the deleted ``require_scope``, ``require_org_admin``, and
+   ``require_org_admin_or_self`` dependencies (see ADR 007).
 
 .. function:: get_dashboard_user(request, org_id)
 
@@ -1707,17 +1802,12 @@ Project-scoped auth guards:
    verifies the key's ``project_id`` matches the request URL.  For JWT,
    verifies the user is a ``ProjectMember``.
 
-.. function:: require_project_owner(request, project_id, db)
+.. note::
 
-   :param Request request: Incoming HTTP request.
-   :param UUID project_id: From URL path.
-   :param AsyncSession db: Database session.
-   :raises HTTPException 401: If not authenticated.
-   :raises HTTPException 403: If not an owner or API key used.
-   :raises HTTPException 404: If project does not exist.
-
-   JWT-only (rejects API keys).  Requires the authenticated dashboard user
-   to have the ``"owner"`` role in the project's members.
+   ``require_project_owner`` is **deleted** (ADR 007).  Owner-only
+   endpoints are gated by ``require_permission("project:manage")``, which
+   also accepts API keys.  ``project_members.role`` is display-only and
+   no longer an authorization input.
 
 
 Utility Modules
@@ -1818,7 +1908,7 @@ The following exceptions are raised by auth-related code (all defined in
      - Invalid credentials, expired/revoked token, wrong token type
    * - :class:`AuthorizationError`
      - 403
-     - Insufficient API key scopes or project membership
+     - Insufficient permissions or project membership
    * - :class:`NotFoundError`
      - 404
      - User or token not found
@@ -1965,7 +2055,7 @@ Module: ``repositories/api_key_repository.py``
 
       :returns: ``ApiKey`` if found, or ``None``.
 
-   .. method:: create(organization_id, lookup_hash, key_hash, salt, prefix, name, scopes=None, project_id=None, created_by=None)
+   .. method:: create(organization_id, lookup_hash, key_hash, salt, prefix, name, permissions=None, project_id=None, created_by=None)
 
       :returns: Newly created ``ApiKey``.
 
@@ -2126,7 +2216,7 @@ Module: ``schemas/api_keys.py``
    :param str prefix: ``"oz_live_"`` or ``"oz_test_"``.
    :param UUID project_id: Project scope.
    :param UUID | None created_by: Creator user UUID.
-   :param list[str] scopes: Permission scopes.
+   :param list[str] permissions: Org-scoped permissions (renamed from ``scopes``).
    :param bool is_revoked: Revocation status.
    :param datetime | None last_used_at: Last usage timestamp.
    :param datetime created_at: Creation timestamp.
@@ -2222,10 +2312,6 @@ TODO / Known Gaps
 * **GDPR hard purge** (``workers/gdpr_jobs.py``) — the Phase 2 worker
   that hard-deletes user data 30 days after soft-delete is currently a
   stub.  See ``TODO(phase2)`` in :meth:`UserService.delete_user`.
-
-* **Session-level RBAC** — JWT users currently get full scopes
-  (``["read", "write", "admin"]``).  Fine-grained RBAC via dashboard
-  roles is planned but not yet implemented.
 
 * **Rate limits for ``/v1/auth/login/otp/send`` and ``/v1/auth/login/otp/verify``
   are managed through ``AuthThrottle``, but the OTP service itself also has
