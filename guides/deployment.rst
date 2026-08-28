@@ -35,7 +35,7 @@ Before deploying OpenZync, ensure the following infrastructure is available:
      - Runtime for the API server and ARQ worker.
    * - **OpenBao**
      - 2.5+ (Vault-compatible)
-      - Required for secrets management.  See ADR-003 for the architectural rationale.
+     - Required for secrets management.  See ADR-003 for the architectural rationale.
    * - **Docker**
      - 24+ (for Compose deployment)
      - Required for the Docker Compose stack.
@@ -62,37 +62,78 @@ Docker Compose Deployment (Backend Stack)
 
 The Docker Compose stack is defined in
 ``openzync-core/infra/docker-compose.backend.yml``.  It deploys 11 services
-across three profiles (default, ``llm``, ``observability``).
+across four profiles (``local-db``, ``llm``, ``observability``, ``alt-graph``)
+plus the default (no profile — external Postgres).
 
 Quick Start
 ~~~~~~~~~~~
 
-Export the four required bootstrap secrets and start the stack::
+**Option A — Local one-box (embedded Postgres):**
 
-   # Generate bootstrap secrets
+::
+
+   # Generate bootstrap secrets (POSTGRES_PASSWORD is Option A only)
    export BAO_STATIC_SEAL_KEY=$(openssl rand -hex 32)
    export POSTGRES_PASSWORD=$(openssl rand -base64 32)
    export OZ_SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(48))")
    export OZ_WEBHOOK_SIGNING_SECRET=$(python -c "import secrets; print(secrets.token_urlsafe(32))")
 
-   # Start the full stack
-   docker compose -f infra/docker-compose.backend.yml up -d
+   # Start the full stack (8-phase DAG, 41-48s)
+   docker compose --env-file .env -f infra/docker-compose.backend.yml --profile local-db up -d --build
 
-   # Tail logs until bootstrap completes (~60s on cold start)
-   docker compose -f infra/docker-compose.backend.yml logs -f
+   # Tail logs until bootstrap completes
+   docker compose --env-file .env -f infra/docker-compose.backend.yml --profile local-db logs -f
 
-   # Optional profiles:
-   #   --profile llm              starts Ollama for local LLM inference
-   #   --profile observability    starts Prometheus + Grafana + Alloy
+**Option B — External Postgres (host / managed DB):**
+
+::
+
+   # Generate bootstrap secrets (no POSTGRES_PASSWORD needed)
+   export BAO_STATIC_SEAL_KEY=$(openssl rand -hex 32)
+   export OZ_SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(48))")
+   export OZ_WEBHOOK_SIGNING_SECRET=$(python -c "import secrets; print(secrets.token_urlsafe(32))")
+   # External DB URL — persisted to .env so OpenBao can render it
+   echo 'OZ_DATABASE_URL=postgresql+asyncpg://openzync:pass@host.docker.internal:5432/openzync' >> .env
+   # extra_hosts: ["host.docker.internal:host-gateway"] is already in compose for api/worker
+
+   # Start without --profile local-db (slim DAG, 21-39s — no postgres phases)
+   docker compose --env-file .env -f infra/docker-compose.backend.yml up -d
+
+   # Host Postgres must listen on 0.0.0.0 (socat relay) or listen_addresses='*'
+   # — localhost:5432 fails inside the container (netns isolation)
+
+   # Tail logs
+   docker compose --env-file .env -f infra/docker-compose.backend.yml logs -f
+
+Profiles:
+
+.. list-table:: Available profiles
+   :header-rows: 1
+
+   * - Profile
+     - Services added
+     - Usage
+   * - ``local-db``
+     - ``postgres``, ``postgres-init``, ``postgres-migrate``, ``openbao-write-db``, ``minio``, ``minio-init``
+     - ``--profile local-db`` — embedded Postgres + MinIO; omit for external DB
+   * - ``llm``
+     - ``ollama``
+     - ``--profile llm`` — local LLM inference
+   * - ``observability``
+     - ``prometheus``, ``grafana``, ``alloy``
+     - ``--profile observability`` — metrics + dashboards
+   * - ``alt-graph``
+     - ``surrealdb``, ``falkordb``
+     - ``--profile alt-graph`` — alternative graph backends (set ``OZ_SURREALDB_URL`` / ``OZ_FALKORDB_URL``)
 
 The API becomes available at ``http://localhost:8000`` once the bootstrap
-sequence reaches phase 8 (api + worker start).  See :doc:`/domains/infrastructure` for the full bootstrap phase table.
-in :doc:`/domains/infrastructure` for the full boot sequence.
+sequence completes (``~60s`` Option A / ``~30s`` Option B).  See
+:doc:`/domains/infrastructure` for the full bootstrap phase table.
 
 Service Topology
 ~~~~~~~~~~~~~~~~
 
-The bootstrap is an eight-phase directed acyclic graph:
+**With ``--profile local-db`` — Full DAG (Option A, 8 phases, 41–48s):**
 
 .. code-block::
 
@@ -112,6 +153,17 @@ The bootstrap is an eight-phase directed acyclic graph:
                         │                           │
                         └─────────► redis ◄─────────┘
 
+**Without ``--profile local-db`` — Slim DAG (Option B, external DB, 21–39s):**
+
+.. code-block::
+
+   openbao ─► openbao-init ─► openbao-agent-api ─► api ─┐
+                              └─► openbao-agent-worker ─► worker ─► redis
+
+   # No postgres, postgres-init, postgres-migrate, or openbao-write-db.
+   # Agent static_secret_render_interval is 10s; grep -c DATABASE_URL is 1
+   # (vs 2 for Option A where openbao-write-db merges a second entry).
+
 Each phase must complete before the next begins, enforced by ``depends_on:
 condition: service_healthy`` and ``service_completed_successfully``.  See
 :doc:`/domains/infrastructure` for the full service graph and bootstrap details.
@@ -127,21 +179,74 @@ The ``Makefile`` at the monolith root exposes common Compose operations:
    * - Target
      - Description
    * - ``make docker-up``
-     - ``docker compose -f infra/docker-compose.backend.yml up -d``
+     - ``docker compose --env-file .env -f infra/docker-compose.backend.yml up -d`` (external DB — no postgres)
+   * - ``make docker-up-local``
+     - ``docker compose --env-file .env -f infra/docker-compose.backend.yml --profile local-db up -d --build`` (embedded Postgres)
    * - ``make docker-down``
-     - ``docker compose -f infra/docker-compose.backend.yml down``
+     - ``docker compose --env-file .env -f infra/docker-compose.backend.yml down``
+   * - ``make docker-down-local``
+     - ``docker compose --env-file .env -f infra/docker-compose.backend.yml --profile local-db down``
    * - ``make docker-logs``
-     - ``docker compose -f infra/docker-compose.backend.yml logs -f``
+     - ``docker compose --env-file .env -f infra/docker-compose.backend.yml logs -f`` (add ``--profile local-db`` for Option A)
    * - ``make docker-reset``
      - Full reset — ``down -v`` then ``up -d`` (removes all volumes)
    * - ``make dev``
      - Local uvicorn with hot-reload (bypasses Docker)
+
+.. note::
+
+   If your Makefile still exposes only ``make docker-up`` / ``make docker-down``
+   without the ``-local`` variants, they map to the external-DB form (no
+   ``--profile local-db``). Add ``docker-up-local`` / ``docker-down-local``
+   targets that include ``--profile local-db --build`` for Option A.
 
 .. warning::
 
    ``make docker-reset`` removes all data volumes (OpenBao Raft state,
    PostgreSQL data, Redis data).  Use with extreme caution in any environment
    with real data.
+
+External Postgres (production/CI)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For managed or host Postgres, skip ``--profile local-db`` and inject
+``OZ_DATABASE_URL`` via OpenBao:
+
+.. code-block:: bash
+
+   # .env — persisted so OpenBao can render it at runtime
+   echo 'OZ_DATABASE_URL=postgresql+asyncpg://openzync:pass@host.docker.internal:5432/openzync' >> .env
+   docker compose --env-file .env -f infra/docker-compose.backend.yml up -d
+
+``init_openbao.sh`` writes all ``OZ_*`` vars (including ``OZ_DATABASE_URL``
+when set) into the OpenBao system secret at ``system/config/data/system``;
+the ``openbao-agent-api`` / ``openbao-agent-worker`` sidecars render it to
+``/run/secrets/system.env`` (``grep -c DATABASE_URL`` → ``1`` vs ``2`` for
+Option A where ``openbao-write-db`` merges a second entry). The
+``postgres-init`` / ``postgres-migrate`` / ``openbao-write-db`` services are
+not started in this mode.
+
+``extra_hosts: ["host.docker.internal:host-gateway"]`` is already configured
+for ``api`` and ``worker`` in the compose file — use
+``host.docker.internal`` in the URL, not ``localhost``.
+``localhost:5432`` inside the container resolves to the container's own network
+namespace and will fail (connection refused). Ensure the host Postgres is
+reachable from containers:
+
+* **socat relay (no config change):** ``socat TCP-LISTEN:5432,bind=0.0.0.0,fork TCP:[::1]:5432 &``
+  — forwards ``0.0.0.0:5432`` to the host's loopback. Useful when Postgres
+  only listens on ``127.0.0.1`` / ``::1``.
+* **or** set ``listen_addresses='*'`` in ``postgresql.conf`` and restart
+  Postgres — makes it listen on all interfaces.
+
+Verify:
+
+.. code-block:: bash
+
+   docker compose --env-file .env -f infra/docker-compose.backend.yml ps
+   # Option B shows no postgres / postgres-init / postgres-migrate / openbao-write-db
+   curl -s http://localhost:8000/v1/health | python3 -m json.tool  # → {"status": "ok"}
+   curl -s http://localhost:8000/v1/ready | python3 -m json.tool   # → {"checks": {"database": true, ...}}
 
 Frontend Docker Deployment
 --------------------------

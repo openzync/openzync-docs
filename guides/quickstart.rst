@@ -28,7 +28,9 @@ Before you begin, ensure you have the following installed and available on your
   generate the required bootstrap secrets.
 * **curl** for API smoke-testing (or any HTTP client of your choice).
 * **Ports** ``8000``, ``5432``, ``6379``, and ``8200`` free on ``127.0.0.1``.
-  These are bound by the backend stack.
+  These are bound by the backend stack (``5432`` is only required for
+  **Option A** — local Postgres with ``--profile local-db``; **Option B**
+  with an external Postgres uses your host's Postgres port instead).
 
 ---------------------------
 Clone and Bootstrap
@@ -78,9 +80,10 @@ What each variable does:
        all OpenBao secrets are irrecoverable.
      - ``openssl rand -hex 32`` (64 hex chars)
      - No (used by OpenBao directly)
-   * - ``POSTGRES_PASSWORD``
-     - Postgres superuser password for first-boot cluster init. Auto-rotated
-       after boot.
+   * - ``POSTGRES_PASSWORD`` **(Option A only)**
+     - Postgres superuser password for first-boot cluster init — only when
+       using ``--profile local-db``. Auto-rotated after boot. Not needed
+       for Option B (external Postgres).
      - ``openssl rand -base64 32``
      - Discarded after rotation
    * - ``OZ_SECRET_KEY``
@@ -102,12 +105,43 @@ What each variable does:
 Step 3 — Start the stack
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Choose one of the two options:
+
+**Option A — Local one-box (embedded Postgres, fastest for local dev):**
+
 .. code-block:: bash
 
-   docker compose -f infra/docker-compose.backend.yml up -d
+   docker compose --env-file .env -f infra/docker-compose.backend.yml --profile local-db up -d --build
 
-This pulls the images and starts every service in the correct dependency order.
+This pulls the images and starts every service including the embedded
+``postgres`` in the correct dependency order (8-phase DAG, 41–48s).
 No ``make migrate``, no manual secret copy-paste.
+
+**Option B — External Postgres (host Postgres / production / CI):**
+
+Add your host Postgres URL to ``.env`` (``host.docker.internal`` resolves
+to the host gateway from inside containers —
+``extra_hosts: ["host.docker.internal:host-gateway"]`` is already in the
+compose file for ``api``/``worker``; do not use ``localhost`` inside the
+container as it resolves to the container's own netns and will fail):
+
+.. code-block:: bash
+
+   # Append to .env — replace pass/host as needed
+   echo 'OZ_DATABASE_URL=postgresql+asyncpg://openzync:pass@host.docker.internal:5432/openzync' >> .env
+
+   # Ensure the host Postgres is reachable from containers:
+   # Option 1 (no config change): socat 0.0.0.0:5432 → [::1]:5432
+   #   socat TCP-LISTEN:5432,bind=0.0.0.0,fork TCP:[::1]:5432 &
+   # Option 2: set listen_addresses='*' in postgresql.conf and restart Postgres
+
+   docker compose --env-file .env -f infra/docker-compose.backend.yml up -d
+
+No ``--profile local-db`` here — ``postgres``, ``postgres-init``,
+``postgres-migrate``, and ``openbao-write-db`` are skipped (slim DAG,
+21–39s). Secrets including ``DATABASE_URL`` are injected via OpenBao from
+``OZ_DATABASE_URL`` (``grep -c DATABASE_URL`` in the rendered secret is ``1``
+vs ``2`` for Option A).
 
 Step 4 — Tail the bootstrap logs (optional, but instructive)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -119,12 +153,14 @@ Step 4 — Tail the bootstrap logs (optional, but instructive)
 Watch for each phase completing. The full bootstrap takes **~60 seconds** on a
 cold start (first pull may take longer depending on your connection speed).
 
-----------------------------------------
+-------------------------------------------
 Boot Sequence — What Happens in Those 60s
-----------------------------------------
+-------------------------------------------
 
-The bootstrap is an eight-phase directed acyclic graph enforced by Docker
-Compose ``depends_on`` conditions:
+The bootstrap is a directed acyclic graph enforced by Docker Compose
+``depends_on`` conditions. Two variants exist depending on the profile:
+
+**Full DAG — Option A (``--profile local-db``, 8 phases, 41–48s):**
 
 .. code-block:: text
 
@@ -144,7 +180,18 @@ Compose ``depends_on`` conditions:
                      │                           │
                      └─────────► redis ◄─────────┘
 
-Timeline:
+**Slim DAG — Option B (external Postgres, no profile, 21–39s):**
+
+.. code-block:: text
+
+   openbao ─► openbao-init ─► openbao-agent-api ─► api ─┐
+                              └─► openbao-agent-worker ─► worker ─► redis
+
+   # No postgres, postgres-init, postgres-migrate, or openbao-write-db.
+   # Agent static_secret_render_interval is 10s; grep -c DATABASE_URL is 1
+   # (vs 2 for Option A where openbao-write-db merges a second entry).
+
+Timeline (Full DAG — Option A):
 
 +-----------------+---------------------------------------------------------------+
 | Time (approx.)  | Phase                                                         |
@@ -186,12 +233,21 @@ Timeline:
 |                 | ``exec`` uvicorn / ARQ.                                       |
 +-----------------+---------------------------------------------------------------+
 
-After this sequence, the API is available at ``http://localhost:8000`` and the
-ARQ worker is listening on the Redis queue for enrichment jobs.
+.. note::
 
-----------------------
+   **Option A only:** the ``30–55s`` postgres phases (``postgres``,
+   ``postgres-init``, ``postgres-migrate``, ``openbao-write-db``) are skipped
+   in **Option B**. Option B's slim DAG completes in **21–39s** (vs **41–48s**
+   for Option A) — roughly ``0–30s`` total: ``openbao`` → ``openbao-init`` →
+   ``openbao-agent-*`` → ``api``/``worker`` → ``redis``. The Agent
+   ``static_secret_render_interval`` is ``10s``.
+
+After either sequence, the API is available at ``http://localhost:8000`` and
+the ARQ worker is listening on the Redis queue for enrichment jobs.
+
+-------------------------
 Verify the Installation
-----------------------
+-------------------------
 
 Once the bootstrap is complete, run the health and readiness checks:
 
@@ -230,6 +286,14 @@ If you get a ``503`` with ``"database": false`` or ``"redis": false``, wait a
 few more seconds and retry — the api container may have started before the
 sidecar finished rendering the secrets. See :ref:`quickstart-troubleshooting`
 below.
+
+.. note::
+
+   ``docker compose --env-file .env -f infra/docker-compose.backend.yml ps``
+   for **Option B** shows no ``postgres`` / ``postgres-init`` /
+   ``postgres-migrate`` / ``openbao-write-db`` services, but ``/v1/health``
+   and ``/v1/ready`` still return ``200`` with ``"database": true`` when the
+   external Postgres is reachable.
 
 -----------------
 First API Calls
@@ -545,12 +609,16 @@ restart), run only the infrastructure in Docker and start the API locally:
 .. code-block:: bash
 
    # Start only the supporting containers (OpenBao, Postgres, Redis, worker,
-   # and the OpenBao Agent sidecars)
-   docker compose -f infra/docker-compose.backend.yml up -d \
+   # and the OpenBao Agent sidecars) — Option A (local-db):
+   docker compose --env-file .env -f infra/docker-compose.backend.yml --profile local-db up -d \
      openbao postgres redis worker openbao-agent-api
 
-   # Wait for the bootstrap sequence to complete (~60s), then start the API
-   # with hot-reload
+   # For Option B (external Postgres), omit postgres and the profile:
+   # docker compose --env-file .env -f infra/docker-compose.backend.yml up -d \
+   #   openbao redis worker openbao-agent-api
+
+   # Wait for the bootstrap sequence to complete (~60s Option A, ~30s Option B),
+   # then start the API with hot-reload
    make dev
 
    # The API is now running at http://localhost:8000 with live reload.
