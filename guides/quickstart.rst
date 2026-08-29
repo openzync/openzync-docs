@@ -114,8 +114,10 @@ Choose one of the two options:
    docker compose --env-file .env -f infra/docker-compose.backend.yml --profile local-db up -d --build
 
 This pulls the images and starts every service including the embedded
-``postgres`` in the correct dependency order (8-phase DAG, 41–48s).
-No ``make migrate``, no manual secret copy-paste.
+``postgres`` and **FalkorDB (default graph backend, host port 6381, always on
+— no profile needed)** in the correct dependency order (8-phase DAG, 41–48s).
+PostgreSQL graph backend is **deprecated** and will be removed in ``v1.1.0`` — new
+deployments must use FalkorDB. No ``make migrate``, no manual secret copy-paste.
 
 **Option B — External Postgres (host Postgres / production / CI):**
 
@@ -139,7 +141,9 @@ container as it resolves to the container's own netns and will fail):
 
 No ``--profile local-db`` here — ``postgres``, ``postgres-init``,
 ``postgres-migrate``, and ``openbao-write-db`` are skipped (slim DAG,
-21–39s). Secrets including ``DATABASE_URL`` are injected via OpenBao from
+21–39s; FalkorDB is still always on as the default graph backend, port 6381).
+PostgreSQL graph backend is deprecated and will be removed in ``v1.1.0``.
+Secrets including ``DATABASE_URL`` are injected via OpenBao from
 ``OZ_DATABASE_URL`` (``grep -c DATABASE_URL`` in the rendered secret is ``1``
 vs ``2`` for Option A).
 
@@ -795,8 +799,9 @@ Next Steps
   retrieval pipeline.
 * :doc:`/domains/sdk_python` — Python SDK reference with all domain clients.
 * :doc:`/domains/frontend` — dashboard setup, routes, and features.
-* :doc:`/domains/graph_backends` — pluggable graph backends (PostgreSQL-native,
-  FalkorDB, SurrealDB).
+* :doc:`/domains/graph_backends` — pluggable graph backends (FalkorDB is the
+  default; SurrealDB is optional via ``--profile alt-graph``; PostgreSQL-native
+  is deprecated and will be removed in ``v1.1.0``).
 * :doc:`/domains/workers` — ARQ worker architecture, enrichment pipeline,
   job lifecycle.
 * ``/docs`` endpoint on your running API — interactive Swagger UI for every

@@ -22,11 +22,13 @@ Before deploying OpenZync, ensure the following infrastructure is available:
    * - Component
      - Requirement
      - Notes
-   * - **PostgreSQL**
-     - 15+ with pgvector extension
-     - Required for relational data, vector embeddings, and the default graph
-       backend.  Managed RDS / Cloud SQL / AlloyDB work as long as pgvector
-       is available.
+    * - **PostgreSQL**
+      - 15+ with pgvector extension
+      - Required for relational data and vector embeddings (pgvector).  The
+        PostgreSQL-native graph backend is **deprecated** and will be removed in
+        ``v1.1.0`` — new deployments must use **FalkorDB** (default graph backend,
+        always on, no profile needed).  Managed RDS / Cloud SQL / AlloyDB work as
+        long as pgvector is available.
    * - **Redis**
      - 7+ (7-alpine recommended)
      - Required for ARQ job queues, rate limiting, caching, and pub/sub.
@@ -123,8 +125,8 @@ Profiles:
      - ``prometheus``, ``grafana``, ``alloy``
      - ``--profile observability`` — metrics + dashboards
    * - ``alt-graph``
-     - ``surrealdb``, ``falkordb``
-     - ``--profile alt-graph`` — alternative graph backends (set ``OZ_SURREALDB_URL`` / ``OZ_FALKORDB_URL``)
+      - ``surrealdb``
+      - ``--profile alt-graph`` — SurrealDB alternative graph backend (set ``OZ_SURREALDB_URL``); FalkorDB is now the default graph backend (always on, host port 6381, no profile needed; PostgreSQL graph backend is deprecated and will be removed in v1.1.0)
 
 The API becomes available at ``http://localhost:8000`` once the bootstrap
 sequence completes (``~60s`` Option A / ``~30s`` Option B).  See
@@ -377,12 +379,12 @@ Key sections of ``values.yaml``:
        enabled: true
        size: 5Gi
 
-   config:
-     llmBackend: "ollama"
-     llmModel: "llama3.2:3b"
-     embeddingDim: 768
-     graphBackend: "postgres"
-     otlpEndpoint: "http://alloy:4317"
+    config:
+      llmBackend: "ollama"
+      llmModel: "llama3.2:3b"
+      embeddingDim: 768
+      graphBackend: "falkordb"
+      otlpEndpoint: "http://alloy:4317"
 
 Secrets are **not** inlined in ``values.yaml`` — inject them via ``--set``,
 an external values file, or the ``external-secrets`` operator.
