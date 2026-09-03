@@ -27,10 +27,15 @@ Before you begin, ensure you have the following installed and available on your
 * **OpenSSL** (``openssl``) and **Python 3.11+** (``python3``) — used to
   generate the required bootstrap secrets.
 * **curl** for API smoke-testing (or any HTTP client of your choice).
-* **Ports** ``8000``, ``5432``, ``6379``, and ``8200`` free on ``127.0.0.1``.
-  These are bound by the backend stack (``5432`` is only required for
-  **Option A** — local Postgres with ``--profile local-db``; **Option B**
-  with an external Postgres uses your host's Postgres port instead).
+* **Ports** ``8000`` (api), ``5432`` (Postgres — **Option A** local-db
+  only; **Option B** with an external Postgres uses your host's Postgres
+  port instead), ``6380`` (Redis — note: **not** ``6379``; the container's
+  ``6379`` is published on host ``6380``), ``6381`` (FalkorDB, the default
+  graph backend — always on, no profile needed), and ``8200`` (OpenBao)
+  free on ``127.0.0.1``. With ``--profile local-db`` also ``9000``/``9001``
+  (MinIO); with ``--profile alt-graph`` also ``8001`` (SurrealDB). Profile
+  ports ``11434`` (llm) and ``9090``/``3000``/``4317`` (observability) only
+  apply when those profiles are enabled.
 
 ---------------------------
 Clone and Bootstrap
@@ -168,7 +173,8 @@ The bootstrap is a directed acyclic graph enforced by Docker Compose
 
 .. code-block:: text
 
-   openbao ─► openbao-init ─► postgres ─► postgres-init ─► postgres-migrate
+   openbao ─► openbao-init
+                              postgres ─► postgres-init ─► postgres-migrate
                                                                │
                                    ┌───────────────────────────┘
                                    ▼
@@ -183,6 +189,14 @@ The bootstrap is a directed acyclic graph enforced by Docker Compose
                     api                        worker
                      │                           │
                      └─────────► redis ◄─────────┘
+
+.. note::
+
+   ``openbao-init`` waits on ``openbao`` only, and ``postgres`` starts with
+   no ``depends_on`` — there is **no** ``openbao-init → postgres`` edge in
+   ``infra/docker-compose.backend.yml``. The two chains boot in parallel;
+   ``api``/``worker`` additionally wait on ``redis`` and ``falkordb``
+   (``service_healthy``).
 
 **Slim DAG — Option B (external Postgres, no profile, 21–39s):**
 
@@ -257,7 +271,7 @@ Once the bootstrap is complete, run the health and readiness checks:
 
 .. code-block:: bash
 
-   curl -s http://localhost:8000/v1/health | python3 -m json.tool
+   curl -s http://localhost:8000/health | python3 -m json.tool
 
 Expected response:
 
@@ -272,7 +286,7 @@ Readiness probe (checks PostgreSQL and Redis):
 
 .. code-block:: bash
 
-   curl -s http://localhost:8000/v1/ready | python3 -m json.tool
+   curl -s http://localhost:8000/ready | python3 -m json.tool
 
 Expected response:
 
@@ -295,8 +309,8 @@ below.
 
    ``docker compose --env-file .env -f infra/docker-compose.backend.yml ps``
    for **Option B** shows no ``postgres`` / ``postgres-init`` /
-   ``postgres-migrate`` / ``openbao-write-db`` services, but ``/v1/health``
-   and ``/v1/ready`` still return ``200`` with ``"database": true`` when the
+   ``postgres-migrate`` / ``openbao-write-db`` services, but ``/health``
+   and ``/ready`` still return ``200`` with ``"database": true`` when the
    external Postgres is reachable.
 
 -----------------
@@ -612,14 +626,16 @@ restart), run only the infrastructure in Docker and start the API locally:
 
 .. code-block:: bash
 
-   # Start only the supporting containers (OpenBao, Postgres, Redis, worker,
-   # and the OpenBao Agent sidecars) — Option A (local-db):
+   # Start only the supporting containers (OpenBao, Postgres, Redis, FalkorDB,
+   # worker, and the OpenBao Agent sidecars) — Option A (local-db):
+   # (falkordb is required: api/worker declare depends_on it, so omitting it
+   # breaks the local api's graph-backend health check.)
    docker compose --env-file .env -f infra/docker-compose.backend.yml --profile local-db up -d \
-     openbao postgres redis worker openbao-agent-api
+     openbao postgres redis falkordb worker openbao-agent-api
 
    # For Option B (external Postgres), omit postgres and the profile:
    # docker compose --env-file .env -f infra/docker-compose.backend.yml up -d \
-   #   openbao redis worker openbao-agent-api
+   #   openbao redis falkordb worker openbao-agent-api
 
    # Wait for the bootstrap sequence to complete (~60s Option A, ~30s Option B),
    # then start the API with hot-reload
@@ -631,6 +647,15 @@ restart), run only the infrastructure in Docker and start the API locally:
 The local API process reads configuration from OpenBao (via the OpenBao Agent
 sidecar) — just like the containerised API.  No additional configuration is
 needed.
+
+.. warning::
+
+   ``make dev`` (host OpenBao on ``127.0.0.1:8200`` plus host Postgres on
+   ``127.0.0.1:5432`` via ``scripts/dev_openbao_up.sh``) and the Compose
+   stack (``openzync-openbao`` / ``openzync-postgres`` on the same ports)
+   **cannot run at the same time** — stop the Compose stack first
+   (``docker compose --env-file .env -f infra/docker-compose.backend.yml
+   [--profile local-db] down``) before ``make dev``, and vice versa.
 
 Useful Makefile targets for development:
 
@@ -681,7 +706,7 @@ Troubleshooting
 Issue: Port already in use
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If port 8000 (or 5432, 6379, 8200) is already allocated:
+If port 8000 (or 5432, 6380, 6381, 8200) is already allocated:
 
 .. code-block:: bash
 
@@ -727,7 +752,24 @@ data).  You will need to re-bootstrap from scratch.
    ``make docker-reset`` deletes **all data**.  There is no recovery path.
    Back up ``BAO_STATIC_SEAL_KEY`` in a password manager or secrets vault.
 
-Issue: API returns 503 on /v1/ready
+Issue: Stale credentials after restart (cold-boot loop)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A restart without ``down -v`` leaves a stale ``DATABASE_URL`` in OpenBao:
+``init_postgres.sh`` rotates DB passwords on every boot, while
+``write_db_to_openbao.sh`` short-circuits on its marker file and never
+re-merges the fresh password.  The cold-boot loop must therefore be:
+
+.. code-block:: bash
+
+   docker compose --env-file .env -f infra/docker-compose.backend.yml \
+     --profile local-db down -v   # -v is required (password rotation vs marker)
+   docker compose --env-file .env -f infra/docker-compose.backend.yml \
+     --profile local-db up -d --build   # --build so one-shot init images are fresh
+
+(omit ``--profile local-db`` for Option B / external Postgres.)
+
+Issue: API returns 503 on /ready
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The readiness probe checks PostgreSQL and Redis connectivity.  If one or both

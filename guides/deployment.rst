@@ -139,7 +139,8 @@ Service Topology
 
 .. code-block::
 
-   openbao ─► openbao-init ─► postgres ─► postgres-init ─► postgres-migrate
+   openbao ─► openbao-init
+                              postgres ─► postgres-init ─► postgres-migrate
                                                                  │
                                       ┌───────────────────────────┘
                                       ▼
@@ -154,6 +155,14 @@ Service Topology
                        api                        worker
                         │                           │
                         └─────────► redis ◄─────────┘
+
+.. note::
+
+   ``openbao-init`` waits on ``openbao`` only, and ``postgres`` starts with
+   no ``depends_on`` — there is **no** ``openbao-init → postgres`` edge in
+   ``infra/docker-compose.backend.yml``. The two chains boot in parallel;
+   ``api``/``worker`` additionally wait on ``redis`` and ``falkordb``
+   (``service_healthy``).
 
 **Without ``--profile local-db`` — Slim DAG (Option B, external DB, 21–39s):**
 
@@ -191,7 +200,8 @@ The ``Makefile`` at the monolith root exposes common Compose operations:
    * - ``make docker-logs``
      - ``docker compose --env-file .env -f infra/docker-compose.backend.yml logs -f`` (add ``--profile local-db`` for Option A)
    * - ``make docker-reset``
-     - Full reset — ``down -v`` then ``up -d`` (removes all volumes)
+     - Full reset — ``down -v`` then ``up -d --build`` (removes all
+       volumes; add ``--profile local-db`` for Option A)
    * - ``make dev``
      - Local uvicorn with hot-reload (bypasses Docker)
 
@@ -206,7 +216,11 @@ The ``Makefile`` at the monolith root exposes common Compose operations:
 
    ``make docker-reset`` removes all data volumes (OpenBao Raft state,
    PostgreSQL data, Redis data).  Use with extreme caution in any environment
-   with real data.
+   with real data.  A cold-boot loop must use ``down -v`` (not plain
+   ``down``): ``init_postgres.sh`` rotates DB passwords on every boot while
+   ``write_db_to_openbao.sh`` short-circuits on its marker file, so a
+   restart without ``-v`` leaves a stale ``DATABASE_URL`` in OpenBao.
+   Re-run with ``--build`` so one-shot init images are not stale.
 
 External Postgres (production/CI)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -247,8 +261,8 @@ Verify:
 
    docker compose --env-file .env -f infra/docker-compose.backend.yml ps
    # Option B shows no postgres / postgres-init / postgres-migrate / openbao-write-db
-   curl -s http://localhost:8000/v1/health | python3 -m json.tool  # → {"status": "ok"}
-   curl -s http://localhost:8000/v1/ready | python3 -m json.tool   # → {"checks": {"database": true, ...}}
+   curl -s http://localhost:8000/health | python3 -m json.tool  # → {"status": "ok"}
+   curl -s http://localhost:8000/ready | python3 -m json.tool   # → {"checks": {"database": true, ...}}
 
 Frontend Docker Deployment
 --------------------------
