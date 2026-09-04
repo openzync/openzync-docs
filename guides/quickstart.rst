@@ -650,8 +650,8 @@ needed.
 
 .. warning::
 
-   ``make dev`` (host OpenBao on ``127.0.0.1:8200`` plus host Postgres on
-   ``127.0.0.1:5432`` via ``scripts/dev_openbao_up.sh``) and the Compose
+   ``make dev`` (host OpenBao on ``127.0.0.1:8200`` plus host Postgres,
+   Redis and FalkorDB via ``scripts/dev_preflight.sh``) and the Compose
    stack (``openzync-openbao`` / ``openzync-postgres`` on the same ports)
    **cannot run at the same time** — stop the Compose stack first
    (``docker compose --env-file .env -f infra/docker-compose.backend.yml
