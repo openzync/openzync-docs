@@ -13,6 +13,39 @@ deployment options (production Docker Compose, Helm, observability stack), see
    :depth: 3
    :class: this-will-duplicate-information-and-it-is-still-useful-here
 
+------------------
+One-liner Install
+------------------
+
+Fastest path — one script installs Docker prerequisites, prompts for options,
+and brings the stack up. Clone backend and frontend as siblings, then run the
+installer:
+
+.. code-block:: bash
+
+   git clone https://github.com/openzync/openzync-core.git
+   git clone https://github.com/openzync/openzync-frontend.git
+   bash openzync-core/infra/install.sh
+
+Non-interactive variant (accepts defaults, for scripted hosts):
+
+.. code-block:: bash
+
+   bash openzync-core/infra/install.sh --yes
+
+What the installer does:
+
+* Installs distro-repo prerequisites (Docker + Compose v2 via apt/dnf/pacman/brew).
+* Asks interactive prompts (frontend on/off, bundled vs external Postgres, CORS/hosts, ports).
+* Writes secrets to ``~/.openzync/.env`` with mode ``0600``.
+* Pulls public GHCR images — no build step.
+* Waits ``/health``-gated until the API is ready, then prints the URLs.
+
+For preconditions, prompts, secrets backup, first login, and uninstall, see
+the production runbook: :doc:`/guides/deployment`.
+
+The manual flow below remains available step by step.
+
 --------------
 Prerequisites
 --------------

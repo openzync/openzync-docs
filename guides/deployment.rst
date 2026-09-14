@@ -59,6 +59,95 @@ Before deploying OpenZync, ensure the following infrastructure is available:
    All other secrets (database credentials, API keys) are auto-generated or
    configured via OpenBao at runtime.
 
+One-liner Installer (Production Runbook)
+-----------------------------------------
+
+Recommended path for a single production host. Clone backend and frontend as
+siblings, then run the installer from the backend repo. See
+:doc:`/guides/quickstart` for the quickstart hero block.
+
+.. code-block:: bash
+
+   git clone https://github.com/openzync/openzync-core.git
+   git clone https://github.com/openzync/openzync-frontend.git
+   bash openzync-core/infra/install.sh
+
+   # Non-interactive (accepts defaults)
+   bash openzync-core/infra/install.sh --yes
+
+Preconditions
+~~~~~~~~~~~~~
+
+Supported hosts: Ubuntu, Fedora, Arch, and macOS — with Docker ``24+`` and
+the Compose v2 plugin (``docker compose``, not standalone
+``docker-compose``). The installer uses distro repos only
+(apt/dnf/pacman/brew). Keep these host ports free on ``127.0.0.1``:
+
+.. list-table:: Installer host ports
+   :header-rows: 1
+
+   * - Port
+     - Service
+   * - ``8000``
+     - API
+   * - ``3000``
+     - Frontend (when enabled)
+   * - ``8200``
+     - OpenBao
+   * - ``5432``
+     - Bundled Postgres (``local-db`` profile only)
+   * - ``6380``
+     - Redis
+   * - ``6381``
+     - FalkorDB
+
+Prompts (normal flow)
+~~~~~~~~~~~~~~~~~~~~~
+
+* **Frontend on/off** — include the dashboard (host port ``3000``) or run
+  API-only.
+* **Bundled vs external Postgres** — ``local-db`` starts the embedded
+  Postgres; otherwise set ``OZ_DATABASE_URL`` to your managed instance.
+  Use a plain reachable hostname in the URL — container ``localhost``
+  resolves to the container itself, so point it at the host or DB host.
+* **CORS_ORIGINS / HOSTS_ALLOWED** — the public origin(s) and host(s) the
+  API serves (e.g. your domain); must match where the frontend and clients
+  reach the API.
+* **Custom ports** — via Compose override files alongside the generated
+  stack; the installer never edits the base Compose file for ports.
+
+Secrets backup
+~~~~~~~~~~~~~~
+
+.. important::
+
+   Generated secrets live in ``~/.openzync/.env`` with mode ``0600``.
+   Back it up in a password manager or vault. Losing
+   ``BAO_STATIC_SEAL_KEY`` is irrecoverable — all OpenBao secrets are lost
+   and the stack must be re-bootstrapped from scratch.
+
+First login
+~~~~~~~~~~~
+
+.. warning::
+
+   Sign in to the dashboard with id ``root`` and password ``admin``. You
+   are forced to rotate this password at first login — do so immediately
+   before exposing the host. Never reuse these defaults anywhere else.
+
+Status and uninstall
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+   bash openzync-core/infra/install.sh --status
+   bash openzync-core/infra/install.sh --uninstall
+
+.. note::
+
+   The installer serves plain HTTP only. Terminate TLS upstream (NGINX,
+   Ingress, or your load balancer) — see the NGINX and Helm sections below.
+
 Docker Compose Deployment (Backend Stack)
 -----------------------------------------
 
