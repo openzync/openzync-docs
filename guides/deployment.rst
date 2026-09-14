@@ -62,18 +62,27 @@ Before deploying OpenZync, ensure the following infrastructure is available:
 One-liner Installer (Production Runbook)
 -----------------------------------------
 
-Recommended path for a single production host. Clone backend and frontend as
-siblings, then run the installer from the backend repo. See
-:doc:`/guides/quickstart` for the quickstart hero block.
+Recommended path for a single production host. One command downloads the
+installer, which provisions its own checkout, then runs the prompts below.
+See :doc:`/guides/quickstart` for the quickstart hero block.
 
 .. code-block:: bash
 
-   git clone https://github.com/openzync/openzync-core.git
-   git clone https://github.com/openzync/openzync-frontend.git
-   bash openzync-core/infra/install.sh
+   curl -fsSL https://raw.githubusercontent.com/openzync/openzync-core/master/infra/install.sh -o install.sh && bash install.sh
 
    # Non-interactive (accepts defaults)
-   bash openzync-core/infra/install.sh --yes
+   curl -fsSL https://raw.githubusercontent.com/openzync/openzync-core/master/infra/install.sh -o install.sh && bash install.sh --yes
+
+Checkout provisioning
+~~~~~~~~~~~~~~~~~~~~~
+
+The installer keeps its checkout under ``INSTALL_DIR/src`` (default
+``~/.openzync/src``) with ``openzync-core`` and ``openzync-frontend`` as
+siblings. It tracks ``master`` by default; pin fleets to a tag with
+``OZ_INSTALL_REF`` (e.g. ``OZ_INSTALL_REF=v1.2.0 bash install.sh``).
+Re-running offline reuses the existing checkout instead of re-cloning.
+Uninstall also offers to remove the checkout directory via a remove-dir
+prompt.
 
 Preconditions
 ~~~~~~~~~~~~~

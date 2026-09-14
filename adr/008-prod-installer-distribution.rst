@@ -91,3 +91,16 @@ References
 - ``openzync-landing`` — stable ``/install.sh`` URL owner
 - ``guides/quickstart.rst``, ``guides/deployment.rst`` — one-liner
   references
+
+----
+
+Amendment (2026-09-14)
+----------------------
+
+D2 corrected: distribution is GitHub raw on ``master``
+(``https://raw.githubusercontent.com/openzync/openzync-core/master/infra/install.sh``,
+verified live; both ``main`` and ``master`` exist on origin, ``master`` is
+canonical and already includes the RLS fix commit). Rationale: zero landing
+coupling, version = branch head, no vendoring/license mixing, no release
+overhead. One-liner uses the raw URL directly. Landing redirect retained
+as a deferred alternative.

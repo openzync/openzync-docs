@@ -17,21 +17,31 @@ deployment options (production Docker Compose, Helm, observability stack), see
 One-liner Install
 ------------------
 
-Fastest path — one script installs Docker prerequisites, prompts for options,
-and brings the stack up. Clone backend and frontend as siblings, then run the
-installer:
+Fastest path — one command downloads the installer, which self-clones
+the backend and frontend repos, then prompts for options and brings the
+stack up:
+
+.. code-block:: bash
+
+   curl -fsSL https://raw.githubusercontent.com/openzync/openzync-core/master/infra/install.sh -o install.sh && bash install.sh
+
+Non-interactive variant (accepts defaults, for scripted hosts):
+
+.. code-block:: bash
+
+   curl -fsSL https://raw.githubusercontent.com/openzync/openzync-core/master/infra/install.sh -o install.sh && bash install.sh --yes
+
+On first run the installer self-clones core+frontend into
+``~/.openzync/src/``.
+
+Alternative for review-first or air-gapped users — inspect the repos
+before running anything:
 
 .. code-block:: bash
 
    git clone https://github.com/openzync/openzync-core.git
    git clone https://github.com/openzync/openzync-frontend.git
    bash openzync-core/infra/install.sh
-
-Non-interactive variant (accepts defaults, for scripted hosts):
-
-.. code-block:: bash
-
-   bash openzync-core/infra/install.sh --yes
 
 What the installer does:
 
