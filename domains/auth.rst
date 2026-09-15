@@ -1397,9 +1397,10 @@ Module: ``services/project_service.py``
 
 Orchestrates project and project member lifecycle.
 
-.. class:: ProjectService(repo)
+.. class:: ProjectService(repo, pin_repo)
 
    :param ProjectRepository repo: Project repository.
+   :param ProjectPinRepository pin_repo: Project-pin repository.
 
    .. method:: create_project(organization_id, user_id, payload)
 
