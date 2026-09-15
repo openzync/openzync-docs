@@ -21,6 +21,7 @@ production LLM applications.
    guides/quickstart
    guides/architecture
    guides/deployment
+   guides/rotating-keys
    guides/contributing
 
 .. toctree::

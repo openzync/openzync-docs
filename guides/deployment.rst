@@ -689,6 +689,10 @@ default.  For production:
    AppRole (``role_id`` + ``secret_id``) and renders secrets to a shared
    ``emptyDir`` volume backed by memory (``medium: Memory`` in Kubernetes).
 
+.. seealso::
+
+   Rotating a live key? See :doc:`/guides/rotating-keys` (single-key pattern).
+
 Scaling
 ~~~~~~~
 
