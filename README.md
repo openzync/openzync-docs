@@ -1,100 +1,56 @@
+<p align="center"><img src="./.github/assets/banner.png" width="100%" alt="OpenZync"></p>
+
 # OpenZync Documentation
 
-**Comprehensive documentation for the OpenZync agent memory platform.**
+Guides, domain references, and ADRs for the OpenZync memory platform.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/sphinx-7.0+-green" alt="Sphinx">
-  <img src="https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey" alt="CC BY 4.0">
-  <img src="https://readthedocs.org/projects/openzync/badge/?version=latest" alt="ReadTheDocs">
+  <a href="https://docs.openzync.tech/en/latest/"><img src="https://img.shields.io/badge/docs-docs.openzync.tech-blue" alt="Documentation"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey" alt="License: CC BY 4.0"></a>
+  <img src="https://img.shields.io/badge/sphinx-7.0%2B-green" alt="Sphinx 7.0+">
 </p>
 
-Hosted on [ReadTheDocs](https://openzync.readthedocs.io). Built with [Sphinx](https://www.sphinx-doc.org), [Furo](https://pradyunsg.me/furo/) theme, and [MyST](https://myst-parser.readthedocs.io) Markdown parser.
+Source for the documentation published at [docs.openzync.tech](https://docs.openzync.tech/en/latest/). Built with Sphinx, the Furo theme, and MyST for embedded Markdown.
 
-## Content
+[docs.openzync.tech](https://docs.openzync.tech/en/latest/) · [openzync-core](https://github.com/openzync/openzync-core) · [GitHub org](https://github.com/openzync) · [Contact](mailto:rohnsha0@gmail.com)
 
-Covering all components of the OpenZync platform:
+## What goes where
 
-### Getting Started (5 guides, ~2,045 lines)
-- **Overview** — platform architecture and design philosophy
-- **Quickstart** — get up and running in minutes
-- **Architecture** — deep dive into system design
-- **Deployment** — Docker Compose and Helm production setup
-- **Contributing** — development workflow and standards
+| You are writing | Add it here |
+|---|---|
+| A getting-started or operations guide | `guides/*.rst` |
+| An explanation of one backend domain | `domains/*.rst` |
+| API reference | `api/*.rst`, generated from core docstrings — do not hand-edit |
+| An architecture decision record | `adr/NNN-slug.{md,rst}` — 005 to 008 exist today |
 
-### Core Infrastructure (4 domains, ~19,344 lines)
-- **Core** — config, DB, Redis, ARQ, events, exceptions, logging
-- **LLM** — multi-provider LLM orchestration (OpenAI, Anthropic, Ollama, Azure, OpenRouter)
-- **Graph Backends** — PostgreSQL-native, FalkorDB, SurrealDB
-- **Reranker** — cross-encoder + label propagation community detection
+A new file also needs an entry in the appropriate toctree in `index.rst`, or it will not appear in navigation or search. ADRs are mixed format — 005 and 006 are Markdown, 007 and 008 are reStructuredText; MyST renders both.
 
-### Domain Services (4 domains)
-- **Auth** — JWT, API keys, OTP, multi-tenant auth
-- **Memory & Context** — episode ingestion, context retrieval, hybrid search
-- **Admin & Webhooks** — admin API, webhook delivery, audit logging
-- **Idempotency** — idempotent request handling
+## Build locally
 
-### API & Workers (2 domains)
-- **API Layer** — FastAPI routers, middleware, dependencies
-- **Workers** — ARQ background job definitions
-
-### SDK, MCP & Frontend (3 domains)
-- **Python SDK** — client library and LangChain integrations
-- **MCP Server** — Model Context Protocol tools
-- **Frontend** — admin dashboard
-
-### API Reference (auto-generated)
-Auto-generated reference from docstrings for all core, routers, models, schemas, services, repositories, middleware, dependencies, workers, and utility packages.
-
-## Build Locally
+The build needs a sibling `openzync-core/` checkout: `conf.py` prepends `../openzync-core` to `sys.path` so autodoc can import core modules. This repository does not build standalone.
 
 ```bash
-# Install build dependencies
 pip install -r requirements.txt
-
-# Build the docs
 sphinx-build -b html . _build/html
-
-# Open in browser
-open _build/html/index.html
-
-# Auto-reload on changes
-sphinx-autobuild . _build/html
 ```
 
-## Structure
+Use `sphinx-autobuild . _build/html` for a live-reloading server, and open `_build/html/index.html` to read the result.
 
-```
-openzync-docs/
-├── conf.py                 # Sphinx configuration
-├── index.rst               # Root toctree
-├── .readthedocs.yaml       # ReadTheDocs build config
-├── requirements.txt        # Python build dependencies
-├── guides/                 # Getting started guides (RST)
-│   ├── overview.md
-│   ├── quickstart.md
-│   ├── architecture.md
-│   ├── deployment.md
-│   └── contributing.md
-├── domains/                # Domain documentation (RST/MD)
-│   ├── core.md
-│   ├── auth.md
-│   ├── memory_context.md
-│   ├── llm.md
-│   ├── graph_backends.md
-│   ├── api_layer.md
-│   ├── workers.md
-│   ├── admin_webhooks.md
-│   ├── idempotency.md
-│   ├── reranker.md
-│   ├── sdk_python.md
-│   ├── mcp_server.md
-│   └── frontend.md
-├── api/                    # Auto-generated API reference
-└── _build/                 # Build artifacts (gitignored — built dynamically by ReadTheDocs)
-```
+## Layout
 
-The `conf.py` imports `openzync-core` packages at build time for autodoc by adding the sibling `openzync-core/` directory to `sys.path`.
+- `guides/` — overview, quickstart, architecture, deployment, rotating keys, contributing
+- `domains/` — one page per backend domain, from `core` and `llm` through `mcp_server` and `frontend`
+- `api/` — auto-generated reference for routers, models, schemas, services, repositories, and packages
+- `adr/` — architecture decision records; the source of truth for cross-cutting backend design
+
+`_build/` is build output and is gitignored.
+
+## Contributing
+
+Corrections and new pages are welcome. Read the [contributing guide](https://docs.openzync.tech/en/latest/guides/contributing.html), open an issue, or send a pull request against `main`.
 
 ## License
 
-CC BY 4.0 — attribution required. See [LICENSE](./LICENSE).
+CC BY 4.0 — reuse with attribution. See [LICENSE](./LICENSE).
+
+If these docs helped you, star the repo.
