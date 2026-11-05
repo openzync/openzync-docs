@@ -19,6 +19,7 @@ production LLM applications.
 
    guides/overview
    guides/quickstart
+   guides/release_notes
    guides/architecture
    guides/deployment
    guides/rotating-keys
