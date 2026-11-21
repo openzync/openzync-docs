@@ -103,5 +103,5 @@ Commit messages follow ``type(scope): short description``:
 License
 -------
 
-OpenZync is licensed under AGPLv3 with a commercial option.
-See ``COMMERCIAL-LICENSE.md`` for details.
+OpenZync is licensed under AGPL-3.0-only (core), Apache-2.0 (SDK/MCP), MIT (frontend/landing), and CC-BY-4.0 (docs).
+No commercial license is offered; see each repository's LICENSE file.

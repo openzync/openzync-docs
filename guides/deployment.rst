@@ -3,7 +3,7 @@ Deployment Guide
 
 This guide covers production and development deployment of the OpenZync
 backend stack.  For detailed infrastructure documentation (service topology,
-OpenBao bootstrap sequence, Helm chart reference, NGINX config, and
+Helm chart reference, NGINX config, and
 observability stack), see :doc:`/domains/infrastructure`.
 
 .. contents:: Sections
@@ -35,9 +35,6 @@ Before deploying OpenZync, ensure the following infrastructure is available:
    * - **Python**
      - 3.11+
      - Runtime for the API server and ARQ worker.
-   * - **OpenBao**
-     - 2.5+ (Vault-compatible)
-     - Required for secrets management.  See ADR-003 for the architectural rationale.
    * - **Docker**
      - 24+ (for Compose deployment)
      - Required for the Docker Compose stack.
@@ -51,13 +48,11 @@ Before deploying OpenZync, ensure the following infrastructure is available:
 
 .. important::
 
-   OpenZync follows a **zero-fallback secrets model**: OpenBao is the exclusive
-   source of truth for all runtime configuration.  The bootstrap sequence
-   generates and escrows secrets automatically.  You must provide only the
-   four bootstrap environment variables (``BAO_STATIC_SEAL_KEY``,
-   ``POSTGRES_PASSWORD``, ``OZ_SECRET_KEY``, ``OZ_WEBHOOK_SIGNING_SECRET``).
-   All other secrets (database credentials, API keys) are auto-generated or
-   configured via OpenBao at runtime.
+   OpenZync reads all runtime configuration from ``OZ_*`` environment
+   variables (``.env``).  Generate ``OZ_SECRET_KEY`` and
+   ``OZ_WEBHOOK_SIGNING_SECRET`` once, set ``OZ_DATABASE_URL`` and
+   ``OZ_REDIS_URL``, and treat the ``.env`` file itself as the secret —
+   there is no sidecar, no seal key, and no external secret store.
 
 One-liner Installer (Production Runbook)
 -----------------------------------------
@@ -101,8 +96,6 @@ the Compose v2 plugin (``docker compose``, not standalone
      - API
    * - ``3000``
      - Frontend (when enabled)
-   * - ``8200``
-     - OpenBao
    * - ``5432``
      - Bundled Postgres (``local-db`` profile only)
    * - ``6380``
@@ -131,9 +124,9 @@ Secrets backup
 .. important::
 
    Generated secrets live in ``~/.openzync/.env`` with mode ``0600``.
-   Back it up in a password manager or vault. Losing
-   ``BAO_STATIC_SEAL_KEY`` is irrecoverable — all OpenBao secrets are lost
-   and the stack must be re-bootstrapped from scratch.
+   Back it up in a password manager or vault. Losing it means
+   regenerating every secret and re-creating per-org credentials
+   from scratch.
 
 First login
 ~~~~~~~~~~~
@@ -172,8 +165,7 @@ Quick Start
 
 ::
 
-   # Generate bootstrap secrets (POSTGRES_PASSWORD is Option A only)
-   export BAO_STATIC_SEAL_KEY=$(openssl rand -hex 32)
+   # Generate secrets (POSTGRES_PASSWORD is Option A only)
    export POSTGRES_PASSWORD=$(openssl rand -base64 32)
    export OZ_SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(48))")
    export OZ_WEBHOOK_SIGNING_SECRET=$(python -c "import secrets; print(secrets.token_urlsafe(32))")
@@ -188,11 +180,10 @@ Quick Start
 
 ::
 
-   # Generate bootstrap secrets (no POSTGRES_PASSWORD needed)
-   export BAO_STATIC_SEAL_KEY=$(openssl rand -hex 32)
+   # Generate secrets (no POSTGRES_PASSWORD needed)
    export OZ_SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(48))")
    export OZ_WEBHOOK_SIGNING_SECRET=$(python -c "import secrets; print(secrets.token_urlsafe(32))")
-   # External DB URL — persisted to .env so OpenBao can render it
+   # External DB URL — read directly from .env at startup
    echo 'OZ_DATABASE_URL=postgresql+asyncpg://openzync:pass@host.docker.internal:5432/openzync' >> .env
    # extra_hosts: ["host.docker.internal:host-gateway"] is already in compose for api/worker
 
@@ -214,7 +205,7 @@ Profiles:
      - Services added
      - Usage
    * - ``local-db``
-     - ``postgres``, ``postgres-init``, ``postgres-migrate``, ``openbao-write-db``, ``minio``, ``minio-init``
+     - ``postgres``, ``postgres-init``, ``postgres-migrate``, ``minio``, ``minio-init``
      - ``--profile local-db`` — embedded Postgres + MinIO; omit for external DB
    * - ``llm``
      - ``ollama``
@@ -226,56 +217,35 @@ Profiles:
       - ``surrealdb``
       - ``--profile alt-graph`` — SurrealDB alternative graph backend (set ``OZ_SURREALDB_URL``); FalkorDB is now the default graph backend (always on, host port 6381, no profile needed; PostgreSQL graph backend is deprecated and will be removed in v1.1.0)
 
-The API becomes available at ``http://localhost:8000`` once the bootstrap
-sequence completes (``~60s`` Option A / ``~30s`` Option B).  See
-:doc:`/domains/infrastructure` for the full bootstrap phase table.
+The API becomes available at ``http://localhost:8000`` once the stack
+is healthy (``~60s`` Option A / ``~30s`` Option B).  See
+:doc:`/domains/infrastructure` for the full service graph.
 
 Service Topology
 ~~~~~~~~~~~~~~~~
 
-**With ``--profile local-db`` — Full DAG (Option A, 8 phases, 41–48s):**
+**With ``--profile local-db`` — Full DAG (Option A, embedded Postgres):**
 
 .. code-block::
 
-   openbao ─► openbao-init
-                              postgres ─► postgres-init ─► postgres-migrate
-                                                                 │
-                                      ┌───────────────────────────┘
-                                      ▼
-                                  openbao-write-db
-                                      │
-                        ┌─────────────┴─────────────┐
-                        ▼                           ▼
-                openbao-agent-api            openbao-agent-worker
-                   (sidecar)                     (sidecar)
-                        │                           │
-                        ▼                           ▼
-                       api                        worker
-                        │                           │
-                        └─────────► redis ◄─────────┘
+   postgres ─► postgres-init ─► postgres-migrate ─► api ─► redis ◄── worker
 
 .. note::
 
-   ``openbao-init`` waits on ``openbao`` only, and ``postgres`` starts with
-   no ``depends_on`` — there is **no** ``openbao-init → postgres`` edge in
-   ``infra/docker-compose.backend.yml``. The two chains boot in parallel;
-   ``api``/``worker`` additionally wait on ``redis`` and ``falkordb``
+   ``api``/``worker`` wait on ``redis`` and ``falkordb``
    (``service_healthy``).
 
 **Without ``--profile local-db`` — Slim DAG (Option B, external DB, 21–39s):**
 
 .. code-block::
 
-   openbao ─► openbao-init ─► openbao-agent-api ─► api ─┐
-                              └─► openbao-agent-worker ─► worker ─► redis
+   api ─► redis ◄── worker
 
-   # No postgres, postgres-init, postgres-migrate, or openbao-write-db.
-   # Agent static_secret_render_interval is 10s; grep -c DATABASE_URL is 1
-   # (vs 2 for Option A where openbao-write-db merges a second entry).
+   # No postgres, postgres-init, or postgres-migrate.
 
 Each phase must complete before the next begins, enforced by ``depends_on:
 condition: service_healthy`` and ``service_completed_successfully``.  See
-:doc:`/domains/infrastructure` for the full service graph and bootstrap details.
+:doc:`/domains/infrastructure` for the full service graph.
 
 Makefile Targets
 ~~~~~~~~~~~~~~~~
@@ -312,33 +282,29 @@ The ``Makefile`` at the monolith root exposes common Compose operations:
 
 .. warning::
 
-   ``make docker-reset`` removes all data volumes (OpenBao Raft state,
-   PostgreSQL data, Redis data).  Use with extreme caution in any environment
+   ``make docker-reset`` removes all data volumes (PostgreSQL data,
+   Redis data, MinIO blobs).  Use with extreme caution in any environment
    with real data.  A cold-boot loop must use ``down -v`` (not plain
-   ``down``): ``init_postgres.sh`` rotates DB passwords on every boot while
-   ``write_db_to_openbao.sh`` short-circuits on its marker file, so a
-   restart without ``-v`` leaves a stale ``DATABASE_URL`` in OpenBao.
+   ``down``): ``init_postgres.sh`` rotates DB passwords on every boot, so a
+   restart without ``-v`` can leave a stale ``DATABASE_URL`` behind.
    Re-run with ``--build`` so one-shot init images are not stale.
 
 External Postgres (production/CI)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For managed or host Postgres, skip ``--profile local-db`` and inject
-``OZ_DATABASE_URL`` via OpenBao:
+For managed or host Postgres, skip ``--profile local-db`` and set
+``OZ_DATABASE_URL`` directly in ``.env``:
 
 .. code-block:: bash
 
-   # .env — persisted so OpenBao can render it at runtime
+   # .env — read directly from the environment at startup
    echo 'OZ_DATABASE_URL=postgresql+asyncpg://openzync:pass@host.docker.internal:5432/openzync' >> .env
    docker compose --env-file .env -f infra/docker-compose.backend.yml up -d
 
-``init_openbao.sh`` writes all ``OZ_*`` vars (including ``OZ_DATABASE_URL``
-when set) into the OpenBao system secret at ``system/config/data/system``;
-the ``openbao-agent-api`` / ``openbao-agent-worker`` sidecars render it to
-``/run/secrets/system.env`` (``grep -c DATABASE_URL`` → ``1`` vs ``2`` for
-Option A where ``openbao-write-db`` merges a second entry). The
-``postgres-init`` / ``postgres-migrate`` / ``openbao-write-db`` services are
-not started in this mode.
+The API, worker, and migrator (``postgres-migrate``) all read
+``OZ_DATABASE_URL`` straight from the environment. The
+``postgres-init`` / ``postgres-migrate`` services are not started in
+this mode.
 
 ``extra_hosts: ["host.docker.internal:host-gateway"]`` is already configured
 for ``api`` and ``worker`` in the compose file — use
@@ -358,7 +324,7 @@ Verify:
 .. code-block:: bash
 
    docker compose --env-file .env -f infra/docker-compose.backend.yml ps
-   # Option B shows no postgres / postgres-init / postgres-migrate / openbao-write-db
+   # Option B shows no postgres / postgres-init / postgres-migrate
    curl -s http://localhost:8000/health | python3 -m json.tool  # → {"status": "ok"}
    curl -s http://localhost:8000/ready | python3 -m json.tool   # → {"checks": {"database": true, ...}}
 
@@ -672,26 +638,21 @@ Production Considerations
 Secrets Management
 ~~~~~~~~~~~~~~~~~~
 
-The OpenBao bootstrap runs with ``tls_disable = true`` and a static-KV seal by
-default.  For production:
+All runtime configuration lives in ``OZ_*`` environment variables
+(``.env``, mode ``0600``).  For production:
 
-#. **Replace the seal** — use Shamir (5-key, 3-threshold) or a cloud KMS
-   (AWS KMS, GCP Cloud KMS, Azure Key Vault).  Remove ``BAO_STATIC_SEAL_KEY``.
-#. **Enable TLS** — remove ``tls_disable = true`` from
-   ``infra/openbao/config.hcl`` and configure proper certificates.
-#. **Revoke the root token** — set ``BAO_REVOKE_ROOT_TOKEN=true`` on the
-   ``openbao-init`` container.
-#. **Persist audit logs** — mount the ``openbao-audit-logs`` volume on
-   persistent storage with a suitable retention policy.
-#. **Deploy a Raft cluster** — use 3 or 5 OpenBao nodes with Raft storage
-   on persistent volumes for high availability.
-#. **Deploy the OpenBao Agent sidecars** — each service authenticates via
-   AppRole (``role_id`` + ``secret_id``) and renders secrets to a shared
-   ``emptyDir`` volume backed by memory (``medium: Memory`` in Kubernetes).
+#. **Restrict the env file** — ``chmod 600 .env``, owned by the service
+   user; never commit it, never log its values.
+#. **Terminate TLS upstream** — the API serves plain HTTP on loopback;
+   put NGINX or your load balancer in front with certificates.
+#. **Back up ``.env`` and the database** — losing ``OZ_SECRET_KEY``
+   invalidates JWTs and per-purpose encryption subkeys; rotate with the
+   ``OZ_SECRET_KEY_PREVIOUS`` dual-key window (see
+   :doc:`/guides/rotating-keys`).
 
 .. seealso::
 
-   Rotating a live key? See :doc:`/guides/rotating-keys` (single-key pattern).
+   Rotating a live key? See :doc:`/guides/rotating-keys` (dual-key rotation).
 
 Scaling
 ~~~~~~~
@@ -720,10 +681,6 @@ Scaling
      - Vertical (larger instance) for cache; cluster mode for queue HA
      - ARQ queues benefit from ``maxmemory-policy allkeys-lru`` and
        sufficient memory for peak queue depth.
-   * - **OpenBao**
-     - Raft cluster (3–5 nodes), performance standby nodes for read scaling
-     - Each org gets its own namespace — total namespace count is bounded by
-       OpenBao's storage backend.
 
 Backup and Disaster Recovery
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -732,29 +689,26 @@ Two pieces of state require regular backups:
 
 #. **PostgreSQL data** — standard ``pg_dump`` or managed-DB snapshots.  The
    binary ``pgvector`` data is included in the dump.
-#. **OpenBao Raft storage** (``openbao-data`` volume) — contains all secrets
-   and encryption keys.  Without this, secrets are irrecoverable.
-#. **OpenBao init data** (``openbao-init-data`` volume) — contains unseal
-   keys, root token (if not revoked), AppRole credentials, and DB credentials.
+#. **The** ``.env`` **file** — holds ``OZ_SECRET_KEY``,
+   ``OZ_WEBHOOK_SIGNING_SECRET``, and credentials.  Without it, JWTs and
+   encrypted webhook secrets cannot be verified or decrypted.
 
-Recovery procedure if the init data volume is lost:
+Recovery procedure if the env file is lost:
 
-#. Re-run ``openbao-init`` — regenerates AppRole ``secret_id``\ s.
+#. Regenerate ``OZ_SECRET_KEY`` / ``OZ_WEBHOOK_SIGNING_SECRET``.
 #. Re-run ``init_postgres.sh`` — regenerates DB user passwords.
-#. Re-run ``openbao-write-db`` — pushes new ``DATABASE_URL`` to OpenBao.
+#. Update ``OZ_DATABASE_URL`` in ``.env`` and restart.
 
 .. important::
 
-   If the OpenBao Raft storage volume is lost **and** no backup exists, all
+   If the ``.env`` file is lost **and** no backup exists, all
    secrets are irrecoverable.  This includes per-org LLM API keys, webhook
-   signing secrets, PII encryption keys, and the system secret.  Regular
-   backups of the OpenBao data volume are mandatory in production.
+   signing secrets, and PII encryption keys.  Regular
+   backups of ``.env`` are mandatory in production.
 
 Networking
 ~~~~~~~~~~
 
-- Replace named volume ``tmpfs``-like mounts (``api-secrets``,
-  ``worker-secrets``) with Kubernetes ``emptyDir.medium: Memory``.
 - Change Prometheus scrape targets from ``host.docker.internal:8000`` to
   ``api:8000`` (internal DNS).
 - Configure proper DNS records and TLS certificates for the NGINX SSL server
@@ -766,7 +720,7 @@ PostgreSQL
 ~~~~~~~~~~
 
 - Use an external managed PostgreSQL instance (RDS, Cloud SQL) in production.
-- The bootstrap credentials must then be pre-seeded into OpenBao; the
+- Set ``OZ_DATABASE_URL`` in ``.env`` directly; the
   ``postgres-init`` and ``postgres-migrate`` services are skipped.
 - Set ``pool_recycle`` to 3600 seconds (the default in ``init_db_engine``)
   to handle connection expiration from managed-DB proxies.
@@ -790,27 +744,6 @@ Known Deployment Pitfalls
      - Root Cause
      - Resolution
 
-   * - API returns ``OpenBaoAuthError: [sys/namespaces/*] permission denied``
-     - ``/sys/namespaces`` is restricted to the **root namespace** — the
-       API's AppRole token (in ``system/``) cannot create namespaces.
-     - Ensure ``/openbao-bootstrap/root-token`` is mounted in the API
-       container. ``OpenBaoClient.create_namespace()`` reads it
-       automatically and uses the root token for namespace creation.
-
-   * - API returns ``OpenBaoSecretNotFoundError: [sys/mounts/config] namespace not found``
-     - ``/sys/mounts`` is also root-namespace-only; the AppRole token
-       cannot enable secrets engines in child namespaces.
-     - ``create_org_namespace()`` passes ``use_root_token=True`` to
-       ``enable_kv_v2()`` — no manual intervention needed.
-
-   * - AppRole token returns ``namespace not found`` on child namespace operations
-     - ``X-Vault-Namespace`` resolves **from root**, not from the token's
-       namespace. Use the full path ``system/org_<uuid>/``, not just
-       ``org_<uuid>/``.
-     - ``_org_ns()`` returns ``system/org_<uuid>/`` automatically.
-       Verify no code path calls ``_headers()`` with a bare
-       ``org_<uuid>`` value.
-
    * - Container shows ``(unhealthy)`` but logs show the app is running
      - HEALTHCHECK uses ``wget`` which is not installed in the image.
      - The fix has been applied to the API Dockerfile (using
@@ -827,10 +760,10 @@ Related documentation
 ---------------------
 
 - :doc:`/domains/infrastructure` — Full infrastructure reference (service
-  graph, OpenBao configuration, NGINX, observability, Helm chart, Makefile
+  graph, NGINX, observability, Helm chart, Makefile
   targets, production considerations)
-- :doc:`/domains/core` — Configuration system (``BootstrapSettings``,
-  ``Settings``), async DB/Redis/ARQ connection management
+- :doc:`/domains/core` — Configuration system (``Settings``,
+  ``get_settings``), async DB/Redis/ARQ connection management
 - :doc:`/domains/workers` — ARQ worker architecture and task registry
 - :doc:`/domains/api_layer` — FastAPI application layer and middleware
 - :doc:`/guides/overview` — System overview and architecture

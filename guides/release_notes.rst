@@ -68,10 +68,11 @@ Security fixes
 * **The hardcoded admin root password is gone.** An unset root password now
   gets a random one-time password, and the seed still forces a change at first
   login.
-* **Webhook signing secrets are encrypted at rest** through OpenBao Transit
-  (AAD = endpoint ID): encrypted before create, rotate, or update, decrypted
-  only at sign time. Transit failures surface as a fail-loud ``502`` with no
-  plaintext fallback, and a missing Transit key fails startup.
+* **Webhook signing secrets are encrypted at rest** with Fernet
+  (``core.crypto``, AAD = endpoint ID): encrypted before create, rotate, or
+  update, decrypted only at sign time. Crypto failures surface as a
+  fail-loud ``502`` with no plaintext fallback, and a missing
+  ``OZ_SECRET_KEY`` fails startup.
 * **RBAC cache keys are scoped per ``(org_id, user_id)``** for roles,
   permission sets, and the must-change-password flag, so a user with roles in
   two organizations can no longer read one organization's cached role from the
