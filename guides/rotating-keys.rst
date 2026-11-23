@@ -1,140 +1,95 @@
-Rotating runtime keys (single-key pattern)
-===========================================
+Rotating runtime keys (dual-key rotation)
+=========================================
 
-OpenBao is the sole runtime-config source. The ``system/`` namespace
-holds one KV-v2 secret at ``config/data/system`` and the API/worker
-sidecars render it to ``/run/secrets/system.env`` at boot.
+All runtime configuration lives in ``OZ_*`` environment variables
+(``.env``), read directly at startup — there is no secret store, no
+sidecar, and no seal key. Secrets at rest (webhook signing secrets, PII
+fields) are encrypted with Fernet under per-purpose subkeys derived from
+``OZ_SECRET_KEY`` (see ``core.crypto``). ``OZ_SECRET_KEY_PREVIOUS``
+decrypts only, providing the rotation window: set it while rotating so
+old ciphertexts still verify while new ones use the fresh key.
 
-This runbook rotates **one** key inside that object. It uses
-``OZ_SMTP_PASSWORD`` as the worked example — swap the key name for
-any other ``OZ_*`` key; the steps are identical.
+For the initial deploy and the plain-env model, see
+:doc:`/guides/deployment`. For the full service topology, see
+:doc:`/domains/infrastructure`.
 
-For the initial deploy and the zero-fallback secrets model, see
-:doc:`/guides/deployment`. For the full service topology and the
-bootstrap sequence, see :doc:`/domains/infrastructure`.
+Rotate OZ_SECRET_KEY
+--------------------
 
-Prerequisites
--------------
+1. Generate the new key without echo or history::
 
-* SSH access to the production host (all commands run there).
-* ``VAULT_ADDR=http://127.0.0.1:8200`` — OpenBao listens on
-  loopback; never expose it publicly.
-* A root token, read from the init-data volume::
+    set +x
+    NEW_KEY=$(python3 -c 'import secrets; print(secrets.token_urlsafe(48))')
 
-    TOKEN=$(cat /var/lib/docker/volumes/infra_openbao-init-data/_data/root-token)
+2. Open the dual-key window — keep the old key as decrypt-only.
+   In ``.env``::
 
-* Every API call **must** send ``X-Vault-Namespace: system/``.
-  Reads against the root namespace return ``404`` even when the
-  path is correct.
+    OZ_SECRET_KEY=<new value from step 1>
+    OZ_SECRET_KEY_PREVIOUS=<old OZ_SECRET_KEY value>
 
-.. warning::
+   Restart both services so new encryptions use the fresh key while old
+   ciphertexts still decrypt::
 
-    ``POST config/data/system`` **replaces the whole data object**.
-    Never write a single key. Always read-modify-write **all** keys
-    (expect ``27``). Writing one field alone deletes the rest.
+    docker restart openzync-api openzync-worker
 
-Rotate one key
---------------
+3. Re-encrypt live secrets under the new key. Webhook signing secrets
+   are single-key Fernet rows — **re-create each webhook** (create with
+   the new key, verify delivery, delete the old one). Per-org LLM keys
+   and PII fields in ``users.config_override`` are re-encrypted on next
+   write; to force it, re-save the org config.
+
+4. Verify, then close the window::
+
+    curl -s http://localhost:8000/health | python3 -m json.tool
+    curl -s http://localhost:8000/ready | python3 -m json.tool
+
+   Once every secret has been re-created/re-saved under the new key,
+   remove ``OZ_SECRET_KEY_PREVIOUS`` from ``.env`` and restart again.
+   A row still encrypted under the old key fails loudly after this —
+   that is the signal it was missed, not a bug.
+
+Rotate any other OZ_* value
+----------------------------
+
+Plain values (``OZ_SMTP_PASSWORD``, feature flags, URLs) need no
+window. This uses ``OZ_SMTP_PASSWORD`` as the worked example — swap the
+key name for any other ``OZ_*`` key; the steps are identical.
 
 1. Capture the new value without echo or history::
 
     set +x
     read -rsp 'New OZ_SMTP_PASSWORD: ' NEW_VAL; echo
 
-2. Back up the current key list (key names only, no values)::
+2. Write it to ``.env`` and restart::
 
-    curl -s -H "X-Vault-Token: $TOKEN" \
-      -H 'X-Vault-Namespace: system/' \
-      "$VAULT_ADDR/v1/config/data/system" \
-      | python3 -c 'import json,sys; print("\n".join(sorted(json.load(sys.stdin)["data"]["data"])))' \
-      | tee /tmp/oz-keys-before.txt
-    wc -l /tmp/oz-keys-before.txt  # expect 27
-
-3. Read-modify-write: assert the key exists, overwrite one field,
-   post the full object back. Print the key count only::
-
-    curl -s -H "X-Vault-Token: $TOKEN" \
-      -H 'X-Vault-Namespace: system/' \
-      "$VAULT_ADDR/v1/config/data/system" > /tmp/oz-cur.json
-    NEW_VAL="$NEW_VAL" TOKEN="$TOKEN" python3 - <<'EOF'
-    import json, os, urllib.request
-    base = 'http://127.0.0.1:8200/v1/config/data/system'
-    ns = 'system/'
-    token = os.environ['TOKEN']
-    with urllib.request.urlopen(urllib.request.Request(
-            base, headers={'X-Vault-Token': token,
-                           'X-Vault-Namespace': ns})) as r:
-        cur = json.load(r)['data']['data']
-    assert 'OZ_SMTP_PASSWORD' in cur, 'key missing, aborting'
-    cur['OZ_SMTP_PASSWORD'] = os.environ['NEW_VAL']
-    req = urllib.request.Request(
-        base, data=json.dumps({'data': cur}).encode(),
-        headers={'X-Vault-Token': token,
-                 'X-Vault-Namespace': ns,
-                 'Content-Type': 'application/json'}, method='POST')
-    with urllib.request.urlopen(req):
-        pass
-    print(f'keys={len(cur)}')  # expect keys=27, value never printed
-    EOF
-
-4. Wait ~12s for the agent sidecars to re-render, then confirm the
-   rendered file changed (names only, values redacted)::
-
-    sleep 12
-    grep -o '^[A-Z0-9_]*' \
-      /var/lib/docker/volumes/infra_api-secrets/_data/system.env \
-      | sort | diff /tmp/oz-keys-before.txt - && echo 'key set unchanged'
-
-5. Restart both services. **Mandatory** — the entrypoint sources
-   ``/run/secrets/system.env`` at boot, so ``docker exec`` env is
-   stale until restart::
-
+    # edit .env: OZ_SMTP_PASSWORD=<new value>
     docker restart openzync-api openzync-worker
 
-6. Verify: key-name listing (redacted), in-container check, probes,
-   and mail logs::
+3. Verify::
 
-    curl -s -H "X-Vault-Token: $TOKEN" \
-      -H 'X-Vault-Namespace: system/' \
-      "$VAULT_ADDR/v1/config/data/system" \
-      | python3 -c 'import json,sys; print(sorted(json.load(sys.stdin)["data"]["data"]))'
-    docker exec openzync-api sh -c 'set | grep -o "^OZ_[A-Z_]*" | sort | head -30'
     curl -s http://localhost:8000/health | python3 -m json.tool
     curl -s http://localhost:8000/ready | python3 -m json.tool
     docker logs openzync-api 2>&1 | grep -i email | tail -5
-    unset NEW_VAL TOKEN; set -x
+    unset NEW_VAL; set -x
 
 Security notes
 --------------
 
-* Never ``echo`` or log a secret value. Print key names and counts.
+* Never ``echo`` or log a secret value.
 * ``unset`` the shell variables when done (last line above).
 * Redact ``PASSWORD|SECRET|KEY|TOKEN`` in any pasted output.
-
-Troubleshooting
----------------
-
-* **Config looks stale** — you forgot the restart in step 5.
-  The sidecar file updates, but the running process keeps its
-  boot-time environment. Restart and re-verify.
-* **Key count is not 27** — a partial write happened. Restore from
-  ``/tmp/oz-keys-before.txt``: re-run step 3 against the previous
-  KV-v2 version, confirm ``keys=27``, then restart.
-* **Signup returns 502** — check for mail-send failures::
-
-    docker logs openzync-api 2>&1 | grep -i 'send_failed' | tail -5
 
 Rollback
 --------
 
-KV-v2 keeps prior versions of ``config/data/system``. To roll back,
-write back the previous version's full data object (same
-read-modify-write path, no single-key writes), confirm ``keys=27``,
-restart both services, and re-run the step 6 probes.
+Inside the dual-key window, roll back by setting ``OZ_SECRET_KEY`` to
+the previous value (or keeping ``OZ_SECRET_KEY_PREVIOUS`` set) and
+restarting. After the window is closed, restore ``.env`` from backup
+and re-create any secrets written under the discarded key.
 
 Related documentation
 ---------------------
 
-* :doc:`/guides/deployment` — deploy runbook, zero-fallback model
-* :doc:`/domains/infrastructure` — OpenBao topology and bootstrap
+* :doc:`/guides/deployment` — deploy runbook, plain-env model
+* :doc:`/domains/infrastructure` — service topology
 * :doc:`/guides/quickstart` — first-boot walkthrough

@@ -546,9 +546,6 @@ Module: ``models/organization.py``
       * - ``name``
         - ``Text``
         - Human-readable name
-      * - ``plan``
-        - ``String(20)``
-        - Billing plan — ``"free"``, ``"pro"``, ``"enterprise"``
       * - ``config``
         - ``JSONB``
         - Per-org UI-exposed configuration (LLM, embeddings, graph, behaviour)
@@ -558,8 +555,6 @@ Module: ``models/organization.py``
       * - ``is_active``
         - ``Boolean``
         - Soft toggle for deactivation. Default: ``True``
-
-   Constraint: ``CHECK (plan IN ('free', 'pro', 'enterprise'))``.
 
 
 Schema (``TimestampMixin``)
@@ -615,7 +610,7 @@ Signup Flow
            AuthService-->>Router: raise ConflictError(409)
            Router-->>Client: 409 Conflict
        else
-           AuthService->>AuthRepository: create_organization(name, plan="free")
+           AuthService->>AuthRepository: create_organization(name)
            AuthService->>AuthRepository: seed_prompts_for_org(org.id)
            AuthService->>AuthService: hash_password(password)
            AuthService->>AuthRepository: create_dashboard_user(...)
@@ -633,7 +628,7 @@ Signup Flow
 #. :meth:`AuthService.signup` validates password strength (min 8 chars, 1 upper,
    1 lower, 1 digit).
 #. Email uniqueness is checked — ``ConflictError(409)`` if taken.
-#. An :class:`Organization` is created with plan ``"free"``.
+#. An :class:`Organization` is created (no subscription tier — quotas govern limits).
 #. Default prompt templates are seeded for the new org.
 #. The password is bcrypt-hashed and the dashboard user is created with role ``"admin"``.
 #. A verification OTP is sent via email. **No JWT tokens are issued yet** —
@@ -1958,10 +1953,9 @@ All database access for dashboard authentication flows.  No business logic
       :param UUID user_id: Internal user UUID.
       :returns: ``User`` if found, or ``None``.
 
-   .. method:: create_organization(name, plan="free")
+   .. method:: create_organization(name)
 
       :param str name: Organisation name.
-      :param str plan: Billing plan (default ``"free"``).
       :returns: Newly created ``Organization``.
 
    .. method:: seed_prompts_for_org(org_id)

@@ -11,10 +11,10 @@ Context
 OpenZync needed a production one-liner installer for full-stack
 single-host deploys (backend compose + frontend dashboard). The
 workspace is 7 independent repos with separate remotes, branches, CI,
-and deploys. OpenBao is the sole runtime-config source, with only 4
-bootstrap secrets allowed in ``.env`` (``BAO_STATIC_SEAL_KEY``,
-``POSTGRES_PASSWORD``, ``OZ_SECRET_KEY``,
-``OZ_WEBHOOK_SIGNING_SECRET``).
+and deploys. Runtime configuration lives in ``OZ_*`` environment variables
+(``.env``) — the full runtime set, read directly at startup with no sidecar
+or seal key. (This supersedes the earlier OpenBao sole-source model; see the
+supersede note below — history preserved as written.)
 
 ----
 
@@ -22,7 +22,7 @@ Decision
 --------
 
 D1 — Installer source lives in ``openzync-core/infra/install.sh``.
-It owns the compose reference, the OpenBao bootstrap, and the GHCR
+It owns the compose reference, the ``.env`` bootstrap, and the GHCR
 image references.
 
 D2 — Distribution via a stable landing URL
@@ -70,8 +70,8 @@ Positive
 - One-liner install: ``curl -fsSL openzync.tech/install.sh | bash``.
 - No license mixing: frontend crosses the boundary only as a
   container image.
-- No config drift: OpenBao stays the sole runtime-config source;
-  the installer only bootstraps the 4 secrets.
+- No config drift: ``.env`` holds the full runtime set;
+  the installer only bootstraps the secrets.
 
 Negative
 ~~~~~~~~
@@ -104,3 +104,15 @@ canonical and already includes the RLS fix commit). Rationale: zero landing
 coupling, version = branch head, no vendoring/license mixing, no release
 overhead. One-liner uses the raw URL directly. Landing redirect retained
 as a deferred alternative.
+
+----
+
+Supersede note (2026-11-21)
+---------------------------
+
+The OpenBao sole-source model in Context/D1 above is superseded:
+runtime configuration now lives in ``OZ_*`` environment variables
+(``.env``), encryption is Fernet via ``core.crypto`` (``OZ_SECRET_KEY`` /
+``OZ_SECRET_KEY_PREVIOUS`` dual-key window), and there is no sidecar,
+seal key, or external secret store. The history above is preserved as
+written; new work follows the env model.
