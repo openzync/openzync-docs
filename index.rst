@@ -19,7 +19,6 @@ production LLM applications.
 
    guides/overview
    guides/quickstart
-   guides/addons
    guides/release_notes
    guides/architecture
    guides/deployment
