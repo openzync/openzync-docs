@@ -915,12 +915,14 @@ are scoped to a project via the API key — you rarely need to provide a
 
          await client.projects.archive()
 
-   .. method:: add_member(user_id, role="member")
+   .. method:: add_member(email, role="member")
 
-      Add a user as a member of the project.
+      Add a user as a member of the project by email address.
 
-      :param user_id: The UUID of the user to add.
-      :type user_id: str
+      # ⚠️ BREAKING: ``user_id`` was removed — email-only.
+
+      :param email: Email address of the user to add.
+      :type email: str
       :param role: Project role.  Must be ``"owner"`` or ``"member"``.
       :type role: str
       :returns: :class:`ProjectMemberResponse` with membership details.
@@ -929,7 +931,7 @@ are scoped to a project via the API key — you rarely need to provide a
       .. code-block:: python
 
          member = await client.projects.add_member(
-             user_id="user-abc-123",
+             email="teammate@example.com",
              role="member",
          )
          print(f"Added member {member.user_id} with role {member.role}")
@@ -1779,11 +1781,11 @@ Project models
 
    Request body for ``POST /v1/projects/{project_id}/members``.
 
-   .. attribute:: user_id
+   .. attribute:: email
 
       :type: str
 
-      UUID of the user to add.
+      Email address of the user to add.
 
    .. attribute:: role
 

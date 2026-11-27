@@ -1419,7 +1419,8 @@ Orchestrates project and project member lifecycle.
 
    .. method:: add_member(project_id, payload)
 
-      :param AddMemberRequest payload: User ID and role.
+      :param AddMemberRequest payload: Member email and role (email-only).
+      # ⚠️ BREAKING: ``user_id`` was removed — members are added by email.
       :raises ValidationError: User already a member.
 
    .. method:: remove_member(project_id, user_id)
