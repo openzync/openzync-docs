@@ -270,7 +270,7 @@ OpenZync uses a three-level hierarchy for data isolation:
    erDiagram
        Organization ||--o{ User : has
        Organization ||--o{ Project : owns
-       Organization ||--o{ OrgConfig : has
+       Organization ||--o{ PlatformConfig : has
        Project ||--o{ Episode : contains
        Project ||--o{ GraphEntity : "knowledge graph (entities)"
        Project ||--o{ Fact : "knowledge graph (facts)"
@@ -278,7 +278,7 @@ OpenZync uses a three-level hierarchy for data isolation:
        Project ||--o{ WebhookSubscription : has
 
 - **Organization** — billing and administrative boundary.  Has its own
-  OpenBao namespace for per-org secrets (LLM API keys).
+  OpenBao namespace for per-user secrets (LLM API keys).
 - **User** — belongs to exactly one organization.  Authenticates via JWT
   (dashboard) or API key (programmatic access).
 - **Project** — data isolation boundary.  All memory, graph, and session
@@ -336,7 +336,7 @@ Key properties:
   with least-privilege policies.
 - **Auto-generated credentials** — database passwords are generated at
   bootstrap and written directly to OpenBao.  No human ever sees them.
-- **Transit encryption** — sensitive per-org data is encrypted via OpenBao's
+- **Transit encryption** — sensitive per-user data is encrypted via OpenBao's
   Transit secrets engine before storage.
 - **Fail-fast** — if OpenBao is unreachable at startup, the process exits
   immediately.  No silent fallback to env vars or defaults.

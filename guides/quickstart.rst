@@ -645,7 +645,7 @@ The dashboard is available at ``http://localhost:3000``.
 Login using the email and password from the signup step above.  After login,
 the dashboard shows:
 
-* **Overview** — org-level usage stats and health indicators.
+* **Overview** — user-level usage stats and health indicators.
 * **Projects** — list of projects with member management.
 * **Graph Explorer** — interactive knowledge graph visualisation with entity
   nodes, relationship edges, and community clusters.

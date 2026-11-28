@@ -34,9 +34,9 @@ Rotate OZ_SECRET_KEY
 
 3. Re-encrypt live secrets under the new key. Webhook signing secrets
    are single-key Fernet rows — **re-create each webhook** (create with
-   the new key, verify delivery, delete the old one). Per-org LLM keys
+   the new key, verify delivery, delete the old one). Per-user LLM keys
    and PII fields in ``users.config_override`` are re-encrypted on next
-   write; to force it, re-save the org config.
+   write; to force it, re-save the platform config.
 
 4. Verify, then close the window::
 

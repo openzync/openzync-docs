@@ -92,7 +92,7 @@ core.logging module
 core.org\_config module
 -----------------------
 
-.. automodule:: core.org_config
+.. automodule:: core.platform_config
    :members:
    :show-inheritance:
    :undoc-members:

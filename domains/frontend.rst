@@ -97,7 +97,7 @@ groups:
            ├── extraction-instructions/# Extraction instructions
            ├── webhooks/               # Webhook endpoints
            ├── prompts/                # Prompt template manager
-           └── org-config/             # Org configuration (LLM, graph, etc.)
+           └── platform-config/      # Platform configuration (LLM, graph, etc.)
 
 Layout Hierarchy
 =================
@@ -128,7 +128,7 @@ Layout Hierarchy
   project metadata from the API and makes it available via
   ``useProject()``.
 
-- **OrgConfigLayout** (``src/app/(dashboard)/settings/org-config/layout.tsx``):
+- **PlatformConfigLayout** (``src/app/(dashboard)/settings/platform-config/layout.tsx``):
   Adds a tabbed sub-navigation (LLM / Embeddings / Graph / Behaviour) for the
   organization configuration section.
 
@@ -340,7 +340,7 @@ Registration & Onboarding
      search type (hybrid, BM25, vector), traversal depth, SurrealDB
      connection fields
    - **Behaviour**: Context cache TTL, audit log response body toggle
-5. On save, ``PUT /admin/org/config`` stores the configuration and the user
+5. On save, ``PUT /admin/platform-config`` stores the configuration and the user
    is redirected to ``/overview``
 
 Login Flow
@@ -461,7 +461,7 @@ All under ``/settings/*``:
   type selection, view signing secret once, test delivery
 - **Prompts** (``/settings/prompts``): Full prompt template manager with
   version history, edit/customize, set default prompt for type
-- **Org Config** (``/settings/org-config``): Tabbed configuration for LLM,
+- **Platform Config** (``/settings/platform-config``): Tabbed configuration for LLM,
   Embeddings, Graph, and Behaviour (same sections as onboarding)
 
 Monitoring & Analytics

@@ -42,7 +42,7 @@ OpenZync supports two independent authentication methods, routed by the
 **JWT (Dashboard users)**
    Bearer tokens with three base64url segments (two dots).  Signed with
    ``SECRET_KEY`` via HS256.  Used by the web dashboard UI.  Claims include
-   ``sub`` (user UUID), ``org_id``, ``role``, and ``type`` (``"access"``).
+   ``sub`` (user UUID), ``user_id``, ``role``, and ``type`` (``"access"``).
 
 **API Key (SDK clients)**
    Bearer tokens starting with ``oz_live_`` or ``oz_test_``.  Stored as
@@ -62,7 +62,7 @@ After successful authentication, the middleware sets the following keys on
      - JWT
      - API Key
      - Type
-   * - ``org_id``
+   * - ``user_id``
      - Extracted from JWT claims
      - From ``api_keys.organization_id``
      - ``str``
@@ -154,7 +154,7 @@ fields.
 Permission Model
 ----------------
 
-Authorization uses a single org-scoped permission vocabulary (see
+Authorization uses a single user-scoped permission vocabulary (see
 `ADR 007 <../adr/007-unified-org-permission-model.html>`_), replacing the
 previous ``users.role`` checks, ``project_members.role`` owner checks, and
 ``api_keys.scopes`` + ``require_scope`` bridge.  One dependency factory —
@@ -175,15 +175,15 @@ Org-Scoped Permissions
    * - ``project:manage``
      - Project lifecycle — create, archive, delete, project settings
    * - ``configuration:read``
-     - Read org/project configuration
+     - Read user/project configuration
    * - ``configuration:write``
-     - Modify org/project configuration
+     - Modify user/project configuration
    * - ``members:read``
-     - List org/project members
+     - List user/project members
    * - ``members:write``
      - Add/remove members and change member permissions
 
-Permissions are org-scoped.  Project membership
+Permissions are user-scoped.  Project membership
 (``require_project_membership``) remains the project-scope gate; the
 permission set decides what a member may do within that scope.
 
@@ -304,7 +304,7 @@ Module: ``models/user.py``
         - User role — ``"admin"``, ``"member"``. Default: ``"member"``
       * - ``permissions``
         - ``ARRAY(String)``
-        - Org-scoped permissions.  Default: member defaults
+        - User-scoped permissions.  Default: member defaults
           ``["project:read", "project:write"]``; optional grants are
           appended.  Empty array = admin wildcard (all permissions)
       * - ``password_hash``
@@ -385,7 +385,7 @@ Module: ``models/api_key.py``
         - Optional label
       * - ``permissions``
         - ``ARRAY(String)``
-        - Org-scoped permissions (renamed from ``scopes``).  Default:
+        - User-scoped permissions (renamed from ``scopes``).  Default:
           member defaults ``["project:read", "project:write"]``.  Empty
           array = admin wildcard.  Legacy values (``read``, ``write``,
           ``admin``, ``admin:write``) are remapped by migration
@@ -548,7 +548,7 @@ Module: ``models/organization.py``
         - Human-readable name
       * - ``config``
         - ``JSONB``
-        - Per-org UI-exposed configuration (LLM, embeddings, graph, behaviour)
+        - Per-user UI-exposed configuration (LLM, embeddings, graph, behaviour)
       * - ``quotas``
         - ``JSONB``
         - Usage quotas — including PII config under ``quotas["pii"]``
@@ -807,7 +807,7 @@ API Key Authentication Flow
        AuthMiddleware->>AuthMiddleware: compute_lookup_hash(raw_key)
        AuthMiddleware->>RedisCache: GET auth:key:{lookup_hash}
        alt Cache hit
-           RedisCache-->>AuthMiddleware: cached {org_id, permissions, ...}
+           RedisCache-->>AuthMiddleware: cached {user_id, permissions, ...}
            AuthMiddleware->>AuthMiddleware: set request.state
            AuthMiddleware-->>Client: → Route handler
        else Cache miss
@@ -1019,7 +1019,7 @@ Router: ``routers/users.py`` — prefix ``/v1/users``, tag ``Users``
      - API Key / JWT
      - Phase 2: hard purge after 30 days
 
-All user endpoints require ``require_org_id`` — both JWT and API key
+All user endpoints require ``require_user_id`` — both JWT and API key
 authentication are accepted.
 
 Public Endpoints (No Auth Required)
@@ -1041,7 +1041,7 @@ authentication:
 * ``/v1/auth/login/otp/send``
 * ``/v1/auth/login/otp/verify``
 * ``/v1/auth/mfa/verify``
-* ``/admin/organizations``, ``/admin/org/config/defaults``
+* ``/admin/custom-instructions``, ``/admin/platform-config/defaults``
 * ``/metrics`` (exact path only)
 
 The ``/metrics`` endpoint is handled by an exact-path check so that sub-paths
@@ -1195,7 +1195,7 @@ and email delivery to :class:`EmailService`.
       :param str role: User role for JWT claims.
       :returns: ``TokenResponse`` with fresh JWT pair.
 
-      Internal helper.  Creates JWT access token with ``sub``, ``org_id``,
+      Internal helper.  Creates JWT access token with ``sub``, ``user_id``,
       ``role``, and ``type`` claims.  Generates opaque refresh token,
       stores its SHA-256 hash, and returns both.
 
@@ -1574,7 +1574,7 @@ ingestion flow.  Configuration is read from the organisation's
 Real-world usage in the ingestion pipeline::
 
     # Each org has a PII config in its quotas dict
-    org = await repo.get_organization(org_id)
+    org = await repo.get_organization(user_id)
     pii_config = org.quotas.get("pii", {})
 
     pii_service = PIIService(pii_config)
@@ -1614,9 +1614,9 @@ for downstream middleware and route handlers.
 
    #. Token has exactly two dots (``_is_jwt_token`` heuristic).
    #. Signature verified via ``verify_jwt_token()`` with ``SECRET_KEY`` (HS256).
-   #. Required claims: ``sub`` (user_id), ``org_id``, ``type`` (must be
+   #. Required claims: ``sub`` (user_id), ``user_id``, ``type`` (must be
       ``"access"``).
-   #. Sets ``request.state``: ``auth_type="jwt"``, ``user_id``, ``org_id``,
+   #. Sets ``request.state``: ``auth_type="jwt"``, ``user_id``, ``user_id``,
       ``role``, ``permissions`` (from ``users.permissions``, DB-verified).
 
    **API Key (SDK clients):**
@@ -1628,7 +1628,7 @@ for downstream middleware and route handlers.
    #. On negative miss, queries the database via ``ApiKeyRepository.get_by_lookup_hash``.
    #. Verifies the salted SHA-256 hash.
    #. Checks revocation and expiration.
-   #. Sets ``request.state``: ``auth_type="api_key"``, ``org_id``,
+   #. Sets ``request.state``: ``auth_type="api_key"``, ``user_id``,
       ``permissions``, ``api_key_project_id``, ``user_id`` (from
       ``created_by``).
    #. Updates ``last_used_at`` (fire-and-forget).
@@ -1716,7 +1716,7 @@ Module: ``dependencies/auth.py``
 
 Five dependency levels for use in route handlers:
 
-.. function:: get_org_id(request, credentials=None)
+.. function:: get_user_id(request, credentials=None)
 
    :param Request request: Incoming HTTP request.
    :param credentials: Used only for OpenAPI schema generation.
@@ -1726,10 +1726,10 @@ Five dependency levels for use in route handlers:
 
    Optional auth.  Works with both API keys and JWT tokens.
 
-.. function:: require_org_id(org_id)
+.. function:: require_user_id(user_id)
 
-   :param org_id: From ``get_org_id``.
-   :type org_id: str | None
+   :param user_id: From ``get_user_id``.
+   :type user_id: str | None
    :returns: Authenticated organization UUID string.
    :raises HTTPException 401: If not authenticated.
 
@@ -1737,9 +1737,9 @@ Five dependency levels for use in route handlers:
 
 .. function:: require_permission(permission)
 
-   :param str permission: The org-scoped permission required (e.g.
+   :param str permission: The user-scoped permission required (e.g.
        ``"project:manage"``, ``"configuration:write"``).
-   :returns: A dependency callable that returns ``org_id``.
+   :returns: A dependency callable that returns ``user_id``.
    :raises HTTPException 403: If the authenticated principal lacks the
        required permission.
    :raises HTTPException 401: If not authenticated.
@@ -1754,26 +1754,26 @@ Five dependency levels for use in route handlers:
 
        @router.post("/projects/{project_id}/archive")
        async def archive_project(
-           org_id: str = Depends(require_permission("project:manage")),
+           user_id: str = Depends(require_permission("project:manage")),
        ):
            ...
 
    Replaces the deleted ``require_scope``, ``require_org_admin``, and
    ``require_org_admin_or_self`` dependencies (see ADR 007).
 
-.. function:: get_dashboard_user(request, org_id)
+.. function:: get_dashboard_user(request, user_id)
 
    :param Request request: Incoming HTTP request.
-   :param str org_id: From ``require_org_id``.
+   :param str user_id: From ``require_user_id``.
    :returns: Dashboard user UUID string.
    :raises HTTPException 401: If not a JWT-authenticated session.
 
    Requires JWT authentication (dashboard session).  Rejects API key auth.
 
-.. function:: get_current_user_id(request, org_id)
+.. function:: get_current_user_id(request, user_id)
 
    :param Request request: Incoming HTTP request.
-   :param str org_id: From ``require_org_id``.
+   :param str user_id: From ``require_user_id``.
    :returns: Authenticated user UUID.
    :rtype: UUID
    :raises HTTPException 401: If user not authenticated.
@@ -1865,7 +1865,7 @@ Module: ``utils/crypto.py``
 
 .. function:: create_jwt_token(data, secret, expires_delta)
 
-   :param dict data: Payload claims (``{"sub": ..., "org_id": ..., ...}``).
+   :param dict data: Payload claims (``{"sub": ..., "user_id": ..., ...}``).
    :param str secret: HMAC secret key (min 32 chars).
    :param timedelta expires_delta: Relative duration until expiry.
    :returns: Encoded JWT string (three base64url segments).
@@ -1959,9 +1959,9 @@ All database access for dashboard authentication flows.  No business logic
       :param str name: Organisation name.
       :returns: Newly created ``Organization``.
 
-   .. method:: seed_prompts_for_org(org_id)
+   .. method:: seed_prompts_for_org(user_id)
 
-      :param UUID org_id: Organisation UUID.
+      :param UUID user_id: Organisation UUID.
       :returns: Number of prompt templates seeded.
 
       Reads from ``services/worker/prompts/manifest.yaml`` + ``.jinja2``
@@ -2212,7 +2212,7 @@ Module: ``schemas/api_keys.py``
    :param str prefix: ``"oz_live_"`` or ``"oz_test_"``.
    :param UUID project_id: Project scope.
    :param UUID | None created_by: Creator user UUID.
-   :param list[str] permissions: Org-scoped permissions (renamed from ``scopes``).
+   :param list[str] permissions: User-scoped permissions (renamed from ``scopes``).
    :param bool is_revoked: Revocation status.
    :param datetime | None last_used_at: Last usage timestamp.
    :param datetime created_at: Creation timestamp.

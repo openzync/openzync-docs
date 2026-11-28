@@ -23,7 +23,7 @@ application and your data, providing:
   and local Ollama.  See :doc:`/domains/llm` for the strategy/registry pattern.
 - **Prompt caching** — provider-side caching for Anthropic (``cache_control``
   markers), OpenAI/Azure (automatic prefix caching), and OpenRouter (session
-  stickiness).  Configurable per-org via system settings.
+  stickiness).  Configurable per-user via system settings.
 - **PII detection & redaction** — automatic identification and redaction of
   personally identifiable information before storage.
 - **Idempotency** — all ingestion and mutation endpoints support idempotency
@@ -49,7 +49,7 @@ The system is built as a **FastAPI** application with:
 - **Pluggable graph backend** — a common abstraction (see
   :doc:`/domains/graph_backends`) supporting PostgreSQL-native (default),
   FalkorDB, or SurrealDB for entity-relation storage.  The backend is
-  resolved per-organisation at runtime.
+  resolved per-user at runtime.
 - **OpenBao** (Vault-compatible secrets manager) as the **sole source of
   truth** for all runtime configuration and secrets.  See
   :doc:`/domains/infrastructure` for the architectural rationale.
@@ -92,7 +92,7 @@ Key features
   BM25, graph traversal, and temporal filtering with a configurable reranker.
   See :doc:`/domains/reranker`.
 - **Prompt templates** versioned and stored as Jinja2 files in a manifest
-  system with per-organisation overrides (``custom_instructions``).
+  system with per-user overrides (``custom_instructions``).
 - **Webhook system** with 14 event types and HMAC-SHA256 (Svix-compatible)
   signed delivery.  See :doc:`/domains/admin_webhooks`.
 - **SDKs** — Python (``openzync`` package) with optional LangChain

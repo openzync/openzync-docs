@@ -125,7 +125,7 @@ Secrets backup
 
    Generated secrets live in ``~/.openzync/.env`` with mode ``0600``.
    Back it up in a password manager or vault. Losing it means
-   regenerating every secret and re-creating per-org credentials
+   regenerating every secret and re-creating per-user credentials
    from scratch.
 
 First login
@@ -702,7 +702,7 @@ Recovery procedure if the env file is lost:
 .. important::
 
    If the ``.env`` file is lost **and** no backup exists, all
-   secrets are irrecoverable.  This includes per-org LLM API keys, webhook
+   secrets are irrecoverable.  This includes per-user LLM API keys, webhook
    signing secrets, and PII encryption keys.  Regular
    backups of ``.env`` are mandatory in production.
 

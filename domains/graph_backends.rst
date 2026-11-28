@@ -6,7 +6,7 @@ Graph Backend Abstraction
 The graph backend abstraction provides a **pluggable interface** for graph
 database operations — entity CRUD, relationship management, BFS traversal,
 full-text search, observation storage, entity merging, and batch analysis.
-An application-level dispatcher resolves a per-organisation backend at
+An application-level dispatcher resolves a per-user backend at
 request time so that different orgs can use different graph engines without
 caller code changes.
 
@@ -54,21 +54,21 @@ Backend Selection
 Module: :mod:`core.graph_backend`
 
 The active graph backend is determined by the :attr:`graph_backend` field in
-:class:`~schemas.organization_config.OrgConfigBase` (stored in the
+:class:`~schemas.platform_config.PlatformConfigBase` (stored in the
 ``organizations.config`` JSONB column per org).  The default value is
 ``"surrealdb"``.
 
 .. code-block:: python
 
-   from schemas.organization_config import OrgConfigBase
+   from schemas.platform_config import PlatformConfigBase
 
-   config = OrgConfigBase(graph_backend="postgres")
+   config = PlatformConfigBase(graph_backend="postgres")
 
 To disable graph features for an org, set ``graph_backend`` to ``"none"``.
 
 There is **no** ``OZ_GRAPH_BACKEND`` environment variable — the setting is
-exclusively per-org.  Connection credentials for SurrealDB (URL, user,
-password, namespace, database) are also stored in the per-org config.  For
+exclusively per-user.  Connection credentials for SurrealDB (URL, user,
+password, namespace, database) are also stored in the per-user config.  For
 FalkorDB, a single app-level connection pool is created from the system-wide
 :class:`~core.config.Settings` fields (``FALKORDB_URL``,
 ``FALKORDB_MAX_CONNECTIONS``, ``FALKORDB_SOCKET_TIMEOUT``).
@@ -99,7 +99,7 @@ Module: :mod:`core.graph_backend`
 
 .. class:: GraphBackendDispatcher()
 
-   Registry of backend **classes** (not instances) with per-org resolution.
+   Registry of backend **classes** (not instances) with per-user resolution.
    This is an app-level singleton.  It does **not** hold backend instances
    because backends need request-scoped connections (an ``AsyncSession``
    for Postgres, an ``AsyncSurreal`` for SurrealDB, or a FalkorDB client).
@@ -114,8 +114,8 @@ Module: :mod:`core.graph_backend`
 
        # Per-request resolution:
        dispatcher = request.app.state.graph_backend_dispatcher
-       backend = dispatcher.resolve_and_create(org_config, db)
-       entity = await backend.create_entity(org_id=..., name="Acme", ...)
+       backend = dispatcher.resolve_and_create(platform_config, db)
+       entity = await backend.create_entity(user_id=..., name="Acme", ...)
 
    .. method:: register(name, backend_cls)
 
@@ -133,13 +133,13 @@ Module: :mod:`core.graph_backend`
           dispatcher.register("postgres", PostgresGraphBackend)
           dispatcher.register("surrealdb", SurrealGraphBackend)
 
-   .. method:: resolve_and_create(org_config, db, surreal=None, falkordb_client=None)
+   .. method:: resolve_and_create(platform_config, db, surreal=None, falkordb_client=None)
 
-      :param OrgConfigBase | None org_config: The resolved per-org
+      :param PlatformConfigBase | None platform_config: The resolved per-user
           configuration.  ``None`` is treated as graph disabled.
       :param AsyncSession db: Request-scoped SQLAlchemy session.  Passed
           only to the PostgreSQL backend.
-      :param surreal: An optional ``AsyncSurreal`` instance from the per-org
+      :param surreal: An optional ``AsyncSurreal`` instance from the per-user
           connection pool.  Passed only to the SurrealDB backend.
       :type surreal: Any | None
       :param falkordb_client: An optional ``FalkorDB`` async client instance
@@ -147,9 +147,9 @@ Module: :mod:`core.graph_backend`
           backend.
       :type falkordb_client: Any | None
       :returns: An initialised :class:`GraphBackend` instance, or ``None``
-          if graph features are disabled for this org.
+          if graph features are disabled for this platform.
       :rtype: GraphBackend | None
-      :raises ValueError: If the backend name from ``org_config`` is not
+      :raises ValueError: If the backend name from ``platform_config`` is not
           registered and is not ``"none"``.
       :raises GraphBackendUnavailableError: When the required backend
           client is not available (e.g., ``surreal`` is ``None`` but
@@ -157,7 +157,7 @@ Module: :mod:`core.graph_backend`
 
       Resolution steps:
 
-      1. If ``org_config`` is ``None`` or ``org_config.graph_backend`` is
+      1. If ``platform_config`` is ``None`` or ``platform_config.graph_backend`` is
          not set or equals ``"none"`` → returns ``None`` (graph disabled).
       2. Looks up the backend name in the registry.
       3. Creates a new instance with backend-specific kwargs.
@@ -168,10 +168,10 @@ Module: :mod:`core.graph_backend`
       * **``"surrealdb"``**: ``surreal`` and ``max_traversal_depth``.
       * **``"falkordb"``**: ``client`` and ``max_traversal_depth``.
 
-   .. method:: create_all_backends(db, org_config=None, surreal=None, falkordb_client=None)
+   .. method:: create_all_backends(db, platform_config=None, surreal=None, falkordb_client=None)
 
       :param AsyncSession db: SQLAlchemy session for the Postgres backend.
-      :param OrgConfigBase | None org_config: Optional per-org config for
+      :param PlatformConfigBase | None platform_config: Optional per-user config for
           ``graph_max_traversal_depth``.
       :param surreal: Optional ``AsyncSurreal`` instance.
       :type surreal: Any | None
@@ -182,14 +182,14 @@ Module: :mod:`core.graph_backend`
       :rtype: list[GraphBackend]
 
       Multi-backend equivalent of :meth:`resolve_and_create`.  Creates **all**
-      registered backends instead of picking one from the org config.  Each
+      registered backends instead of picking one from the platform config.  Each
       backend receives backend-specific kwargs.  Used by
       ``HybridRetriever`` to run multiple backends in parallel and merge
       results.
 
-   .. method:: resolve_backend_name(org_config)
+   .. method:: resolve_backend_name(platform_config)
 
-      :param OrgConfigBase | None org_config: The resolved per-org config.
+      :param PlatformConfigBase | None platform_config: The resolved per-user config.
       :returns: The backend name string (e.g. ``"postgres"``), or ``None``
           if graph features are disabled.
       :rtype: str | None
@@ -229,7 +229,7 @@ Module: :mod:`packages.graph_backend.interface`
 .. class:: GraphBackend
 
    Abstract base class for all graph database backends.  Every method
-   requires ``org_id`` and ``project_id`` — OpenZync enforces strict
+   requires ``user_id`` and ``project_id`` — OpenZync enforces strict
    organisational and project-level isolation.  No cross-project graph
    traversal is possible.
 
@@ -264,9 +264,9 @@ Module: :mod:`packages.graph_backend.interface`
    Entity CRUD
    ~~~~~~~~~~~
 
-   .. method:: create_entity(org_id, project_id, name, entity_type, summary=None)
+   .. method:: create_entity(user_id, project_id, name, entity_type, summary=None)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param str name: Human-readable name for the entity.
       :param str entity_type: Type label (e.g. ``"person"``,
@@ -283,18 +283,18 @@ Module: :mod:`packages.graph_backend.interface`
       entity name within the org scope so that duplicate extractions update
       rather than silently drop information.
 
-   .. method:: get_entity(org_id, project_id, entity_id)
+   .. method:: get_entity(user_id, project_id, entity_id)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param UUID entity_id: The UUID of the entity to fetch.
       :returns: The entity dict, or ``None`` if no entity with that ID
           exists within the given org and project.
       :rtype: dict[str, Any] | None
 
-   .. method:: delete_entity(org_id, project_id, entity_id)
+   .. method:: delete_entity(user_id, project_id, entity_id)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param UUID entity_id: The UUID of the entity to delete.
       :returns: ``True`` if the entity was deleted, ``False`` if it did
@@ -303,9 +303,9 @@ Module: :mod:`packages.graph_backend.interface`
 
       Removes the entity and cascades to all incident edges.
 
-   .. method:: update_entity(org_id, project_id, entity_id, *, name=None, entity_type=None, summary=None)
+   .. method:: update_entity(user_id, project_id, entity_id, *, name=None, entity_type=None, summary=None)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param UUID entity_id: UUID of the entity to update.
       :param name: New name, or ``None`` to leave unchanged.
@@ -326,9 +326,9 @@ Module: :mod:`packages.graph_backend.interface`
    Relationship CRUD
    ~~~~~~~~~~~~~~~~~
 
-   .. method:: create_relationship(org_id, project_id, source_id, target_id, relationship_type, properties=None, confidence=None, valid_from=None, valid_to=None)
+   .. method:: create_relationship(user_id, project_id, source_id, target_id, relationship_type, properties=None, confidence=None, valid_from=None, valid_to=None)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param UUID source_id: UUID of the source entity.
       :param UUID target_id: UUID of the target entity.
@@ -361,9 +361,9 @@ Module: :mod:`packages.graph_backend.interface`
       Edge type names are **sanitised** to allow only
       ``[a-zA-Z0-9_]`` characters to prevent Cypher/SurrealQL injection.
 
-   .. method:: expire_relationship(org_id, project_id, relationship_id)
+   .. method:: expire_relationship(user_id, project_id, relationship_id)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param UUID relationship_id: UUID of the relationship to expire.
       :returns: ``True`` if the relationship was expired, ``False`` if it
@@ -377,9 +377,9 @@ Module: :mod:`packages.graph_backend.interface`
    Traversal & Search
    ~~~~~~~~~~~~~~~~~~
 
-   .. method:: traverse(org_id, project_id, start_node_id, max_depth=2, edge_types=None)
+   .. method:: traverse(user_id, project_id, start_node_id, max_depth=2, edge_types=None)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param UUID start_node_id: UUID of the node to begin traversal from.
       :param int max_depth: Maximum number of edge hops (default 2,
@@ -406,9 +406,9 @@ Module: :mod:`packages.graph_backend.interface`
       * **SurrealDB**: Iterative BFS in Python.  At each hop, uses native
         SurrealQL arrow syntax (``->``, ``->?``) for neighbour discovery.
 
-   .. method:: search_entities(org_id, project_id, query, types=None, limit=50, offset=0)
+   .. method:: search_entities(user_id, project_id, query, types=None, limit=50, offset=0)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param str query: Free-text search string.
       :param types: Optional filter — only return entities matching these
@@ -431,9 +431,9 @@ Module: :mod:`packages.graph_backend.interface`
         ``openzync_entity`` analyzer and ``search::score(0)`` for BM25
         ranking.
 
-   .. method:: retrieve_graph(org_id, project_id, query, *, match_limit=5, max_depth=2, max_results=50)
+   .. method:: retrieve_graph(user_id, project_id, query, *, match_limit=5, max_depth=2, max_results=50)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param str query: Free-text search string.
       :param int match_limit: Max entities to match before traversal.
@@ -454,9 +454,9 @@ Module: :mod:`packages.graph_backend.interface`
    Entity Listing
    ~~~~~~~~~~~~~~
 
-   .. method:: list_entities(org_id, project_id, *, entity_type=None, limit=50, cursor=None)
+   .. method:: list_entities(user_id, project_id, *, entity_type=None, limit=50, cursor=None)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param entity_type: Optional filter by entity type (e.g.
           ``"Person"``).
@@ -474,9 +474,9 @@ Module: :mod:`packages.graph_backend.interface`
       Cursor format (FalkorDB, SurrealDB): base64-encoded JSON
       ``{"o": <offset>}`` for offset-based pagination.
 
-   .. method:: list_entity_edges(org_id, project_id, entity_id, *, predicate=None, limit=50, cursor=None)
+   .. method:: list_entity_edges(user_id, project_id, entity_id, *, predicate=None, limit=50, cursor=None)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param UUID entity_id: UUID of the entity node whose edges to list.
       :param predicate: Optional filter by edge label.
@@ -488,9 +488,9 @@ Module: :mod:`packages.graph_backend.interface`
           ``next_cursor`` (str or None), and ``has_more`` (bool).
       :rtype: dict[str, Any]
 
-   .. method:: get_entity_with_edges(org_id, project_id, entity_id)
+   .. method:: get_entity_with_edges(user_id, project_id, entity_id)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param UUID entity_id: UUID of the entity to fetch.
       :returns: A dict with ``node`` (entity dict) and ``edges`` (list of
@@ -503,9 +503,9 @@ Module: :mod:`packages.graph_backend.interface`
    Entity-Episode Linking
    ~~~~~~~~~~~~~~~~~~~~~~
 
-   .. method:: link_entity_to_episode(org_id, project_id, episode_id, entity_id)
+   .. method:: link_entity_to_episode(user_id, project_id, episode_id, entity_id)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param UUID episode_id: UUID of the episode the entity appears in.
       :param UUID entity_id: UUID of the entity appearing in the episode.
@@ -524,9 +524,9 @@ Module: :mod:`packages.graph_backend.interface`
       * **SurrealDB**: Uses the ``has_entity`` edge table via
         ``RELATE`` with an ``IF/THEN/ELSE`` idempotency guard.
 
-   .. method:: get_entities_for_session(org_id, project_id, session_id)
+   .. method:: get_entities_for_session(user_id, project_id, session_id)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param UUID session_id: UUID of the processing session.
       :returns: List of entity dicts with ``id``, ``name``,
@@ -536,9 +536,9 @@ Module: :mod:`packages.graph_backend.interface`
       Return all distinct graph entities linked to episodes in a session.
       Traverses session → episodes → episode_entity_links → entities.
 
-   .. method:: get_co_occurring_entity_pairs(org_id, project_id, min_co_count=2)
+   .. method:: get_co_occurring_entity_pairs(user_id, project_id, min_co_count=2)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param int min_co_count: Minimum number of co-occurring episodes
           required (default 2).
@@ -561,9 +561,9 @@ Module: :mod:`packages.graph_backend.interface`
    Bulk / Merge Operations
    ~~~~~~~~~~~~~~~~~~~~~~~
 
-   .. method:: get_all_entities(org_id, project_id, *, include_merged=False)
+   .. method:: get_all_entities(user_id, project_id, *, include_merged=False)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param bool include_merged: If ``True``, include entities that have
           been soft-deleted via merge.  Defaults to ``False``.
@@ -578,9 +578,9 @@ Module: :mod:`packages.graph_backend.interface`
           BATCH WORKER USE ONLY — no pagination, no limit.  Potentially
           millions of rows.  Do **not** expose via API.
 
-   .. method:: get_all_relationships(org_id, project_id)
+   .. method:: get_all_relationships(user_id, project_id)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :returns: A complete list of relationship dicts.  Each dict includes
           ``id``, ``source_id``, ``target_id``, ``relationship_type``,
@@ -590,9 +590,9 @@ Module: :mod:`packages.graph_backend.interface`
 
       Same warning as :meth:`get_all_entities` — batch use only.
 
-   .. method:: bulk_search_entities(org_id, project_id, query, *, fuzzy_threshold=0.3, limit=50)
+   .. method:: bulk_search_entities(user_id, project_id, query, *, fuzzy_threshold=0.3, limit=50)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param str query: Search string to match against entity names.
       :param float fuzzy_threshold: Minimum similarity score (0.0–1.0)
@@ -614,9 +614,9 @@ Module: :mod:`packages.graph_backend.interface`
         operator (word-level, not character-level fuzzy).  Raw BM25 scores
         are normalised via ``1 - 1/(1 + raw_score)`` to 0–1 range.
 
-   .. method:: merge_entities(org_id, project_id, canonical_id, merged_ids)
+   .. method:: merge_entities(user_id, project_id, canonical_id, merged_ids)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param UUID canonical_id: UUID of the entity that survives the merge.
       :param list[UUID] merged_ids: UUIDs of entities being absorbed into
@@ -643,9 +643,9 @@ Module: :mod:`packages.graph_backend.interface`
         delete → soft-delete).  **Not fully atomic** — use a saga pattern
         for strict guarantees.
 
-   .. method:: create_relationship_bulk(org_id, project_id, relationships)
+   .. method:: create_relationship_bulk(user_id, project_id, relationships)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param list[dict[str, Any]] relationships: List of relationship
           descriptor dicts.  Each must have ``source_id``, ``target_id``,
@@ -659,9 +659,9 @@ Module: :mod:`packages.graph_backend.interface`
    Observations
    ~~~~~~~~~~~~
 
-   .. method:: upsert_observation(org_id, project_id, subject_entity_id, observation_type, content, confidence, *, related_entity_id=None, supporting_fact_ids=None, supporting_relationship_ids=None, valid_from=None, valid_to=None, observation_metadata=None)
+   .. method:: upsert_observation(user_id, project_id, subject_entity_id, observation_type, content, confidence, *, related_entity_id=None, supporting_fact_ids=None, supporting_relationship_ids=None, valid_from=None, valid_to=None, observation_metadata=None)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param UUID subject_entity_id: The entity this observation is about.
       :param str observation_type: Semantic type label (e.g.
@@ -696,9 +696,9 @@ Module: :mod:`packages.graph_backend.interface`
       COALESCE(related_entity_id, sentinel))`` where the sentinel for
       ``None`` is ``00000000-0000-0000-0000-000000000000``.
 
-   .. method:: get_observations(org_id, project_id, *, subject_entity_id=None, observation_type=None, limit=50, cursor=None)
+   .. method:: get_observations(user_id, project_id, *, subject_entity_id=None, observation_type=None, limit=50, cursor=None)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param subject_entity_id: Optional filter — only observations about
           this entity.
@@ -713,9 +713,9 @@ Module: :mod:`packages.graph_backend.interface`
           ``has_more`` — same pattern as :meth:`list_entities`.
       :rtype: dict[str, Any]
 
-   .. method:: get_entity_appearance_timestamps(org_id, project_id, entity_id)
+   .. method:: get_entity_appearance_timestamps(user_id, project_id, entity_id)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param UUID entity_id: UUID of the entity to query.
       :returns: Sorted list of episode timestamps (oldest first) when the
@@ -725,9 +725,9 @@ Module: :mod:`packages.graph_backend.interface`
 
       Used by temporal gap analysis in the observation service.
 
-   .. method:: get_relationship_ids_between(org_id, project_id, entity_a_id, entity_b_id)
+   .. method:: get_relationship_ids_between(user_id, project_id, entity_a_id, entity_b_id)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param UUID entity_a_id: UUID of the first entity.
       :param UUID entity_b_id: UUID of the second entity.
@@ -741,18 +741,18 @@ Module: :mod:`packages.graph_backend.interface`
    Aggregate Queries
    ~~~~~~~~~~~~~~~~~
 
-   .. method:: get_total_entity_linked_episode_count(org_id, project_id)
+   .. method:: get_total_entity_linked_episode_count(user_id, project_id)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :returns: Total number of distinct episodes in the project that have
           at least one entity linked to them.
       :rtype: int
       :raises GraphBackendUnavailableError: If the backend is unreachable.
 
-   .. method:: resolve_entity_names(org_id, project_id, entity_ids)
+   .. method:: resolve_entity_names(user_id, project_id, entity_ids)
 
-      :param UUID org_id: Organisational scope.
+      :param UUID user_id: Organisational scope.
       :param UUID project_id: Project scope.
       :param list[UUID] entity_ids: List of entity UUIDs to resolve.
       :returns: Dict keyed by entity ID string, where each value is
@@ -811,7 +811,7 @@ registered in ``main.py`` maps these to RFC 7807 Problem Detail responses.
 
 Every backend also applies structured logging via ``structlog`` at key
 points — entity/relationship upsert, traversal, search, merge — with
-``org_id``, ``project_id``, and operation-specific identifiers in the
+``user_id``, ``project_id``, and operation-specific identifiers in the
 ``extra`` dict for traceability.
 
 .. important:: **Zero fallback policy**
@@ -898,7 +898,7 @@ Module: :mod:`packages.graph_backend.postgres`
           SELECT ge.id, ge.name, ge.entity_type, ge.summary,
                  ge.attributes, ge.created_at, 0 AS depth
           FROM graph_entities ge
-          WHERE ge.id = :start_id AND ge.organization_id = :org_id
+          WHERE ge.id = :start_id AND ge.organization_id = :user_id
           AND ge.project_id = :project_id
           UNION
           SELECT DISTINCT e.id, e.name, e.entity_type, e.summary,
@@ -970,7 +970,7 @@ Module: :mod:`packages.graph_backend.postgres`
            backend = PostgresGraphBackend(db=db, max_traversal_depth=3)
 
            entity = await backend.create_entity(
-               org_id=...,
+               user_id=...,
                project_id=...,
                name="Acme Corp",
                entity_type="company",
@@ -978,7 +978,7 @@ Module: :mod:`packages.graph_backend.postgres`
            )
 
            await backend.create_relationship(
-               org_id=...,
+               user_id=...,
                project_id=...,
                source_id=entity["id"],
                target_id=other_entity["id"],
@@ -987,7 +987,7 @@ Module: :mod:`packages.graph_backend.postgres`
            )
 
            results = await backend.traverse(
-               org_id=...,
+               user_id=...,
                project_id=...,
                start_node_id=entity["id"],
                max_depth=2,
@@ -1011,7 +1011,7 @@ Module: :mod:`packages.graph_backend.falkordb`
 
    FalkorDB-native graph backend using the RedisGraph module.  Each
    org+project pair gets its own isolated FalkorDB graph key
-   (``openzync_{org_id}_{project_id}``), guaranteeing tenant isolation at
+   (``openzync_{user_id}_{project_id}``), guaranteeing tenant isolation at
    the database level.
 
    Connection
@@ -1140,13 +1140,13 @@ Module: :mod:`packages.graph_backend.falkordb`
        backend = FalkorGraphBackend(client=client)
 
        entity = await backend.create_entity(
-           org_id=...,
+           user_id=...,
            project_id=...,
            name="Acme",
            entity_type="company",
        )
        results = await backend.traverse(
-           org_id=...,
+           user_id=...,
            project_id=...,
            start_node_id=entity["id"],
            max_depth=2,
@@ -1197,7 +1197,7 @@ Module: :mod:`packages.graph_backend.surrealdb`
       DEFINE INDEX entity_summary_fts ON entity FIELDS summary
           FULLTEXT ANALYZER openzync_entity BM25;
 
-      -- 4. Unique index for entity upsert by (org_id, project_id, name)
+      -- 4. Unique index for entity upsert by (user_id, project_id, name)
       DEFINE INDEX entity_org_project_name ON entity
           FIELDS organization_id, project_id, name UNIQUE;
 
@@ -1215,23 +1215,23 @@ Module: :mod:`packages.graph_backend.surrealdb`
    Connection
    ~~~~~~~~~~
 
-   Per-org SurrealDB connections are managed by the
+   Per-user SurrealDB connections are managed by the
    ``core.surreal_pool`` integration.  Each org's connection URL, user,
-   password, namespace, and database are stored in the per-org config:
+   password, namespace, and database are stored in the per-user config:
 
    .. code-block:: python
 
        from surrealdb import AsyncSurreal
 
-       surreal = AsyncSurreal(org_config.surrealdb_url)
+       surreal = AsyncSurreal(platform_config.surrealdb_url)
        await surreal.connect()
        await surreal.signin({
-           "username": org_config.surrealdb_user,
-           "password": org_config.surrealdb_pass,
+           "username": platform_config.surrealdb_user,
+           "password": platform_config.surrealdb_pass,
        })
        await surreal.use(
-           org_config.surrealdb_namespace,
-           org_config.surrealdb_database,
+           platform_config.surrealdb_namespace,
+           platform_config.surrealdb_database,
        )
 
    Entity CRUD
@@ -1242,7 +1242,7 @@ Module: :mod:`packages.graph_backend.surrealdb`
    .. code-block:: surrealql
 
       LET $existing = (SELECT id, entity_type, summary FROM entity
-          WHERE organization_id = $org_id
+          WHERE organization_id = $user_id
             AND project_id = $project_id
             AND name = $name LIMIT 1);
       RETURN IF array::len($existing) > 0 THEN
@@ -1255,7 +1255,7 @@ Module: :mod:`packages.graph_backend.surrealdb`
               updated_at = time::now()
           WHERE id = $existing[0].id RETURN AFTER)
       ELSE
-          (CREATE entity SET organization_id = $org_id, ... RETURN AFTER)
+          (CREATE entity SET organization_id = $user_id, ... RETURN AFTER)
       END;
 
    The query is executed via :meth:`_query_last` which calls
@@ -1273,7 +1273,7 @@ Module: :mod:`packages.graph_backend.surrealdb`
 
       RELATE $source_id -> mentions -> $target_id
       CONTENT {
-          organization_id: $org_id,
+          organization_id: $user_id,
           project_id: $project_id,
           properties: $properties,
           confidence: $confidence,
@@ -1308,7 +1308,7 @@ Module: :mod:`packages.graph_backend.surrealdb`
 
       SELECT *, search::score(0) AS score
       FROM entity
-      WHERE organization_id = $org_id
+      WHERE organization_id = $user_id
         AND project_id = $project_id
         AND (name @@ $query OR summary @@ $query)
       ORDER BY score DESC
@@ -1327,7 +1327,7 @@ Module: :mod:`packages.graph_backend.surrealdb`
 
       SELECT DISTINCT id, name, entity_type, summary
       FROM entity
-      WHERE organization_id = $org_id
+      WHERE organization_id = $user_id
         AND project_id = $project_id
         AND <-has_entity<-(episode WHERE session_id = $session_id)
       ORDER BY name ASC;
@@ -1395,7 +1395,7 @@ Module: :mod:`packages.graph_backend.surrealdb`
 
        backend = SurrealGraphBackend(surreal=surreal)
        entity = await backend.create_entity(
-           org_id=...,
+           user_id=...,
            project_id=...,
            name="Acme",
            entity_type="company",
@@ -1433,9 +1433,9 @@ To integrate a new graph database engine, follow these steps:
    pass the correct backend-specific kwargs (``db``, ``surreal``,
    ``client``, etc.).
 
-4. **Set the org config**::
+4. **Set the platform config**::
 
-       PATCH /admin/org/config
+       PATCH /admin/platform-config
        {"graph_backend": "mybackend"}
 
    No caller code changes are needed.

@@ -73,7 +73,7 @@ Security fixes
   update, decrypted only at sign time. Crypto failures surface as a
   fail-loud ``502`` with no plaintext fallback, and a missing
   ``OZ_SECRET_KEY`` fails startup.
-* **RBAC cache keys are scoped per ``(org_id, user_id)``** for roles,
+* **RBAC cache keys are scoped per ``(user_id, org_id)``** for roles,
   permission sets, and the must-change-password flag, so a user with roles in
   two organizations can no longer read one organization's cached role from the
   other's lookup.

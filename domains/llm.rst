@@ -13,7 +13,7 @@ LLM Backend Abstraction
    * ``core/llm.py`` defines the abstract interface (:class:`LLMBackend`),
      standardised response types, a registry
      (:class:`LLMBackendRegistry`), and a factory function
-     (:func:`resolve_backend`) that wires org-level configuration to the
+     (:func:`resolve_backend`) that wires user-level configuration to the
      correct provider.
    * ``core/llm_backends.py`` contains concrete implementations — one class
      per provider — each registering itself with the registry at module load
@@ -264,18 +264,18 @@ Data Types
 Helper Functions
 ~~~~~~~~~~~~~~~~
 
-.. function:: build_cache_config(org_config=None, session_id=None)
+.. function:: build_cache_config(platform_config=None, session_id=None)
 
-   :param org_config: Optional per-org LLM config dict (from the
-       :class:`~core.org_config.OrgConfigBase` JSONB column).  May contain a
+   :param platform_config: Optional per-user LLM config dict (from the
+       :class:`~core.platform_config.PlatformConfigBase` JSONB column).  May contain a
        ``"prompt_caching"`` key with ``enabled``, ``anthropic_min_tokens``,
        ``anthropic_cache_ttl``.
-   :type org_config: dict | None
+   :type platform_config: dict | None
    :param session_id: Optional session ID for OpenRouter sticky routing.
    :type session_id: str | None
    :rtype: PromptCachingConfig
 
-   Build a :class:`PromptCachingConfig` from per-org settings, falling back
+   Build a :class:`PromptCachingConfig` from per-user settings, falling back
    to global defaults from the :class:`~core.config.Settings` singleton.
 
    Resolution order:
@@ -283,7 +283,7 @@ Helper Functions
    1. ``settings.PROMPT_CACHING_ENABLED`` — hard kill switch.  If
       ``False``, returns ``PromptCachingConfig(enabled=False)`` immediately
       with no further lookup.
-   2. ``org_config.get("prompt_caching")`` dict — per-org overrides for
+   2. ``platform_config.get("prompt_caching")`` dict — per-user overrides for
       ``anthropic_min_tokens`` and ``anthropic_cache_ttl``.
    3. ``settings.PROMPT_CACHING_ANTHROPIC_MIN_TOKENS`` and
       ``settings.PROMPT_CACHING_ANTHROPIC_TTL`` — global defaults.
@@ -293,10 +293,10 @@ Helper Functions
        from core.config import get_settings
        from core.llm import build_cache_config
 
-       # Within a request with per-org config
-       org_cfg = await get_org_config(org_id)
+       # Within a request with per-user config
+       platform_cfg = await get_platform_config(user_id)
        cache_cfg = build_cache_config(
-           org_config=org_cfg.dict() if org_cfg else None,
+           platform_config=platform_cfg.dict() if platform_cfg else None,
            session_id="my-session-42",
        )
        # cache_cfg.enabled is True unless OZ_PROMPT_CACHING_ENABLED=False
@@ -561,27 +561,27 @@ Backend Registry — :class:`LLMBackendRegistry`
 Resolution — :func:`resolve_backend`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: resolve_backend(provider=None, org_config=None)
+.. function:: resolve_backend(provider=None, platform_config=None)
 
-   :param provider: Explicit override.  If provided, org config is skipped.
+   :param provider: Explicit override.  If provided, platform config is skipped.
    :type provider: str | None
-   :param org_config: Optional dict with per-organisation LLM settings.
+   :param platform_config: Optional dict with per-user LLM settings.
        Supported keys include ``llm_backend``, ``ollama_base_url``,
        ``openai_api_key``, ``openai_model``, ``azure_endpoint``,
        ``azure_api_key``, ``azure_deployment``, ``anthropic_api_key``,
        ``anthropic_model``, ``api_key``, ``model``.
-   :type org_config: dict | None
+   :type platform_config: dict | None
    :rtype: LLMBackend
    :raises LLMConfigurationError: If no backend could be resolved.
    :raises ValueError: If the resolved provider name is unknown.
 
-   Resolve the appropriate LLM backend via org config, explicit argument,
+   Resolve the appropriate LLM backend via platform config, explicit argument,
    or environment variable.
 
    **Resolution order**:
 
-   1. **Org-level config** — If ``provider`` is ``None`` and
-      ``org_config.get("llm_backend")`` is set, that value is used.
+   1. **User-level config** — If ``provider`` is ``None`` and
+      ``platform_config.get("llm_backend")`` is set, that value is used.
    2. **Explicit argument** — the ``provider`` parameter.
    3. **Error** — raises :class:`LLMConfigurationError`.
 
@@ -592,9 +592,9 @@ Resolution — :func:`resolve_backend`
        # Via explicit argument
        backend = await resolve_backend(provider="openai")
 
-       # Via per-org config
-       org_cfg = {"llm_backend": "anthropic", "anthropic_api_key": "...", "anthropic_model": "claude-sonnet-4-20250514"}
-       backend = await resolve_backend(org_config=org_cfg)
+       # Via per-user config
+       platform_cfg = {"llm_backend": "anthropic", "anthropic_api_key": "...", "anthropic_model": "claude-sonnet-4-20250514"}
+       backend = await resolve_backend(platform_config=platform_cfg)
 
        response = await backend.chat([{"role": "user", "content": "Hello!"}])
 
@@ -665,7 +665,7 @@ OllamaBackend
 
    :param str base_url: Ollama server URL (default ``http://localhost:11434``).
        The system does **not** read this from an environment variable;
-       it must be provided via per-org config or explicitly.
+       it must be provided via per-user config or explicitly.
 
    Model defaults are class constants — there is no env-var fallback.
 
@@ -748,7 +748,7 @@ OpenAIBackend
    .. rubric:: Constructor
 
    :param str api_key: OpenAI API key (required).  Can be obtained from
-       per-org config (``openai_api_key``) or provided directly.  Raises
+       per-user config (``openai_api_key``) or provided directly.  Raises
        :class:`ValueError` if empty.
    :param model: OpenAI model name.  Falls back to :attr:`DEFAULT_MODEL`
        if ``None``.
@@ -981,7 +981,7 @@ OpenRouterBackend
       Embeddings are now supported.  OpenRouter proxies the
       ``/v1/embeddings`` endpoint via the same OpenAI-compatible client.
       The model name and dimension are configured separately from the chat
-      model via ``org_config.embedding_model`` and ``org_config.embedding_dim``.
+      model via ``platform_config.embedding_model`` and ``platform_config.embedding_dim``.
 
    .. attribute:: embedding_dim
 
@@ -989,14 +989,14 @@ OpenRouterBackend
       :value: ``0``
 
       Returns ``0`` because the dimension is dynamic per model.  Set the
-      expected dimension via ``org_config.embedding_dim`` — it is validated
+      expected dimension via ``platform_config.embedding_dim`` — it is validated
       at runtime in the worker tasks and used for the pgvector column cast
       in :class:`~services.hybrid_retriever.HybridRetriever`.
 
    ``embed`` supported kwargs:
 
    * ``model`` — the embedding model name (required).  Passed from
-     ``org_config.embedding_model`` at call time.
+     ``platform_config.embedding_model`` at call time.
 
    Raises :class:`~core.exceptions.LLMConfigurationError` if no ``model``
    kwarg is provided.
@@ -1138,31 +1138,31 @@ Backend Selection Flow
 The full backend selection flow at runtime is:
 
 1. Caller (typically a service layer) calls
-   :func:`resolve_backend(org_config=...)`.
-2. :func:`resolve_backend` reads ``org_config.get("llm_backend")`` to
+   :func:`resolve_backend(platform_config=...)`.
+2. :func:`resolve_backend` reads ``platform_config.get("llm_backend")`` to
    determine the provider name (e.g. ``"openai"``).
 3. ``_create_backend`` looks up the class via
    :meth:`LLMBackendRegistry.get(provider)`.
 4. The class is instantiated with provider-specific parameters extracted
-   from the org config (API keys, model names, endpoints).
+   from the platform config (API keys, model names, endpoints).
 5. The caller uses the returned :class:`LLMBackend` instance polymorphically.
 
 For callers that already know the provider at coding time, the explicit
 parameter form can be used::
 
-   backend = await resolve_backend(provider="openai", org_config=org_cfg)
+   backend = await resolve_backend(provider="openai", platform_config=platform_cfg)
 
-This skips the org-level ``llm_backend`` key lookup and goes straight to
+This skips the user-level ``llm_backend`` key lookup and goes straight to
 backend instantiation.
 
 
 API Key Resolution
 ~~~~~~~~~~~~~~~~~~
 
-API keys are resolved **exclusively** from per-org configuration, **not**
-from environment variables.  The per-org config dict is stored in OpenBao
+API keys are resolved **exclusively** from per-user configuration, **not**
+from environment variables.  The per-user config dict is stored in OpenBao
 under each organisation's namespace and fetched at runtime via
-:func:`core.org_config.get_org_config`.
+:func:`core.platform_config.get_platform_config`.
 
 The mapping of config keys to provider constructors is:
 
@@ -1182,13 +1182,13 @@ pointing to the local instance.
 There is **no** env-var fallback anywhere in the LLM backend construction
 pipeline.  If a required key is missing from the config,
 :class:`LLMConfigurationError` is raised with a message directing the
-operator to ``PATCH /admin/org/config``.
+operator to ``PATCH /admin/platform-config``.
 
 .. note::
 
    The actual storage of these API keys in OpenBao is encrypted using the
    Transit engine (see :class:`core.transit.TransitManager`).  The
-   :func:`core.org_config.get_org_config` function returns decrypted values
+   :func:`core.platform_config.get_platform_config` function returns decrypted values
    at runtime, so the LLM backends always receive plaintext API keys.
 
 
@@ -1201,15 +1201,15 @@ Prompt caching is controlled at three levels:
 
    Set via :class:`~core.config.Settings.PROMPT_CACHING_ENABLED`.  When
    ``False``, :func:`build_cache_config` immediately returns
-   ``PromptCachingConfig(enabled=False)`` regardless of per-org settings.
+   ``PromptCachingConfig(enabled=False)`` regardless of per-user settings.
    This allows operators to disable caching globally without touching every
    org's configuration.
 
-**Level 2 — Per-org overrides**
+**Level 2 — Platform overrides**
 
    Each organisation can set ``prompt_caching.enabled``,
    ``prompt_caching.anthropic_min_tokens``, and
-   ``prompt_caching.anthropic_cache_ttl`` in its org config.  These
+   ``prompt_caching.anthropic_cache_ttl`` in its platform config.  These
    override the global defaults.
 
 **Level 3 — Per-call configuration**
@@ -1385,8 +1385,8 @@ To add a new LLM provider (e.g. Google Gemini, Cohere, Mistral AI):
        elif provider == "gemini":
            if config is None or not config.get("gemini_api_key"):
                raise LLMConfigurationError(
-                   "Gemini backend requires gemini_api_key in per-org "
-                   "configuration.  Set it via PATCH /admin/org/config."
+                   "Gemini backend requires gemini_api_key in per-user "
+                   "configuration.  Set it via PATCH /admin/platform-config."
                )
            api_key = config["gemini_api_key"]
            model = config.get("gemini_model")
@@ -1431,5 +1431,5 @@ To add a new LLM provider (e.g. Google Gemini, Cohere, Mistral AI):
    * Integration test with :func:`resolve_backend` and the registry.
    * End-to-end test with the actual provider (requires credentials).
 
-The backend will then be selectable via per-org config by setting
+The backend will then be selectable via per-user config by setting
 ``llm_backend`` to ``"gemini"`` and providing the required config keys.

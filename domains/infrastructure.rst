@@ -562,7 +562,7 @@ api
      - Purpose
    * - ``OZ_OPENBAO_ADDR``
      - ``http://openbao:8200``
-     - OpenBao address for runtime org config access
+     - OpenBao address for runtime platform config access
    * - ``UVICORN_WORKERS``
      - ``1``
      - Uvicorn worker processes (entrypoint handles the rest)
@@ -941,7 +941,7 @@ OpenBao Configuration
 OpenBao is the system's **sole source of truth** for all runtime configuration.
 The stack uses:
 
-* **KV v2** at ``system/config/`` for flat system-level config and per-org
+* **KV v2** at ``system/config/`` for flat system-level config and per-user
   config (``org_<uuid>/config/``).
 * **AppRole** auth at ``auth/approle/`` for machine-to-machine authentication.
 * **Transit** engine at ``transit/`` for server-side encryption/decryption of
@@ -1020,9 +1020,9 @@ openzync-app (``infra/openbao/policies/openzync-app.hcl``)
 Grants the API server permission to:
 
 * Read system-level config from the ``system/`` namespace.
-* Create, read, update, and delete org-level namespaces.
+* Create, read, update, and delete user-level namespaces.
 * Enable secrets engines within org namespaces.
-* Read and write org-level config keys.
+* Read and write user-level config keys.
 * Encrypt, decrypt, and rewrap with any Transit key (but **not** create or
   delete keys).
 
@@ -1043,7 +1043,7 @@ openzync-worker (``infra/openbao/policies/openzync-worker.hcl``)
 Grants the ARQ worker permission to:
 
 * Read system-level config.
-* Read org-level config keys (read-only — workers never write config).
+* Read user-level config keys (read-only — workers never write config).
 * Decrypt with Transit keys (but **not** encrypt).
 
 Key paths:
@@ -1067,7 +1067,7 @@ Three AES256-GCM96 encryption keys are created during bootstrap:
      - Write access
      - Read access
    * - ``org-api-key``
-     - Encrypts org-level LLM/embedding API keys
+     - Encrypts user-level LLM/embedding API keys
      - api
      - worker
    * - ``webhook-secret``
@@ -1919,7 +1919,7 @@ Infrastructure & Deployment
      - Root Cause
      - Fix
 
-   * - Frontend admin API calls (``/admin/org/config``) return 404
+   * - Frontend admin API calls (``/admin/platform-config``) return 404
      - Nginx only routes ``/v1/*`` to the API backend.
        ``/admin/*`` hits the frontend (Next.js) which has no
        matching route.

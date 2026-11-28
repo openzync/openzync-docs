@@ -773,7 +773,7 @@ CustomInstruction
       :nullable: True
 
       Optional target UUID (e.g. user UUID for ``"user_summary"`` scope).
-      ``NULL`` represents org-level instructions.
+      ``NULL`` represents user-level instructions.
 
    .. attribute:: name
 
@@ -796,7 +796,7 @@ PromptTemplate
 .. class:: PromptTemplate
 
    A versioned prompt template belonging to an organization.  Templates are
-   org-scoped (all rows have a non-null ``organization_id``).  The source of
+   user-scoped (all rows have a non-null ``organization_id``).  The source of
    truth for defaults is ``services/worker/prompts/manifest.yaml`` plus
    ``.jinja2`` files on disk, seeded at signup.
 
@@ -889,7 +889,7 @@ Memory Ingestion
 
    .. rubric:: Public Methods
 
-   .. method:: async ingest(org_id, project_id, created_by, session_external_id, messages, uploaded_blobs=None, idempotency_key=None, body_hash=None) -> IngestMemoryResponse
+   .. method:: async ingest(user_id, project_id, created_by, session_external_id, messages, uploaded_blobs=None, idempotency_key=None, body_hash=None) -> IngestMemoryResponse
 
       The core ingestion flow with 14 steps:
 
@@ -949,7 +949,7 @@ Memory Ingestion
          (``SCAN ctx:{org}:{project}:*`` + ``DEL``), and emits webhook
          events.
 
-      :param org_id: The authenticated organization UUID.
+      :param user_id: The authenticated organization UUID.
       :param project_id: The project UUID.
       :param created_by: The authenticated user UUID for attribution.
       :param session_external_id: Required session external ID.  The
@@ -975,13 +975,13 @@ Memory Ingestion
       HTTP adapter: ``routers.memory.ingest_messages`` — ``POST /v1/projects/{project_id}/memory``
       Returns ``202 Accepted``.
 
-   .. method:: async delete_project_memory(org_id, project_id) -> tuple[int, int]
+   .. method:: async delete_project_memory(user_id, project_id) -> tuple[int, int]
 
       Soft-delete all memory for a project.  Calls
       ``episode_repo.soft_delete_by_project()`` and
       ``fact_repo.soft_delete_by_project()``.  Sessions are **not** deleted.
 
-      :param org_id: The authenticated organization UUID.
+      :param user_id: The authenticated organization UUID.
       :param project_id: The project UUID.
       :returns: ``(episodes_deleted, facts_deleted)`` counts.
 
@@ -1010,7 +1010,7 @@ Memory Ingestion
    .. rubric:: Context Cache Invalidation
 
    After every successful ingestion, the service invalidates the project's
-   context cache by scanning Redis for keys matching ``ctx:{org_id}:{project_id}:*``
+   context cache by scanning Redis for keys matching ``ctx:{user_id}:{project_id}:*``
    and deleting them in batches of 100.  This ensures subsequent context
    assembly queries fetch fresh data from the database.
 
@@ -1023,7 +1023,7 @@ Memory Ingestion
 
    .. rubric:: ARQ Task Enqueueing
 
-   .. method:: _enqueue_arq_tasks(job_id, org_id, project_id, session_id, episodes)
+   .. method:: _enqueue_arq_tasks(job_id, user_id, project_id, session_id, episodes)
 
       Enqueues enrichment tasks for each episode on the appropriate ARQ
       queues:
@@ -1036,7 +1036,7 @@ Memory Ingestion
       critical error and re-raises — episodes are safe in PostgreSQL and
       must be picked up by a reconciliation worker.
 
-      Each task receives ``episode_id``, ``content``, ``org_id``,
+      Each task receives ``episode_id``, ``content``, ``user_id``,
       ``project_id``, ``trace_id``, and ``metadata`` for correlation.
 
    .. rubric:: Session Resolution
@@ -1166,8 +1166,8 @@ Payload Too Large``.
 
 .. rubric:: Storage
 
-Blob storage is S3-compatible and configured per-org (endpoint, bucket,
-credentials, size limit) via ``OrgConfigBase.to_blob_storage_config()`` —
+Blob storage is S3-compatible and configured per-user (endpoint, bucket,
+credentials, size limit) via ``PlatformConfigBase.to_blob_storage_config()`` —
 the docker-compose default points at MinIO (``http://minio:9000``,
 bucket ``openzync-blobs``).  The ``BlobStorageService`` orchestrates the
 upload and persists one ``EpisodeBlob`` record per blob per episode via
@@ -1178,7 +1178,7 @@ key, MIME type, original filename, and content SHA-256.
 
 .. module:: workers.tasks.extract_blob_text
 
-.. function:: async extract_blob_text(ctx, *, blob_id, org_id, project_id, episode_id, storage_key, mime_type, file_name="", trace_id="")
+.. function:: async extract_blob_text(ctx, *, blob_id, user_id, project_id, episode_id, storage_key, mime_type, file_name="", trace_id="")
 
    Low-priority ARQ task that downloads a blob from S3, extracts text by
    MIME type, and stores it on the ``episode_blobs.extracted_text``
@@ -1212,7 +1212,7 @@ Fact Ingestion
    deduplicates via content hash, persists to the ``facts`` table, and
    enqueues embedding tasks.
 
-   .. method:: async ingest_facts(org_id, project_id, created_by, facts, session_external_id) -> FactBatchResponse
+   .. method:: async ingest_facts(user_id, project_id, created_by, facts, session_external_id) -> FactBatchResponse
 
       Flow:
 
@@ -1230,7 +1230,7 @@ Fact Ingestion
       #. Cache content hash in Redis (48h TTL).
       #. Emit ``FACT_EXTRACTED`` webhook event.
 
-      :param org_id: The authenticated organization UUID.
+      :param user_id: The authenticated organization UUID.
       :param project_id: The project UUID.
       :param created_by: The authenticated user UUID.
       :param facts: List of :class:`~schemas.facts.FactTriple` objects.
@@ -1398,7 +1398,7 @@ Session Management
       HTTP adapter: ``routers.sessions.create_session`` — ``POST /v1/projects/{project_id}/sessions``
       Returns ``201 Created``.
 
-   .. method:: async get_session(org_id, session_id, project_id=None) -> SessionResponse
+   .. method:: async get_session(user_id, session_id, project_id=None) -> SessionResponse
 
       Get a session by UUID with aggregate statistics (message count,
       fact count, pending enrichment count).  Loads stats via
@@ -1406,16 +1406,16 @@ Session Management
 
       :raises NotFoundError: Session not found or soft-deleted.
 
-   .. method:: async get_session_by_external_id(org_id, project_id, external_id) -> SessionResponse
+   .. method:: async get_session_by_external_id(user_id, project_id, external_id) -> SessionResponse
 
       Get a session within a project by its ``external_id``.
 
-   .. method:: async get_session_by_uuid(org_id, session_id, project_id=None) -> SessionResponse
+   .. method:: async get_session_by_uuid(user_id, session_id, project_id=None) -> SessionResponse
 
       Alias for ``get_session()`` — provided for callers that already
       have the UUID.
 
-   .. method:: async list_sessions(org_id, project_id, limit=50, cursor=None, include_closed=False) -> PaginatedResponse[SessionListResponse]
+   .. method:: async list_sessions(user_id, project_id, limit=50, cursor=None, include_closed=False) -> PaginatedResponse[SessionListResponse]
 
       List sessions with cursor-based pagination.  Uses
       ``repo.batch_get_stats()`` for N+1 prevention.
@@ -1425,7 +1425,7 @@ Session Management
 
       :raises ValidationError: If ``limit`` is outside 1–200.
 
-   .. method:: async get_messages(org_id, session_id, limit=100, cursor=None, project_id=None) -> PaginatedResponse[MessageResponse]
+   .. method:: async get_messages(user_id, session_id, limit=100, cursor=None, project_id=None) -> PaginatedResponse[MessageResponse]
 
       Get paginated messages for a session, ordered by ``sequence_number``
       for deterministic, tie-free ordering.
@@ -1433,7 +1433,7 @@ Session Management
       :raises NotFoundError: If the session does not exist.
       :raises ValidationError: If ``limit`` is outside 1–500.
 
-   .. method:: async delete_session(org_id, session_id, project_id=None) -> None
+   .. method:: async delete_session(user_id, session_id, project_id=None) -> None
 
       Soft-delete a session.
 
@@ -1554,17 +1554,17 @@ GraphService
    Wraps a :class:`~packages.graph_backend.interface.GraphBackend`
    implementation (typically :class:`~PostgresGraphBackend`) to provide a
    clean service-layer interface for graph query endpoints.  Every method
-   enforces ``org_id`` isolation.
+   enforces ``user_id`` isolation.
 
    All methods raise :class:`~core.exceptions.GraphBackendUnavailableError`
    when no backend is configured.
 
-   .. method:: async ensure_user_exists(org_id, user_id) -> None
+   .. method:: async ensure_user_exists(user_id, user_id) -> None
 
       :raises NotFoundError: If the user repository is not configured or
          the user does not exist in the organization.
 
-   .. method:: async get_entities(org_id, project_id, *, entity_type=None, limit=50, cursor=None, session_id=None) -> dict
+   .. method:: async get_entities(user_id, project_id, *, entity_type=None, limit=50, cursor=None, session_id=None) -> dict
 
       List entity nodes with optional type filtering and cursor pagination.
 
@@ -1575,7 +1575,7 @@ GraphService
 
       :returns: A dict with ``items``, ``next_cursor``, and ``has_more``.
 
-   .. method:: async get_entity(org_id, project_id, entity_id) -> dict
+   .. method:: async get_entity(user_id, project_id, entity_id) -> dict
 
       Get a single entity node with all incident edges.
 
@@ -1583,13 +1583,13 @@ GraphService
 
       :raises EntityNotFoundError: If the entity does not exist.
 
-   .. method:: async delete_entity(org_id, project_id, entity_id) -> bool
+   .. method:: async delete_entity(user_id, project_id, entity_id) -> bool
 
       Delete an entity node from the knowledge graph.
 
       :returns: ``True`` if deleted, ``False`` if not found.
 
-   .. method:: async get_edges(org_id, project_id, *, subject_id=None, subject_ids=None, predicate=None, limit=50, cursor=None) -> dict
+   .. method:: async get_edges(user_id, project_id, *, subject_id=None, subject_ids=None, predicate=None, limit=50, cursor=None) -> dict
 
       List relationship edges with optional filters.  Supports both
       single-entity and batch (``subject_ids``) queries.  Batch queries
@@ -1598,7 +1598,7 @@ GraphService
 
       :returns: A dict with ``items``, ``next_cursor``, and ``has_more``.
 
-   .. method:: async get_communities(org_id, project_id) -> list[dict]
+   .. method:: async get_communities(user_id, project_id) -> list[dict]
 
       List community summary nodes.  Communities are created by the
       scheduled ``summarise_community`` ARQ worker, which runs Label
@@ -1854,13 +1854,13 @@ HybridRetriever
 
    .. rubric:: Constructor
 
-   .. method:: __init__(db, org_id, redis=None, graph_backends=None, org_config=None, reranker=None)
+   .. method:: __init__(db, user_id, redis=None, graph_backends=None, platform_config=None, reranker=None)
 
       :param db: Async SQLAlchemy session (request-scoped).
-      :param org_id: Authenticated organization UUID for tenant isolation.
+      :param user_id: Authenticated organization UUID for tenant isolation.
       :param redis: Optional async Redis client for result caching.
       :param graph_backends: List of ``GraphBackend`` instances.
-      :param org_config: Org configuration (embedding model, dimensions,
+      :param platform_config: Org configuration (embedding model, dimensions,
          reranker settings).
       :param reranker: Optional ``CrossEncoderReranker`` for second-pass
          re-ranking.
@@ -1914,7 +1914,7 @@ HybridRetriever
       non-deleted episodes with non-null, non-empty embeddings.
 
       Embedding dimension defaults to 1536 (``text-embedding-3-small``)
-      and can be overridden by ``org_config.embedding_dim``.
+      and can be overridden by ``platform_config.embedding_dim``.
 
    .. method:: _vector_search_facts(query, project_id, limit=20) -> list[dict]
 
@@ -1995,7 +1995,7 @@ ContextService
 
       Full pipeline:
 
-      #. Build a cache key from ``(org_id, project_id, query)`` and check
+      #. Build a cache key from ``(user_id, project_id, query)`` and check
          Redis.  Cache hit → return immediately with ``cache_hit=True``.
       #. On miss, run :meth:`HybridRetriever.hybrid_search` with the
          query.
@@ -2039,7 +2039,7 @@ ContextService
    ``router.context.get_context`` — Returns :class:`~schemas.context.ContextResponse`.
 
    The router handles SurrealDB connection pooling when
-   ``org_config.graph_backend == "surrealdb"``.  SurrealDB connections
+   ``platform_config.graph_backend == "surrealdb"``.  SurrealDB connections
    are lazily acquired from the connection pool, so SurrealDB is only
    contacted for orgs that explicitly configure it.
 
@@ -2146,19 +2146,19 @@ ClassificationService
    Read-only service for querying dialog classification results produced
    by the enrichment pipeline.
 
-   .. method:: async get_classifications_for_session(org_id, session_id, project_id=None) -> list[ClassificationResponse]
+   .. method:: async get_classifications_for_session(user_id, session_id, project_id=None) -> list[ClassificationResponse]
 
       Returns all classifications for episodes in a session, ordered by
       episode sequence number.
 
       :raises NotFoundError: If the session does not exist.
 
-   .. method:: async get_classification_for_episode(org_id, episode_id) -> ClassificationResponse | None
+   .. method:: async get_classification_for_episode(user_id, episode_id) -> ClassificationResponse | None
 
       Returns the classification for a specific episode, or ``None`` if
       not yet classified.
 
-   .. method:: async count_classifications_for_session(org_id, session_id, project_id=None) -> int
+   .. method:: async count_classifications_for_session(user_id, session_id, project_id=None) -> int
 
       Counts classified episodes in a session.
 
@@ -2234,7 +2234,7 @@ UserSummaryService
    summary retrieval, and custom-instruction management for the
    ``user_summary`` scope.
 
-   .. method:: async trigger_generation(org_id, user_id) -> UserSummaryTriggerResponse
+   .. method:: async trigger_generation(user_id, user_id) -> UserSummaryTriggerResponse
 
       Enqueues a background ``generate_user_summary`` ARQ job.  Rate-limited
       to one generation per 5 minutes per user via Redis ``SET NX EX``.
@@ -2242,49 +2242,49 @@ UserSummaryService
       :raises CacheUnavailableError: If Redis is not configured.
       :raises RateLimitError: If within the 5-minute cooldown window.
 
-   .. method:: async get_summary(org_id, user_id) -> UserSummaryResponse | None
+   .. method:: async get_summary(user_id, user_id) -> UserSummaryResponse | None
 
       Fetches the currently stored summary for a user.  Returns ``None``
       if no summary has been generated yet.
 
       .. caution::
 
-         ``org_id`` is accepted for future tenant-isolation enforcement,
+         ``user_id`` is accepted for future tenant-isolation enforcement,
          but the underlying ``UserRepository.get_summary`` currently
          queries by ``user_id`` only.  If users span organisations, a
          WHERE clause on ``organization_id`` must be added.
 
    .. rubric:: Custom Instructions CRUD (user_summary scope)
 
-   .. method:: async get_instructions(org_id, user_id) -> list[dict]
+   .. method:: async get_instructions(user_id, user_id) -> list[dict]
 
       Fetches custom instructions scoped to ``"user_summary"`` for the
       user.  Returns ``[{name, text}, ...]`` dicts ordered alphabetically
       by name.
 
-   .. method:: async set_instructions(org_id, user_id, instructions) -> list[dict]
+   .. method:: async set_instructions(user_id, user_id, instructions) -> list[dict]
 
       Atomically replaces all custom instructions for this scope + target.
       Deletes existing rows and bulk-inserts new ones in a single
       transaction.
 
-   .. method:: async delete_instructions(org_id, user_id) -> None
+   .. method:: async delete_instructions(user_id, user_id) -> None
 
       Deletes all custom instructions for this scope + target.
 
    .. rubric:: Rate Limiting
 
-   .. method:: _check_rate_limit(org_id, user_id) -> bool
+   .. method:: _check_rate_limit(user_id, user_id) -> bool
 
       Uses Redis ``SET key "1" NX EX 300`` (5-minute TTL) on key
-      ``ratelimit:summary:{org_id}:{user_id}``.
+      ``ratelimit:summary:{user_id}:{user_id}``.
 
 
 Configuration
 -------------
 
 The Memory & Context domain is configured through the organization's
-``OrgConfig`` (resolved at request time via :func:`dependencies.org_config.get_org_config`).
+``PlatformConfig`` (resolved at request time via :func:`dependencies.platform_config.get_platform_config`).
 Key configuration settings that affect behavior:
 
 ====================== ======================================================

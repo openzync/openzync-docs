@@ -25,18 +25,18 @@ routers.admin\_metrics module
    :show-inheritance:
    :undoc-members:
 
-routers.admin\_org\_config module
----------------------------------
+routers.admin\_platform\_config module
+--------------------------------------
 
-.. automodule:: routers.admin_org_config
+.. automodule:: routers.admin_platform_config
    :members:
    :show-inheritance:
    :undoc-members:
 
-routers.admin\_organizations module
------------------------------------
+routers.admin\_custom\_instructions module
+------------------------------------------
 
-.. automodule:: routers.admin_organizations
+.. automodule:: routers.admin_custom_instructions
    :members:
    :show-inheritance:
    :undoc-members:

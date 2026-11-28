@@ -103,14 +103,14 @@ Module-Level Constants
    :value: 50
 
    Default number of RRF-merged candidates to pass to the reranker.
-   Overridable per-organisation via ``OrgConfig.reranker_top_k``.
+   Overridable per-user via ``PlatformConfig.reranker_top_k``.
 
 .. py:data:: DEFAULT_RERANK_TOP_N
    :type: int
    :value: 10
 
    Default number of results to return after re-ranking.
-   Overridable per-organisation via ``OrgConfig.reranker_top_n``.
+   Overridable per-user via ``PlatformConfig.reranker_top_n``.
 
 
 Abstract Interface — ``packages.reranker.interface``
@@ -299,19 +299,19 @@ Config-Driven Factory — ``packages.reranker.factory``
    :exclude-members: __init__
 
 :class:`~packages.reranker.factory.RerankerFactory.create` is the single
-entry point for constructing a reranker from org-level configuration.
+entry point for constructing a reranker from user-level configuration.
 It is called by :class:`~services.context_service.ContextService` every
 time a context is assembled::
 
     # services/context_service.py (simplified)
-    reranker = RerankerFactory.create(org_config) if org_config else None
+    reranker = RerankerFactory.create(platform_config) if platform_config else None
     retriever = HybridRetriever(
         ...,
         reranker=reranker,
     )
 
 The factory inspects these fields from
-:class:`~schemas.organization_config.OrgConfigBase`:
+:class:`~schemas.platform_config.PlatformConfigBase`:
 
 .. list-table:: Config fields consumed
    :header-rows: 1
@@ -382,7 +382,7 @@ Architecture overview::
     ┌──────────────────────────────────────────────────┐
     │  ARQ Worker (workers/tasks/summarise_community)  │
     │                                                   │
-    │  1. Resolve per-org GraphBackend                  │
+    │  1. Resolve per-user GraphBackend                  │
     │  2. For each project with ≥ 5 entities:           │
     │     a. Fetch all entities + relationships         │
     │     b. build_entity_graph() → nx.Graph            │
@@ -583,8 +583,8 @@ Community detection runs in one of two modes, controlled by the
        :func:`~workers.tasks.link_entities_to_episode.link_entities_to_episode`
        completion (graph sync step).  Runs on the ``low_queue_full``
        worker queue.
-     - Per-organisation Redis key
-       ``community:recently_enqueued:{org_id}`` with 1-hour TTL.
+     - Per-useranisation Redis key
+       ``community:recently_enqueued:{user_id}`` with 1-hour TTL.
        Prevents re-enqueueing the same org within 60 minutes.
 
 The event-driven mode is designed for organisations that ingest entities
@@ -608,7 +608,7 @@ backend, using the same schema as regular entities.
 
     # Community entity
     backend.create_entity(
-        org_id=org_id,
+        user_id=user_id,
         project_id=project_id,
         name="Community: Alice, Bob, Acme Corp...",
         entity_type="community",
@@ -617,7 +617,7 @@ backend, using the same schema as regular entities.
 
     # Member edges
     backend.create_relationship_bulk(
-        org_id=org_id,
+        user_id=user_id,
         project_id=project_id,
         relationships=[
             {"source_id": entity_uuid,
@@ -631,7 +631,7 @@ backend, using the same schema as regular entities.
 
     # services/graph_service.py
     communities = await service.get_communities(
-        org_id=org_id,
+        user_id=user_id,
         project_id=project_id,
     )
 
@@ -707,7 +707,7 @@ Constants & Thresholds
    * - Event-driven cooldown
      - 3600 s (1 hour)
      - ``workers/tasks/link_entities_to_episode.py``
-     - Redis TTL on ``community:recently_enqueued:{org_id}`` key.
+     - Redis TTL on ``community:recently_enqueued:{user_id}`` key.
 
 
 Frontend Hull Visualization

@@ -14,7 +14,7 @@ Context
 OpenZync previously enforced authorization through **three overlapping
 models**, each with its own vocabulary and its own dependency family:
 
-1. **``users.role`` checks** — org-level role gates (``admin`` /
+1. **``users.role`` checks** — user-level role gates (``admin`` /
    ``member`` / ``superadmin``) enforced by ``require_org_admin`` and
    ``require_org_admin_or_self``.
 2. **``project_members.role`` owner checks** — project-level ownership
@@ -42,7 +42,7 @@ for JWT users — with the translation logic buried inside one dependency.
 Decision
 --------
 
-Replace all three models with **one org-scoped permission vocabulary**,
+Replace all three models with **one user-scoped permission vocabulary**,
 materialized on both users and API keys, and enforced by a single
 dependency factory that treats JWT and API-key authentication
 identically.
@@ -50,7 +50,7 @@ identically.
 D1 — The permission vocabulary
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Seven org-scoped permissions:
+Seven user-scoped permissions:
 
 .. list-table::
    :header-rows: 1
@@ -64,15 +64,15 @@ Seven org-scoped permissions:
    * - ``project:manage``
      - Project lifecycle — create, archive, delete, project settings
    * - ``configuration:read``
-     - Read org/project configuration
+     - Read user/project configuration
    * - ``configuration:write``
-     - Modify org/project configuration
+     - Modify user/project configuration
    * - ``members:read``
-     - List org/project members
+     - List user/project members
    * - ``members:write``
      - Add/remove members and change member permissions
 
-Permissions are org-scoped: project membership (``require_project_membership``)
+Permissions are user-scoped: project membership (``require_project_membership``)
 remains the project-scope gate, and the permission set decides *what* a
 member may do within that scope.
 
@@ -106,7 +106,7 @@ One dependency factory replaces all four deleted dependencies:
 
 .. code-block:: python
 
-   org_id: str = Depends(require_permission("project:manage"))
+   user_id: str = Depends(require_permission("project:manage"))
 
 ``require_permission`` handles JWT and API-key auth identically:
 
@@ -169,7 +169,7 @@ Alternatives Considered
 
 **Per-project permission tables** (``project_members.permissions``)
    A permission set per project membership would allow independent
-   project-level grants.  Rejected: the org-scoped vocabulary plus the
+   project-level grants.  Rejected: the user-scoped vocabulary plus the
    existing project-membership gate covers the current product surface
    with one table and one cache key; per-project sets would multiply
    cache keys, grant/revoke paths, and migration surface for no current
@@ -218,7 +218,7 @@ Deferred Items
 
 1. **Per-project permission sets** — if a project ever needs a
    permission set independent of the org vocabulary, revisit the
-   per-project table alternative (the org-scoped model is the
+   per-project table alternative (the user-scoped model is the
    foundation it would extend).
 2. **Role→permission mapping UI** — the dashboard currently manages
    roles; a UI for editing the underlying permission arrays is future

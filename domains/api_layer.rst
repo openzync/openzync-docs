@@ -129,7 +129,7 @@ initialises these infrastructure components:
      - :func:`init_dispatcher` — singleton registry of backend classes
      - ``graph_backend_dispatcher``
    * - **SurrealDB pool**
-     - :class:`SurrealConnectionPool` — per-org connection pool (optional)
+     - :class:`SurrealConnectionPool` — per-user connection pool (optional)
      - ``surreal_connection_pool``
    * - **FalkorDB client**
      - :class:`BlockingConnectionPool` from URL (optional, graceful skip)
@@ -399,7 +399,7 @@ Sliding-window rate limiting using Redis sorted sets
 1. **IP-based** — for unauthenticated requests
    (key: ``rate:auth:{ip}``, default: 10 req / 60s).
 2. **Org-based** — for authenticated API requests
-   (key: ``rate:api:{org_id}``, configured per-org quota or fallback: 1000
+   (key: ``rate:api:{user_id}``, configured per-user quota or fallback: 1000
    req / 60s).
 
 **Behaviour**:
@@ -436,7 +436,7 @@ Supports two authentication modes:
 #. Checks Redis cache at ``auth:key:{lookup_hash}`` (TTL: 300s).
 #. On miss, queries the ``api_keys`` table via :class:`ApiKeyRepository`.
 #. Verifies the raw key against the salted hash from the DB.
-#. Sets ``scope["state"]`` fields: ``auth_type="api_key"``, ``org_id``,
+#. Sets ``scope["state"]`` fields: ``auth_type="api_key"``, ``user_id``,
    ``user_id`` (``created_by``), ``api_key_scopes``, ``api_key_project_id``.
 #. Updates ``last_used`` timestamp on the API key (fire-and-forget).
 #. Caches the result in Redis (fire-and-forget).
@@ -445,9 +445,9 @@ Supports two authentication modes:
 
 #. Token is a three-segment JWT (starts with ``eyJ``).
 #. Verifies signature with ``OZ_SECRET_KEY`` via HS256.
-#. Extracts ``sub`` (user_id), ``org_id``, ``role``, ``type`` claims.
+#. Extracts ``sub`` (user_id), ``user_id``, ``role``, ``type`` claims.
 #. Rejects tokens where ``type != "access"``.
-#. Sets ``scope["state"]`` fields: ``auth_type="jwt"``, ``org_id``,
+#. Sets ``scope["state"]`` fields: ``auth_type="jwt"``, ``user_id``,
    ``user_id``, ``role``, ``api_key_scopes`` (all scopes granted).
 
 **Security features**:
@@ -1075,18 +1075,18 @@ Prefix: ``/admin``
      - Auth / Scopes
      - Description
    * - ``POST``
-     - ``/admin/organizations``
+     - ``/admin/custom-instructions``
      - **Public** (bootstrap)
      - Create a new organization (no default project, no API key).  One-shot
        bootstrap endpoint intended for first-use flows. Should be disabled in
        production.
 
-Admin — Organization Config
-===========================
+Admin — Platform Config
+======================
 
-.. module:: routers.admin_org_config
+.. module:: routers.admin_platform_config
 
-Prefix: ``/admin/org/config``
+Prefix: ``/admin/platform-config``
 
 .. list-table::
    :header-rows: 1
@@ -1097,25 +1097,25 @@ Prefix: ``/admin/org/config``
      - Auth / Scopes
      - Description
    * - ``GET``
-     - ``/admin/org/config/defaults``
+     - ``/admin/platform-config/defaults``
      - **Public**
-     - Return seeded onboarding defaults from ``config/defaults/org_config.yaml``.
+     - Return seeded onboarding defaults from ``config/defaults/platform_config.yaml``.
        Secrets are returned as empty strings.
    * - ``GET``
-     - ``/admin/org/config``
-     - API Key / JWT
-     - Get the stored configuration for the current organisation. Unset fields
+     - ``/admin/platform-config``
+     - JWT dashboard session + ``configuration:read``
+     - Get the stored configuration for the current user. Unset fields
        are ``null``.
    * - ``PATCH``
-     - ``/admin/org/config``
-     - ``admin:write``
-     - Partially update organisation config. Only provided fields are changed.
+     - ``/admin/platform-config``
+     - JWT dashboard session + ``configuration:write``
+     - Partially update platform config. Only provided fields are changed.
        Set a field to ``null`` to clear it.
    * - ``PUT``
-     - ``/admin/org/config``
-     - ``admin:write``
-     - Replace the entire organisation configuration. Omitted fields are
-       removed.
+     - ``/admin/platform-config``
+     - JWT dashboard session + ``configuration:write``
+     - Merge-alias for ``PATCH`` — provided fields are merged, omitted
+       fields are preserved.
 
 Admin — Schemas
 ===============
@@ -1145,7 +1145,7 @@ Prefix: ``/v1/admin/schemas``
    * - ``GET``
      - ``/v1/admin/schemas/{schema_id}``
      - API Key / JWT
-     - Get a single schema by ID (org-scoped).
+     - Get a single schema by ID (user-scoped).
    * - ``PUT``
      - ``/v1/admin/schemas/{schema_id}``
      - ``admin`` scope
@@ -1195,12 +1195,19 @@ Prefix: ``/v1/admin/webhooks``
      - JWT
      - Delete a webhook endpoint.
 
-Admin — Org Configuration (Prompt Templates + Custom Instructions)
-==================================================================
+Admin — Custom Instructions
+==============================
 
-.. module:: routers.admin_organizations
+.. note::
 
-Prefix: ``/admin/org``
+   **BREAKING:** the prompt-template rows below are removed —
+   prompt templates are disk-only now (manifest + ``.jinja2`` files).
+   Custom instructions live at ``/admin/custom-instructions`` and
+   platform config at ``/admin/platform-config``.
+
+.. module:: routers.admin_custom_instructions
+
+Prefix: ``/admin/custom-instructions``
 
 .. list-table::
    :header-rows: 1
@@ -1211,55 +1218,15 @@ Prefix: ``/admin/org``
      - Auth / Scopes
      - Description
    * - ``GET``
-     - ``/admin/org/prompts``
-     - JWT
-     - List all prompt template names with override status, current version,
-       and last-updated timestamp.
-   * - ``GET``
-     - ``/admin/org/prompts/system``
-     - JWT
-     - List system-default prompt templates grouped by base name.
-   * - ``POST``
-     - ``/admin/org/prompts/import``
-     - JWT
-     - Import a system-default prompt template into the org. Returns 409 if
-       already imported, 404 if no active system default.
-   * - ``POST``
-     - ``/admin/org/prompts/{name}/set-default``
-     - JWT
-     - Mark a prompt template as the active default for its type.
-   * - ``GET``
-     - ``/admin/org/prompts/{name}``
-     - JWT
-     - Get the active template for an org. Returns 404 if not found.
-   * - ``GET``
-     - ``/admin/org/prompts/{name}/versions``
-     - JWT
-     - List all versions of a named template, newest first.
-   * - ``PUT``
-     - ``/admin/org/prompts/{name}``
-     - JWT
-     - Create a new org-specific version (max version + 1). Invalidates Redis
-       cache.
-   * - ``POST``
-     - ``/admin/org/prompts/{name}/rollback/{version}``
-     - JWT
-     - Rollback to a previous version (creates a new version with old text).
-   * - ``DELETE``
-     - ``/admin/org/prompts/{name}``
-     - JWT
-     - Delete all org-specific versions. Cannot delete if it's the active
-       default for its type.
-   * - ``GET``
-     - ``/admin/org/custom-instructions``
+     - ``/admin/custom-instructions``
      - JWT
      - List all extraction custom instructions for the organisation.
    * - ``PUT``
-     - ``/admin/org/custom-instructions``
+     - ``/admin/custom-instructions``
      - JWT
      - Replace all extraction custom instructions atomically.
    * - ``DELETE``
-     - ``/admin/org/custom-instructions``
+     - ``/admin/custom-instructions``
      - JWT
      - Clear all extraction custom instructions.
 
@@ -1402,20 +1369,20 @@ same ``Idempotency-Key`` header.
 Content-Level Deduplication
 ===========================
 
-Prevents the same ``(org_id, user_id, session_id, messages)`` combination
+Prevents the same ``(user_id, user_id, session_id, messages)`` combination
 from being ingested more than once, even from different clients with different
 ``Idempotency-Key`` values.
 
 .. code-block:: python
 
-   if await service.check_content_hash(org_id, user_id, session_id, messages):
+   if await service.check_content_hash(user_id, user_id, session_id, messages):
        return  # duplicate content, skip
 
-   await service.store_content_hash(org_id, user_id, session_id, messages)
+   await service.store_content_hash(user_id, user_id, session_id, messages)
    # ... continue processing ...
 
 **Hash computation**: SHA-256 over a canonical JSON document containing only
-``org_id``, ``user_id``, ``session_id``, and ``(role, content)`` pairs —
+``user_id``, ``user_id``, ``session_id``, and ``(role, content)`` pairs —
 metadata and ordering are excluded for deterministic dedup.
 
 **Race safety**: Uses ``SETNX`` (``nx=True``) on Redis so that two concurrent
@@ -1477,10 +1444,10 @@ Cache Invalidation
 
 .. code-block:: python
 
-   await service.invalidate_user_cache(org_id, user_id)
+   await service.invalidate_user_cache(user_id, user_id)
 
 Uses Redis ``SCAN`` to find all keys matching
-``OpenZync:{env}:cache:{org_id}:{user_id}:*`` and deletes them in batches
+``OpenZync:{env}:cache:{user_id}:{user_id}:*`` and deletes them in batches
 of 100.
 
 .. _api-layer-dependencies:
@@ -1505,11 +1472,11 @@ set by :class:`AuthMiddleware <openzync.middleware.auth.AuthMiddleware>`:
    * - Dependency
      - Return Type
      - Description
-   * - :func:`get_org_id`
+   * - :func:`get_user_id`
      - ``str | None``
      - Optional auth. Returns org ID if authenticated, ``None`` otherwise.
        Works with both API keys and JWT.
-   * - :func:`require_org_id`
+   * - :func:`require_user_id`
      - ``str``
      - Mandatory auth. Returns org ID or raises HTTP 401 with RFC 7807 body.
    * - :func:`require_scope(scope_name)`
@@ -1531,14 +1498,14 @@ set by :class:`AuthMiddleware <openzync.middleware.auth.AuthMiddleware>`:
 
    @router.get("/sensitive")
    async def sensitive_endpoint(
-       org_id: str = Depends(require_org_id),
+       user_id: str = Depends(require_user_id),
        user_id: UUID = Depends(get_current_user_id),
    ):
        ...
 
    @router.post("/admin/action")
    async def admin_action(
-       org_id: str = Depends(require_scope("admin:write")),
+       user_id: str = Depends(require_scope("admin:write")),
    ):
        ...
 
@@ -1580,7 +1547,7 @@ Yields an :class:`AsyncSession` from the application's session factory.
 **Key behaviour**:
 
 - Reads the session factory from ``request.app.state.db_session_factory``.
-- Applies PostgreSQL RLS context: sets ``app.org_id`` and ``app.bypass_rls``
+- Applies PostgreSQL RLS context: sets ``app.user_id`` and ``app.bypass_rls``
   session-level config parameters via ``SELECT set_config(...)``.
 - On yield, commits the transaction. On exception, rolls back.
 
@@ -1621,7 +1588,7 @@ dependencies (DB session, Redis, repositories):
        ``FactRepository``, ``OrganizationRepository``, Redis, ``WebhookService``
    * - :func:`get_graph_service`
      - :class:`GraphService`
-     - ``GraphBackendDispatcher`` (resolved per-org), ``UserRepository``,
+     - ``GraphBackendDispatcher`` (resolved per-user), ``UserRepository``,
        ``FactRepository``, ``WebhookService``
    * - :func:`get_auth_throttle`
      - :class:`AuthThrottle`
@@ -1630,18 +1597,18 @@ dependencies (DB session, Redis, repositories):
 Org Config Dependency
 =====================
 
-.. module:: dependencies.org_config
+.. module:: dependencies.platform_config
 
-:file:`dependencies/org_config.py`
+:file:`dependencies/platform_config.py`
 
 .. code-block:: python
 
-   async def get_org_config(
+   async def get_platform_config(
        request: Request,
-       org_id: str = Depends(require_org_id),
-   ) -> OrgConfigBase:
+       user_id: str = Depends(require_user_id),
+   ) -> PlatformConfigBase:
 
-Fetches per-org configuration from Redis cache (fast path) or OpenBao KV
+Fetches per-user configuration from Redis cache (fast path) or OpenBao KV
 (authoritative slow path). Every field may be ``None`` — there is no env-var
 fallback.
 
@@ -1715,7 +1682,7 @@ no ORM imports, no business logic, no service imports.
    * - :file:`organizations.py`
      - ``CreateOrgRequest``, ``CreateOrgResponse``
    * - :file:`organization_config.py`
-     - ``OrgConfigBase``, ``OrgConfigResponse``, ``UpdateOrgConfigRequest``
+     - ``PlatformConfigBase``, ``PlatformConfigResponse``, ``UpdatePlatformConfigRequest``
    * - :file:`auth.py`` (schemas)
      - ``SignupRequest``, ``LoginRequest``, ``TokenResponse``, ``LoginResponse``
    * - :file:`audit_log.py`

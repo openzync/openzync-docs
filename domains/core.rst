@@ -11,7 +11,7 @@ Core Infrastructure
    The ``core/`` package provides shared infrastructure: configuration loading
    (exclusively from OpenBao), async database sessions, Redis connections, ARQ
    background workers, a domain exception hierarchy, structured logging, secrets
-   management, cursor-based pagination, prompt template manifests, and per-org
+   management, cursor-based pagination, prompt template manifests, and per-user
    configuration resolution.
 
    **Design principle**: zero env-var fallback for runtime secrets.  If OpenBao
@@ -117,8 +117,8 @@ Settings
    OpenBao.  Non-sensitive tunables have sensible defaults that can be
    overridden in OpenBao.
 
-   Per-org configuration (LLM, embeddings, graph, behaviour) is **not** stored
-   here — use :func:`core.org_config.get_org_config` for those values.
+   Per-user configuration (LLM, embeddings, graph, behaviour) is **not** stored
+   here — use :func:`core.platform_config.get_platform_config` for those values.
 
    .. rubric:: Database
 
@@ -1068,11 +1068,11 @@ standard-library logging integration.
 
    Registered as a processor — callers do not invoke this directly.
 
-.. function:: bind_request_context(request_id, org_id=None, user_id=None)
+.. function:: bind_request_context(request_id, user_id=None, user_id=None)
 
    :param str request_id: Unique identifier for the current request.
-   :param org_id: Organisation identifier (optional).
-   :type org_id: str | None
+   :param user_id: Organisation identifier (optional).
+   :type user_id: str | None
    :param user_id: Authenticated user identifier (optional).
    :type user_id: str | None
 
@@ -1083,11 +1083,11 @@ standard-library logging integration.
 
        bind_request_context(
            request_id="abc-123",
-           org_id="org-42",
+           user_id="org-42",
            user_id="usr-7",
        )
 
-   Subsequent log entries will include ``request_id``, ``org_id``, and
+   Subsequent log entries will include ``request_id``, ``user_id``, and
    ``user_id`` automatically.
 
 Processors applied in order:
@@ -1118,7 +1118,7 @@ Real-world usage — middleware::
             bind_request_context(
                 request_id=request_id,
                 user_id=getattr(request.state, "user_id", None),
-                org_id=getattr(request.state, "org_id", None),
+                user_id=getattr(request.state, "user_id", None),
             )
             response = await call_next(request)
             response.headers["X-Request-ID"] = request_id
@@ -1128,7 +1128,7 @@ Real-world usage — middleware::
     logger = structlog.get_logger(__name__)
     logger.info("request.started", path="/api/v1/sessions")
     # → {"event": "request.started", "path": "/api/v1/sessions",
-    #    "request_id": "abc-123", "org_id": "org-42", "user_id": "usr-7",
+    #    "request_id": "abc-123", "user_id": "org-42", "user_id": "usr-7",
     #    "level": "info", "timestamp": "2026-07-15T10:30:00Z"}
 
 
@@ -1222,7 +1222,7 @@ Module: ``core.openbao``
 
    Async HTTP client for the OpenBao secrets-management API.  Authenticates
    via AppRole and exposes methods for KV v2 operations, namespace management,
-   system- and org-level config read/write, and Transit engine operations.
+   system- and user-level config read/write, and Transit engine operations.
 
    **Must** be used as an async context manager::
 
@@ -1333,34 +1333,34 @@ Module: ``core.openbao``
 
    .. rubric:: Organisation Configuration
 
-   .. method:: read_org_config(org_id)
+   .. method:: read_platform_config(user_id)
 
-      :param UUID org_id: Organisation UUID.
+      :param UUID user_id: Organisation UUID.
       :rtype: dict[str, Any]
 
       Read all configuration keys for an organisation from its own namespace.
       Returns an empty dict if no config exists yet.
 
-   .. method:: write_org_config(org_id, config)
+   .. method:: write_platform_config(user_id, config)
 
-      :param UUID org_id: Organisation UUID.
+      :param UUID user_id: Organisation UUID.
       :param dict[str, Any] config: Flat dict of key/value pairs.  ``None``
           values trigger deletion of the corresponding secret.
 
       Write organisation-level configuration key/value pairs.  Ensures the
       org namespace and KV engine exist (idempotent, one-time cost per org).
 
-   .. method:: create_org_namespace(org_id)
+   .. method:: create_org_namespace(user_id)
 
-      :param UUID org_id: Organisation UUID.
+      :param UUID user_id: Organisation UUID.
 
       Bootstrap a namespace for a new organisation.  Creates the
       ``org_<uuid>`` namespace and enables a KV v2 secrets engine at
       ``config/`` inside it.  Both operations are idempotent.
 
-   .. method:: delete_org_namespace(org_id)
+   .. method:: delete_org_namespace(user_id)
 
-      :param UUID org_id: Organisation UUID.
+      :param UUID user_id: Organisation UUID.
 
       Tear down the namespace for an organisation, deleting all secrets
       within it.
@@ -1508,15 +1508,15 @@ encrypt/decrypt methods for specific data contexts.
 
    :param OpenBaoClient bao_client: An authenticated OpenBao client.
 
-   .. method:: encrypt_org_api_key(org_id, api_key)
+   .. method:: encrypt_org_api_key(user_id, api_key)
 
-      :param UUID org_id: Organisation UUID (used as AAD context).
+      :param UUID user_id: Organisation UUID (used as AAD context).
       :param str api_key: The plaintext API key.
       :rtype: str
 
-   .. method:: decrypt_org_api_key(org_id, ciphertext)
+   .. method:: decrypt_org_api_key(user_id, ciphertext)
 
-      :param UUID org_id: Organisation UUID (must match the AAD used at
+      :param UUID user_id: Organisation UUID (must match the AAD used at
           encryption).
       :param str ciphertext: Ciphertext from :meth:`encrypt_org_api_key`.
       :rtype: str
@@ -1579,10 +1579,10 @@ Real-world usage — encrypting an org's LLM API key::
         transit = TransitManager(bao)
 
         # Encrypt before storing in DB
-        encrypted = await transit.encrypt_org_api_key(org_id, "sk-...")
+        encrypted = await transit.encrypt_org_api_key(user_id, "sk-...")
 
         # Decrypt when needed at runtime
-        plaintext = await transit.decrypt_org_api_key(org_id, encrypted)
+        plaintext = await transit.decrypt_org_api_key(user_id, encrypted)
 
 
 Event System
@@ -1718,7 +1718,7 @@ Real-world usage::
 
     # Emit an event
     await webhook_service.emit(
-        org_id=org.id,
+        user_id=org.id,
         event_type=EventType.SESSION_CREATED,
         payload={"session_id": str(session.id), "user_id": str(user.id)},
     )
@@ -1900,18 +1900,18 @@ the system never needs to know about the file layout.
 Org Config
 ----------
 
-Module: ``core.org_config``
+Module: ``core.platform_config``
 
-Per-organisation configuration resolution — cache-first, OpenBao-authoritative.
-Every request path and background worker that needs org-level settings (LLM,
+Per-useranisation configuration resolution — cache-first, OpenBao-authoritative.
+Every request path and background worker that needs user-level settings (LLM,
 embeddings, graph, behaviour) should resolve them through this module.
 
 **Resolution order:**
 
-1. **Redis cache** (key ``org_config:{org_id}``, TTL 5 min) — performance
+1. **Redis cache** (key ``platform_config:{user_id}``, TTL 5 min) — performance
    optimisation only.  Cache failures are logged at ERROR but the request
    continues to OpenBao.
-2. **OpenBao KV** (per-org namespace ``org_<uuid>/config/``) — the
+2. **OpenBao KV** (per-user namespace ``org_<uuid>/config/``) — the
    authoritative source.  OpenBao failures propagate as hard errors.
 
 There is **no** env-var fallback — if a field is not set in OpenBao it is
@@ -1925,18 +1925,18 @@ logged at ERROR but do not fail the operation (stale cache expires via TTL).
    :type: int
    :value: ``300``
 
-   TTL in seconds for cached org config (5 minutes).
+   TTL in seconds for cached platform config (5 minutes).
 
 .. data:: CACHE_KEY_PREFIX
 
    :type: str
-   :value: ``"org_config"``
+   :value: ``"platform_config"``
 
-   Redis key prefix for cached org config.
+   Redis key prefix for cached platform config.
 
-.. function:: get_org_config(org_id, redis=None, bao_client=None, \*, skip_cache=False)
+.. function:: get_platform_config(user_id, redis=None, bao_client=None, \*, skip_cache=False)
 
-   :param UUID org_id: The organisation UUID.
+   :param UUID user_id: The organisation UUID.
    :param redis: An optional async Redis client.  When ``None``, caching is
        skipped.
    :type redis: redis.asyncio.Redis | None
@@ -1945,7 +1945,7 @@ logged at ERROR but do not fail the operation (stale cache expires via TTL).
     :type bao_client: OpenBaoClient | None
    :param bool skip_cache: If ``True``, bypass cache and always fetch from
        OpenBao.
-   :rtype: OrgConfigBase
+   :rtype: PlatformConfigBase
    :raises OpenBaoConnectionError: If *bao_client* is ``None``.
 
    Fetch the stored config for an org: cache → OpenBao.  There is no env-var
@@ -1953,51 +1953,51 @@ logged at ERROR but do not fail the operation (stale cache expires via TTL).
    ``None``.
 
    When OpenBao has no config at all for the org, every field in the returned
-   :class:`OrgConfigBase` is set to ``None`` (Pydantic defaults are **not**
+   :class:`PlatformConfigBase` is set to ``None`` (Pydantic defaults are **not**
    applied)::
 
-       config = await get_org_config(
-           org_id=org.id,
+       config = await get_platform_config(
+           user_id=org.id,
            redis=redis_client,
            bao_client=bao_client,
        )
        api_key = config.llm_api_key  # str | None
 
-.. function:: update_org_config(org_id, update_data, bao_client, redis=None)
+.. function:: update_platform_config(user_id, update_data, bao_client, redis=None)
 
-   :param UUID org_id: The organisation UUID.
+   :param UUID user_id: The organisation UUID.
    :param update_data: Fields to update.  Can be an
-       :class:`UpdateOrgConfigRequest` or a plain dict.
-   :type update_data: UpdateOrgConfigRequest | dict[str, Any]
+       :class:`UpdatePlatformConfigRequest` or a plain dict.
+   :type update_data: UpdatePlatformConfigRequest | dict[str, Any]
    :param OpenBaoClient bao_client: An authenticated OpenBao client.
    :param redis: An optional async Redis client (for cache invalidation).
    :type redis: redis.asyncio.Redis | None
-   :rtype: OrgConfigBase
+   :rtype: PlatformConfigBase
 
-   Update stored org config in OpenBao, invalidate cache, return fresh config.
+   Update stored platform config in OpenBao, invalidate cache, return fresh config.
    Performs a deep merge: provided keys replace existing values.  Keys set to
    ``None`` are removed from the stored config (returning ``None`` on next
    read).  OpenBao is the sole authoritative store — there is no database
    dual-write::
 
-       updated = await update_org_config(
-           org_id=org.id,
+       updated = await update_platform_config(
+           user_id=org.id,
            update_data={"graph_backend": "falkordb", "llm_api_key": None},
            bao_client=bao_client,
            redis=redis_client,
        )
        # Returns the freshly stored config after update
 
-.. function:: build_cache_key(org_id)
+.. function:: build_cache_key(user_id)
 
-   :param UUID org_id: The organisation UUID.
+   :param UUID user_id: The organisation UUID.
    :rtype: str
 
    Build the Redis cache key for an org's config, returning a string like
-   ``"org_config:<uuid>"``::
+   ``"platform_config:<uuid>"``::
 
        key = build_cache_key(org.id)
-       # "org_config:550e8400-e29b-41d4-a716-446655440000"
+       # "platform_config:550e8400-e29b-41d4-a716-446655440000"
 
 
 Additional Core Infrastructure
@@ -2014,7 +2014,7 @@ Module: ``core.graph_backend``
 
 Provides :class:`GraphBackendDispatcher` — a registry of backend **classes**
 (not instances) and a :meth:`resolve_and_create` factory that selects and
-instantiates the per-org graph backend based on ``org_config.graph_backend``.
+instantiates the per-user graph backend based on ``platform_config.graph_backend``.
 
 * Registered backends: ``"surrealdb"``, ``"postgres"``, ``"falkordb"``.
 * ``graph_backend="none"`` or ``None`` → graph features disabled, returns
@@ -2098,16 +2098,16 @@ SurrealDB Connection Pool (`core.surreal_pool`)
 
 Module: ``core.surreal_pool``
 
-Per-org SurrealDB connection pool created lazily and cached by ``org_id``.
+Per-user SurrealDB connection pool created lazily and cached by ``user_id``.
 Each org gets its own :class:`AsyncSurreal` connection using credentials from
-:class:`OrgConfigBase`.  Thread safety via per-org ``asyncio.Lock``.
+:class:`PlatformConfigBase`.  Thread safety via per-user ``asyncio.Lock``.
 
 .. class:: SurrealConnectionPool
 
-   .. method:: get_or_create(org_id, org_config)
+   .. method:: get_or_create(user_id, platform_config)
 
-      :param UUID org_id: Organisation UUID.
-      :param OrgConfigBase org_config: Org config with SurrealDB credentials.
+      :param UUID user_id: Organisation UUID.
+      :param PlatformConfigBase platform_config: Platform config with SurrealDB credentials.
 
    .. method:: close_all()
 
@@ -2129,7 +2129,7 @@ The ``core/`` package enforces these non-negotiable design rules:
    always propagate as HTTP 503 — never swallowed, never served stale data.
 
 3. **OpenBao is the sole source of truth** for both system-level and
-   per-org configuration.  Redis caching is best-effort; OpenBao failures
+   per-user configuration.  Redis caching is best-effort; OpenBao failures
    are hard errors.
 
 4. **One-time initialisation.**  :class:`Settings`, :class:`ARQPool`, and

@@ -7,7 +7,7 @@ Admin & Webhooks Domain
    monolith** (``openzync-core``).  Code examples assume the relevant packages
    are importable from the monolith's Python path.
 
-   The Admin domain spans: organization bootstrap and management, per-org
+   The Admin domain spans: organization bootstrap and management, per-user
    configuration (LLM, embeddings, graph, behaviour), prompt template management,
    custom instructions, extraction schema CRUD, structured extraction queries,
    audit logging, Prometheus metrics, webhook endpoint management and event
@@ -17,7 +17,7 @@ Admin & Webhooks Domain
 
    * Multi-tenant isolation via ``organization_id`` on every query — all admin
      endpoints are scoped to the authenticated organization.
-   * Per-org configuration is stored in OpenBao and cached in Redis — no
+   * Per-user configuration is stored in OpenBao and cached in Redis — no
      env-var fallback, static defaults shipped via YAML.
    * Webhook delivery is async (ARQ background jobs) with HMAC-SHA256 signing
      and retry semantics.
@@ -25,7 +25,7 @@ Admin & Webhooks Domain
      immutable by design (``updated_at`` intentionally absent).
    * Metrics expose no PII — the Prometheus ``/metrics`` endpoint is
      intentionally unauthenticated.
-   * The bootstrap endpoint (``POST /admin/organizations``) has no
+   * The bootstrap endpoint (``POST /admin/custom-instructions``) has no
      authentication — it is designed for first-use flow before any API keys
      exist.  In production it should be disabled or gated behind a
      deployment-time secret.
@@ -69,28 +69,28 @@ via JWT; SDK clients authenticate via project-scoped API keys
 PostgreSQL Row-Level Security (RLS) enforces tenant isolation at the database
 level, and every repository method accepts an ``organization_id`` parameter.
 
-.. _admin-per-org-config:
+.. _admin-per-user-config:
 
 Per-Organization Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Organizations can configure their own LLM backend, embedding model, graph
 backend, and behavioural settings through the ``organizations.config`` JSONB
-column and the per-org OpenBao namespace.
+column and the per-user OpenBao namespace.
 
-**Config resolution order** (defined in ``core.org_config``):
+**Config resolution order** (defined in ``core.platform_config``):
 
-1. **Redis cache** (key ``org_config:{org_id}``, TTL 5 min) — performance
+1. **Redis cache** (key ``platform_config:{user_id}``, TTL 5 min) — performance
    optimisation.  Cache failures are logged at ERROR but the request
    continues to OpenBao.
-2. **OpenBao KV** (per-org namespace ``org_<uuid>/config/``) — authoritative
+2. **OpenBao KV** (per-user namespace ``org_<uuid>/config/``) — authoritative
    source.  OpenBao failures propagate as hard errors.
 
 There is **no** env-var fallback — if a field is not set in OpenBao it is
 returned as ``None`` and the caller decides what to do (typically falling back
 to built-in defaults in ``core.config.Settings``).
 
-The config schema (``schemas.organization_config.OrgConfigBase``) covers:
+The config schema (``schemas.platform_config.PlatformConfigBase``) covers:
 
 * **LLM**: ``llm_backend``, ``llm_model``, ``llm_temperature``,
   ``llm_max_tokens``, and provider API keys (OpenAI, Azure, Anthropic,
@@ -303,7 +303,7 @@ Organization
 
    .. attribute:: config
 
-      JSONB blob for all per-org UI-exposed configuration (LLM, embeddings,
+      JSONB blob for all per-user UI-exposed configuration (LLM, embeddings,
       graph, behaviour).  ``None`` fields fall back to env-var defaults from
       ``core.config.Settings``.  Type: ``Mapped[dict]`` (JSONB,
       default ``{}``).
@@ -664,52 +664,52 @@ OrganizationService
 
    .. method:: _load_org_defaults() -> dict[str, Any]
 
-      Load default per-org config values from
-      ``config/defaults/org_config.yaml``.  Returns ``{}`` if the file is
+      Load default per-user config values from
+      ``config/defaults/platform_config.yaml``.  Returns ``{}`` if the file is
       missing or unreadable.  Errors are logged at WARNING level.
 
       :returns: Flat dict of key/value pairs.
       :rtype: dict
 
-OrgConfigService
+PlatformConfigService
 ~~~~~~~~~~~~~~~~
 
-.. module:: services.org_config_service
+.. module:: services.platform_config_service
 
-.. class:: OrgConfigService
+.. class:: PlatformConfigService
 
-   Business logic for per-organization configuration management.  Orchestrates
-   the config update flow: validate → delegate to ``core.org_config`` for the
+   Business logic for per-user configuration management.  Orchestrates
+   the config update flow: validate → delegate to ``core.platform_config`` for the
    OpenBao update + cache invalidation → return stored config.
 
-   .. method:: get_config(org_id: UUID) -> OrgConfigBase
+   .. method:: get_config(user_id: UUID) -> PlatformConfigBase
 
       Return the stored config for an organization.
 
-      :param org_id: The organization UUID.
-      :type org_id: :class:`uuid.UUID`
-      :returns: An :class:`schemas.organization_config.OrgConfigBase` with
+      :param user_id: The organization UUID.
+      :type user_id: :class:`uuid.UUID`
+      :returns: An :class:`schemas.platform_config.PlatformConfigBase` with
                 only explicitly stored fields.  Unset fields are ``None``.
 
-   .. method:: get_config_response(org_id: UUID) -> OrgConfigResponse
+   .. method:: get_config_response(user_id: UUID) -> PlatformConfigResponse
 
-      Return the stored config wrapped in an ``OrgConfigResponse``.
+      Return the stored config wrapped in an ``PlatformConfigResponse``.
 
-      :param org_id: The organization UUID.
-      :type org_id: :class:`uuid.UUID`
-      :returns: An :class:`schemas.organization_config.OrgConfigResponse`.
+      :param user_id: The organization UUID.
+      :type user_id: :class:`uuid.UUID`
+      :returns: An :class:`schemas.platform_config.PlatformConfigResponse`.
 
-   .. method:: update_config(org_id: UUID, payload: UpdateOrgConfigRequest) -> OrgConfigBase
+   .. method:: update_config(user_id: UUID, payload: UpdatePlatformConfigRequest) -> PlatformConfigBase
 
       Partially update an org's configuration.  Only fields explicitly set
       in *payload* are updated.  Fields set to ``None`` are removed from
       the stored config.  The cache is invalidated after the update.
 
-      :param org_id: The organization UUID.
+      :param user_id: The organization UUID.
       :param payload: The fields to update.
-      :type payload: :class:`schemas.organization_config.UpdateOrgConfigRequest`
+      :type payload: :class:`schemas.platform_config.UpdatePlatformConfigRequest`
       :returns: The freshly stored config after the update.
-      :rtype: :class:`schemas.organization_config.OrgConfigBase`
+      :rtype: :class:`schemas.platform_config.PlatformConfigBase`
 
 AuditLogService
 ~~~~~~~~~~~~~~~
@@ -924,7 +924,7 @@ SchemaService
       that define the intent, emotion, valence, and arousal categories for
       dialog classification.
 
-   .. method:: create_schema(org_id: UUID, payload: CreateExtractionSchemaRequest) -> ExtractionSchemaResponse
+   .. method:: create_schema(user_id: UUID, payload: CreateExtractionSchemaRequest) -> ExtractionSchemaResponse
 
       Create a new extraction schema for an organization.  Validates schema
       structure based on type.  For ``type='classification'``, validates the
@@ -935,18 +935,18 @@ SchemaService
       :raises ConflictError: If a schema with the same name already exists.
       :raises ValidationError: If the payload fails domain validation.
 
-   .. method:: list_schemas(org_id: UUID, schema_type: str | None = None, is_active: bool | None = None) -> list[ExtractionSchemaResponse]
+   .. method:: list_schemas(user_id: UUID, schema_type: str | None = None, is_active: bool | None = None) -> list[ExtractionSchemaResponse]
 
       List schemas for an organization with optional filters.
 
-   .. method:: get_schema(org_id: UUID, schema_id: UUID) -> ExtractionSchemaResponse
+   .. method:: get_schema(user_id: UUID, schema_id: UUID) -> ExtractionSchemaResponse
 
       Get a single schema by ID.
 
       :raises NotFoundError: If the schema does not exist or belongs to
                              another org.
 
-   .. method:: update_schema(org_id: UUID, schema_id: UUID, payload: UpdateExtractionSchemaRequest) -> ExtractionSchemaResponse
+   .. method:: update_schema(user_id: UUID, schema_id: UUID, payload: UpdateExtractionSchemaRequest) -> ExtractionSchemaResponse
 
       Update an existing schema.  The ``type`` field is immutable after
       creation.  Name uniqueness is enforced within the organization.
@@ -954,7 +954,7 @@ SchemaService
       :raises NotFoundError: If the schema does not exist.
       :raises ConflictError: If the new name conflicts with an existing schema.
 
-   .. method:: delete_schema(org_id: UUID, schema_id: UUID) -> None
+   .. method:: delete_schema(user_id: UUID, schema_id: UUID) -> None
 
       Soft-delete a schema (set ``is_active=false``).  Existing extractions
       referencing this schema are preserved (FK uses ``ON DELETE SET NULL``).
@@ -994,23 +994,23 @@ StructuredExtractionService
    Structured extractions are produced by the ``extract_structured`` worker
    and inserted directly into the database.
 
-   .. method:: get_session_extractions(org_id: UUID, session_id: UUID, project_id: UUID | None = None) -> StructuredExtractionListResponse
+   .. method:: get_session_extractions(user_id: UUID, session_id: UUID, project_id: UUID | None = None) -> StructuredExtractionListResponse
 
       Return all extractions for episodes in a session.  Verifies session
       ownership before returning data.
 
-      :param org_id: The authenticated organization UUID.
+      :param user_id: The authenticated organization UUID.
       :param session_id: The session UUID.
       :param project_id: Optional project UUID for intra-org isolation.
       :returns: ``StructuredExtractionListResponse`` with items ordered by
                 episode sequence number.  May be empty if no extractions exist.
       :raises NotFoundError: If the session does not exist.
 
-   .. method:: get_episode_extraction(org_id: UUID, session_id: UUID, episode_id: UUID, project_id: UUID | None = None) -> StructuredExtractionResponse | None
+   .. method:: get_episode_extraction(user_id: UUID, session_id: UUID, episode_id: UUID, project_id: UUID | None = None) -> StructuredExtractionResponse | None
 
       Return the extraction for a specific episode, or ``None``.
 
-      :param org_id: The authenticated organization UUID.
+      :param user_id: The authenticated organization UUID.
       :param session_id: The session UUID.
       :param episode_id: The episode UUID.
       :param project_id: Optional project UUID for intra-org isolation.
@@ -1031,7 +1031,7 @@ Router prefix: ``/admin``, tags: ``Admin``
 
 .. function:: routers.admin.create_organization(payload: CreateOrgRequest, db: AsyncSession) -> CreateOrgResponse
 
-   **POST /admin/organizations** (status 201)
+   **POST /admin/custom-instructions** (status 201)
 
    Create a new organization.  This is a bootstrap endpoint for initial
    setup.  It performs a single atomic transaction:
@@ -1048,126 +1048,44 @@ Router prefix: ``/admin``, tags: ``Admin``
    * In production, disable this endpoint or gate it behind a
      deployment-time secret environment variable.
 
-Admin — Organization Management (Prompts & Custom Instructions)
+Admin — Custom Instructions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. module:: routers.admin_organizations
+.. note::
 
-Router prefix: ``/admin/org``, tags: ``Admin - Organizations``
+   **BREAKING:** the prompt-template endpoints (list, get, set,
+   versions, rollback, set-default, system, import) are removed — prompt
+   templates are disk-only now (manifest + ``.jinja2`` files, cached at
+   startup).  Custom instructions live at ``/admin/custom-instructions``
+   and platform config at ``/admin/platform-config``.
 
-All endpoints in this router require JWT authentication via
-``get_dashboard_user`` and organization ID via ``require_org_id``.
+.. module:: routers.admin_custom_instructions
 
-**Prompt Templates**:
+Router prefix: ``/admin/custom-instructions``, tags: ``Admin - Custom Instructions``
 
-.. function:: routers.admin_organizations.list_prompt_templates(db, org_id, _user_id) -> PromptTemplateListResponse
-
-   ``GET /admin/org/prompts``
-
-   List all prompt template names with override status.  Returns one entry
-   per template name — includes the current version, whether the org has
-   customised it, and its last-updated timestamp.
-
-.. function:: routers.admin_organizations.list_system_prompts(db, org_id, _user_id) -> SystemPromptGroupsResponse
-
-   ``GET /admin/org/prompts/system``
-
-   List all system-default prompt templates grouped by base name.  Returns
-   every system-default version (not just active ones) so users can see old
-   versions.  Each group is annotated with which template names the
-   organisation has already imported.
-
-.. function:: routers.admin_organizations.import_system_prompt(body, db, org_id, _user_id) -> PromptTemplateDetail
-
-   ``POST /admin/org/prompts/import`` (status 201)
-
-   Import a system-default prompt template into the organisation.  Creates
-   an org-specific copy at ``version = 1`` with the text from the active
-   system default.
-
-   :status 409: If the template is already imported.
-   :status 404: If no active system default exists.
-
-.. function:: routers.admin_organizations.set_prompt_type_default(name, db, org_id, _user_id) -> PromptTemplateDetail
-
-   ``POST /admin/org/prompts/{name}/set-default``
-
-   Mark a prompt template as the active default for its type.  Sets
-   ``is_default_for_type = True`` for this template and ``False`` for all
-   other templates of the same type and scope.
-
-   :status 404: If the template does not exist or has no ``type`` assigned.
-
-.. function:: routers.admin_organizations.get_prompt_template(name, db, org_id, _user_id) -> PromptTemplateDetail
-
-   ``GET /admin/org/prompts/{name}``
-
-   Get the active template for an organization.  Returns the org-specific
-   template if it exists.
-
-   :status 404: If not found.
-
-.. function:: routers.admin_organizations.list_prompt_template_versions(name, db, org_id, _user_id) -> PromptTemplateVersionsResponse
-
-   ``GET /admin/org/prompts/{name}/versions``
-
-   List all versions of a named template for this org.  Returns only
-   org-scoped versions, ordered by version descending (newest first).
-
-   :status 404: If no template exists with this name.
-
-.. function:: routers.admin_organizations.set_prompt_template(name, body, request, db, org_id, _user_id) -> PromptTemplateDetail
-
-   ``PUT /admin/org/prompts/{name}`` (status 201)
-
-   Create a new org-specific version of a prompt template.  Creates an
-   org-scoped copy at ``version = max(existing) + 1``.  Invalidates any
-   Redis cache entries for this template after update.
-
-   Note: System-level defaults no longer exist (Option A).  Defaults come
-   from ``manifest.yaml`` on disk.  To start from the disk default, import
-   it first via ``POST /admin/org/prompts/import``.
-
-.. function:: routers.admin_organizations.rollback_prompt_template(name, version, db, org_id, _user_id) -> PromptTemplateDetail
-
-   ``POST /admin/org/prompts/{name}/rollback/{version}``
-
-   Rollback to a previous version of a prompt template.  Creates a **new**
-   version whose ``template_text`` is copied from the target version.  The
-   new version is activated and all previously active versions are
-   deactivated.
-
-   :status 404: If the target version does not exist.
-
-.. function:: routers.admin_organizations.delete_prompt_template_override(name, db, org_id, _user_id) -> None
-
-   ``DELETE /admin/org/prompts/{name}`` (status 204)
-
-   Delete all org-specific versions of a prompt template.  Re-import from
-   the disk manifest via ``POST /admin/org/prompts/import`` if needed.
-
-   :status 404: If no org-specific override exists.
-   :status 409: If the template is the active default for its type.
+All endpoints in this router require a JWT dashboard session via
+``require_permission("configuration:read")`` (GET) or
+``require_permission("configuration:write")`` (PUT/DELETE).
 
 **Custom Instructions**:
 
-.. function:: routers.admin_organizations.list_custom_instructions(db, org_id, _user_id) -> CustomInstructionsResponse
+.. function:: routers.admin_custom_instructions.list_custom_instructions(service, user_id) -> CustomInstructionsResponse
 
-   ``GET /admin/org/custom-instructions``
+   ``GET /admin/custom-instructions``
 
    List all extraction custom instructions for the organization.
 
-.. function:: routers.admin_organizations.set_custom_instructions(body, db, org_id, _user_id) -> CustomInstructionsResponse
+.. function:: routers.admin_custom_instructions.set_custom_instructions(body, service, user_id) -> CustomInstructionsResponse
 
-   ``PUT /admin/org/custom-instructions`` (status 201)
+   ``PUT /admin/custom-instructions`` (status 201)
 
    Replace all extraction custom instructions for the organization
    atomically.  The existing instructions in the ``extraction`` scope are
    deleted and replaced with the provided list.
 
-.. function:: routers.admin_organizations.clear_custom_instructions(db, org_id, _user_id) -> Response
+.. function:: routers.admin_custom_instructions.clear_custom_instructions(service, user_id) -> Response
 
-   ``DELETE /admin/org/custom-instructions`` (status 204)
+   ``DELETE /admin/custom-instructions`` (status 204)
 
    Clear all extraction custom instructions for the organization.  No-op
    if no instructions exist.
@@ -1175,13 +1093,13 @@ All endpoints in this router require JWT authentication via
 Admin — Organization Config
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. module:: routers.admin_org_config
+.. module:: routers.admin_platform_config
 
-Router prefix: ``/admin/org/config``, tags: ``Admin - Organization Config``
+Router prefix: ``/admin/platform-config``, tags: ``Admin - Platform Config``
 
-.. function:: routers.admin_org_config.get_org_config_defaults() -> UpdateOrgConfigRequest
+.. function:: routers.admin_platform_config.get_platform_config_defaults() -> UpdatePlatformConfigRequest
 
-   ``GET /admin/org/config/defaults``
+   ``GET /admin/platform-config/defaults``
 
    Return seeded onboarding defaults for a new organization.  These are
    **not** the stored config — they are starter values for the onboarding
@@ -1190,26 +1108,26 @@ Router prefix: ``/admin/org/config``, tags: ``Admin - Organization Config``
 
    :status 500: If the defaults configuration file is not found.
 
-.. function:: routers.admin_org_config.get_org_config(_org_id, service) -> OrgConfigResponse
+.. function:: routers.admin_platform_config.get_platform_config(_user_id, service) -> PlatformConfigResponse
 
-   ``GET /admin/org/config``
+   ``GET /admin/platform-config``
 
    Get the stored configuration for the current organization.  Returns only
    the fields explicitly set in OpenBao.  Unset fields are ``null``.
 
-.. function:: routers.admin_org_config.update_org_config(body, _org_id, service) -> OrgConfigBase
+.. function:: routers.admin_platform_config.update_platform_config(body, _user_id, service) -> PlatformConfigBase
 
-   ``PATCH /admin/org/config``
+   ``PATCH /admin/platform-config``
 
-   Partially update the organization's configuration.  Only fields
+   Partially update the user's platform configuration.  Only fields
    explicitly provided in the request body are updated.  Set a field to
    ``null`` to remove it from the stored config.
 
    Requires ``admin:write`` scope.
 
-.. function:: routers.admin_org_config.replace_org_config(body, _org_id, service) -> OrgConfigBase
+.. function:: routers.admin_platform_config.replace_platform_config(body, _user_id, service) -> PlatformConfigBase
 
-   ``PUT /admin/org/config``
+   ``PUT /admin/platform-config``
 
    Replace the entire organization configuration.  Every field is stored as
    provided.  Fields set to ``null`` are stored as ``null``.  Fields not
@@ -1217,6 +1135,21 @@ Router prefix: ``/admin/org/config``, tags: ``Admin - Organization Config``
    Prefer ``PATCH`` for updating individual fields.
 
    Requires ``admin:write`` scope.
+
+.. function:: routers.admin_platform_config.test_platform_config(body, request, _user_id, service) -> TestPlatformConfigResponse
+
+   ``POST /admin/platform-config/test``
+
+   Probe live connectivity for a candidate config without saving it.
+   Overlays ``body.config`` on the stored config in-memory and probes the
+   requested domain via
+   ``service PlatformConfigConnectionService.test_connections``.  Probe
+   failures return 200 with ``ok: false`` entries — only malformed
+   payloads (422) or a down secrets backend (503) change the status
+   code.
+
+   Requires ``configuration:write`` permission (JWT dashboard session).
+   Throttled to ~10 requests/min per user.
 
 Admin — Webhooks
 ~~~~~~~~~~~~~~~~
@@ -1235,13 +1168,13 @@ Router prefix: ``/v1/admin/webhooks``, tags: ``Admin Webhooks``
    Returns a dict with key ``"data"`` mapping to category objects, each
    containing ``type``, ``label``, ``category``, and ``description`` fields.
 
-.. function:: routers.admin_webhooks.list_webhooks(service, org_id, _user_id) -> dict
+.. function:: routers.admin_webhooks.list_webhooks(service, user_id, _user_id) -> dict
 
    ``GET /v1/admin/webhooks``
 
    List all webhook endpoints for the authenticated organization.
 
-.. function:: routers.admin_webhooks.get_webhook(endpoint_id, service, org_id, _user_id) -> dict
+.. function:: routers.admin_webhooks.get_webhook(endpoint_id, service, user_id, _user_id) -> dict
 
    ``GET /v1/admin/webhooks/{endpoint_id}``
 
@@ -1249,7 +1182,7 @@ Router prefix: ``/v1/admin/webhooks``, tags: ``Admin Webhooks``
 
    :status 404: If the endpoint is not found or not owned by the org.
 
-.. function:: routers.admin_webhooks.create_webhook(body, service, org_id, _user_id) -> WebhookSecretResponse
+.. function:: routers.admin_webhooks.create_webhook(body, service, user_id, _user_id) -> WebhookSecretResponse
 
    ``POST /v1/admin/webhooks`` (status 201)
 
@@ -1258,7 +1191,7 @@ Router prefix: ``/v1/admin/webhooks``, tags: ``Admin Webhooks``
 
    :returns: :class:`schemas.webhook.WebhookSecretResponse`
 
-.. function:: routers.admin_webhooks.update_webhook(endpoint_id, body, service, org_id, _user_id) -> dict
+.. function:: routers.admin_webhooks.update_webhook(endpoint_id, body, service, user_id, _user_id) -> dict
 
    ``PATCH /v1/admin/webhooks/{endpoint_id}``
 
@@ -1267,7 +1200,7 @@ Router prefix: ``/v1/admin/webhooks``, tags: ``Admin Webhooks``
    :status 400: If no fields to update.
    :status 404: If the endpoint is not found or not owned by the org.
 
-.. function:: routers.admin_webhooks.delete_webhook(endpoint_id, service, org_id, _user_id) -> None
+.. function:: routers.admin_webhooks.delete_webhook(endpoint_id, service, user_id, _user_id) -> None
 
    ``DELETE /v1/admin/webhooks/{endpoint_id}`` (status 204)
 
@@ -1282,9 +1215,9 @@ Admin — Metrics
 
 Router prefix: ``/metrics``, tags: ``Admin - Metrics``
 
-All endpoints in this router require authentication via ``require_org_id``.
+All endpoints in this router require authentication via ``require_user_id``.
 
-.. function:: routers.admin_metrics.get_metrics_summary(db, org_id, prom) -> MetricsSummaryResponse
+.. function:: routers.admin_metrics.get_metrics_summary(db, user_id, prom) -> MetricsSummaryResponse
 
    ``GET /metrics/summary``
 
@@ -1312,7 +1245,7 @@ All endpoints in this router require authentication via ``require_org_id``.
    * Total and active request counters.
    * ARQ worker queue depth (high and low priority).
 
-.. function:: routers.admin_metrics.get_promql_query(query: str, _org_id, prom) -> dict
+.. function:: routers.admin_metrics.get_promql_query(query: str, _user_id, prom) -> dict
 
    ``GET /metrics/query?query=<promql>``
 
@@ -1323,7 +1256,7 @@ All endpoints in this router require authentication via ``require_org_id``.
    :returns: Raw Prometheus query result with ``status`` and ``data`` fields.
    :status 502: If Prometheus is unreachable.
 
-.. function:: routers.admin_metrics.get_prometheus_targets(_org_id) -> dict
+.. function:: routers.admin_metrics.get_prometheus_targets(_user_id) -> dict
 
    ``GET /metrics/targets``
 
@@ -1344,7 +1277,7 @@ Router prefix: ``/v1/admin/stats``, tags: ``Admin - Stats``
 All endpoints require JWT authentication (dashboard session) via
 ``get_dashboard_user``.
 
-.. function:: routers.admin_stats.get_org_stats(db, org_id, _user_id) -> OrgStatsResponse
+.. function:: routers.admin_stats.get_org_stats(db, user_id, _user_id) -> OrgStatsResponse
 
    ``GET /v1/admin/stats/org``
 
@@ -1352,7 +1285,7 @@ All endpoints require JWT authentication (dashboard session) via
    total users, sessions, episodes, facts, messages, and API keys (all
    scoped to the organization).
 
-.. function:: routers.admin_stats.get_usage_stats(days, db, org_id, _user_id) -> list[UsageStatsResponse]
+.. function:: routers.admin_stats.get_usage_stats(days, db, user_id, _user_id) -> list[UsageStatsResponse]
 
    ``GET /v1/admin/stats/usage?days=30``
 
@@ -1369,7 +1302,7 @@ Admin — Schemas
 
 Router prefix: ``/v1/admin/schemas``, tags: ``Admin - Schemas``
 
-.. function:: routers.admin_schemas.create_schema(payload, service, org_id) -> ExtractionSchemaResponse
+.. function:: routers.admin_schemas.create_schema(payload, service, user_id) -> ExtractionSchemaResponse
 
    ``POST /v1/admin/schemas`` (status 201)
 
@@ -1378,7 +1311,7 @@ Router prefix: ``/v1/admin/schemas``, tags: ``Admin - Schemas``
    ``type='classification'``, the ``json_schema`` must follow the expected
    classification label structure.
 
-.. function:: routers.admin_schemas.list_schemas(type, is_active, service, org_id) -> ExtractionSchemaListResponse
+.. function:: routers.admin_schemas.list_schemas(type, is_active, service, user_id) -> ExtractionSchemaListResponse
 
    ``GET /v1/admin/schemas``
 
@@ -1386,13 +1319,13 @@ Router prefix: ``/v1/admin/schemas``, tags: ``Admin - Schemas``
    filtering by ``type`` (``structured``/``classification``) and
    ``is_active`` status.
 
-.. function:: routers.admin_schemas.get_schema(schema_id, service, org_id) -> ExtractionSchemaResponse
+.. function:: routers.admin_schemas.get_schema(schema_id, service, user_id) -> ExtractionSchemaResponse
 
    ``GET /v1/admin/schemas/{schema_id}``
 
    Get a single schema by ID.  Scoped to the authenticated organization.
 
-.. function:: routers.admin_schemas.update_schema(schema_id, payload, service, org_id) -> ExtractionSchemaResponse
+.. function:: routers.admin_schemas.update_schema(schema_id, payload, service, user_id) -> ExtractionSchemaResponse
 
    ``PUT /v1/admin/schemas/{schema_id}``
 
@@ -1400,7 +1333,7 @@ Router prefix: ``/v1/admin/schemas``, tags: ``Admin - Schemas``
    is immutable after creation.  Name uniqueness is enforced within the
    organization.
 
-.. function:: routers.admin_schemas.delete_schema(schema_id, service, org_id) -> None
+.. function:: routers.admin_schemas.delete_schema(schema_id, service, user_id) -> None
 
    ``DELETE /v1/admin/schemas/{schema_id}`` (status 204)
 
@@ -1442,7 +1375,7 @@ Audit Logs
 
 Router prefix: ``/v1/admin/audit-logs``, tags: ``Admin - Audit Logs``
 
-.. function:: routers.audit_log.list_audit_logs(db, org_id, _user_id, ...) -> AuditLogListResponse
+.. function:: routers.audit_log.list_audit_logs(db, user_id, _user_id, ...) -> AuditLogListResponse
 
    ``GET /v1/admin/audit-logs``
 
@@ -1506,7 +1439,7 @@ Key Schemas
 
 .. class:: CreateOrgRequest
 
-   Request body for ``POST /admin/organizations``.
+   Request body for ``POST /admin/custom-instructions``.
 
    .. attribute:: name
 
@@ -1519,7 +1452,7 @@ Key Schemas
 
 .. class:: CreateOrgResponse
 
-   Response body for ``POST /admin/organizations``.
+   Response body for ``POST /admin/custom-instructions``.
 
    .. attribute:: organization_id
 
@@ -1541,11 +1474,11 @@ Key Schemas
 
       Warning that the key will not be retrievable later.  ``str``.
 
-.. module:: schemas.organization_config
+.. module:: schemas.platform_config
 
-.. class:: OrgConfigBase
+.. class:: PlatformConfigBase
 
-   Raw per-org config stored in the ``organizations.config`` JSONB column.
+   Raw per-user config stored in the ``organizations.config`` JSONB column.
    Every field is **optional**.  When a field is ``None`` (absent from the
    JSONB), the caller must decide what to do — there is no env-var fallback
    at this layer.
@@ -1598,20 +1531,20 @@ Key Schemas
       Return embedding config as a flat dict.  Only non-``None`` fields are
       included.  Used by worker tasks that read embedding settings directly.
 
-.. class:: UpdateOrgConfigRequest
+.. class:: UpdatePlatformConfigRequest
 
-   Request body for ``PATCH /admin/org/config`` and ``PUT /admin/org/config``.
-   Same shape as ``OrgConfigBase`` — every field is optional, only provided
+   Request body for ``PATCH /admin/platform-config`` and ``PUT /admin/platform-config``.
+   Same shape as ``PlatformConfigBase`` — every field is optional, only provided
    fields are updated.  Set a field to ``null`` to remove it.
 
-.. class:: OrgConfigResponse
+.. class:: PlatformConfigResponse
 
    Response for config GET endpoints.
 
    .. attribute:: stored
 
       Raw config stored in OpenBao — only explicitly set fields.
-      ``OrgConfigBase``.
+      ``PlatformConfigBase``.
 
 .. module:: schemas.admin_metrics
 
@@ -1768,34 +1701,34 @@ Key Schemas
 Core Infrastructure
 -------------------
 
-.. module:: core.org_config
+.. module:: core.platform_config
 
-Per-organization configuration resolution — cache-first, OpenBao-authoritative.
+Per-user configuration resolution — cache-first, OpenBao-authoritative.
 
-.. function:: core.org_config.get_org_config(
-      org_id: UUID,
+.. function:: core.platform_config.get_platform_config(
+      user_id: UUID,
       redis: redis.asyncio.Redis | None = None,
       bao_client: OpenBaoClient | None = None,
       *,
       skip_cache: bool = False,
-   ) -> OrgConfigBase
+   ) -> PlatformConfigBase
 
    Fetch the stored config for an org: cache → OpenBao.  There is no env-var
    fallback — every field is returned as stored in OpenBao.
 
    :param skip_cache: If ``True``, bypass cache and always fetch from OpenBao.
-   :returns: :class:`schemas.organization_config.OrgConfigBase` with only
+   :returns: :class:`schemas.platform_config.PlatformConfigBase` with only
              explicitly set fields.
    :raises OpenBaoConnectionError: If *bao_client* is ``None``.
 
-.. function:: core.org_config.update_org_config(
-      org_id: UUID,
-      update_data: UpdateOrgConfigRequest | dict[str, Any],
+.. function:: core.platform_config.update_platform_config(
+      user_id: UUID,
+      update_data: UpdatePlatformConfigRequest | dict[str, Any],
       bao_client: OpenBaoClient,
       redis: redis.asyncio.Redis | None = None,
-   ) -> OrgConfigBase
+   ) -> PlatformConfigBase
 
-   Update stored org config in OpenBao, invalidate cache, return fresh
+   Update stored platform config in OpenBao, invalidate cache, return fresh
    config.  Performs a deep merge: provided keys replace existing stored
    values.  Keys set to ``None`` are removed from the stored config.
 

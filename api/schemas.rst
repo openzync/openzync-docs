@@ -140,7 +140,7 @@ schemas.memory module
 schemas.organization\_config module
 -----------------------------------
 
-.. automodule:: schemas.organization_config
+.. automodule:: schemas.platform_config
    :members:
    :show-inheritance:
    :undoc-members:

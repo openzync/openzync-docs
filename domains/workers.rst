@@ -85,7 +85,7 @@ Once authenticated, it calls :func:`init_worker_settings_from_bao` to load
 settings into the :class:`WorkerSettings` singleton.
 
 A **persistent** :class:`OpenBaoClient` is created and stored in the worker
-context for per-task org config resolution.  This avoids re-authenticating
+context for per-task platform config resolution.  This avoids re-authenticating
 on every task invocation.
 
 Phase 2 — Shared Resource Initialisation
@@ -100,7 +100,7 @@ Context Key           Resource
 ``db_engine``         Shared SQLAlchemy async engine (pool_size=10, max_overflow=5)
 ``db_session_factory`` Bound :func:`async_sessionmaker`
 ``graph_backend_dispatcher`` ``GraphBackendDispatcher`` registry
-``surreal_connection_pool`` Lazy per-org SurrealDB connection pool
+``surreal_connection_pool`` Lazy per-user SurrealDB connection pool
 ``falkordb_client``   FalkorDB client (optional — graceful fallback)
 ``openbao_client``    Persistent authenticated OpenBao client
 ==================== ==========================================================
@@ -213,7 +213,7 @@ lifecycle hooks for FastAPI integration::
     await init_arq()
 
     # Enqueue a job
-    job_id = await get_arq().enqueue("embed_episode", episode_id="...", org_id="...")
+    job_id = await get_arq().enqueue("embed_episode", episode_id="...", user_id="...")
 
     # During FastAPI lifespan shutdown
     await close_arq()
@@ -251,7 +251,7 @@ lifecycle hooks for FastAPI integration::
            "extract_entities",
            queue_name="high",
            episode_id=str(episode.id),
-           org_id=str(org.org_id),
+           user_id=str(org.user_id),
            project_id=str(episode.project_id),
            content=episode.content,
        )
@@ -423,7 +423,7 @@ Retry Decorator — ``with_retry``
        from workers.tasks.base import with_retry
 
        @with_retry(max_retries=3, base_delay_s=2.0)
-       async def my_task(ctx, episode_id, org_id):
+       async def my_task(ctx, episode_id, user_id):
            ...
 
 
@@ -432,20 +432,20 @@ Graph Backend Resolution — ``workers.backend``
 
 Module: ``workers/backend.py``
 
-Workers resolve the per-organization graph backend at runtime via
+Workers resolve the per-user graph backend at runtime via
 :func:`resolve_graph_backend`.  This function reads the org's configured
 backends from the ``organizations.config`` JSONB column (cache-first via
-:func:`core.org_config.get_org_config`, DB-authoritative) and instantiates
+:func:`core.platform_config.get_platform_config`, DB-authoritative) and instantiates
 the appropriate :class:`GraphBackend` implementation.
 
-.. function:: resolve_graph_backend(ctx, org_id, db, *, fallback_to_postgres=True)
+.. function:: resolve_graph_backend(ctx, user_id, db, *, fallback_to_postgres=True)
 
-   Resolve the per-organization graph backend inside an ARQ worker.
+   Resolve the per-user graph backend inside an ARQ worker.
 
    :param ctx: ARQ worker context dict — must contain
        ``graph_backend_dispatcher`` and may contain
        ``surreal_connection_pool`` and ``falkordb_client``.
-   :param org_id: Organization UUID.
+   :param user_id: Organization UUID.
    :param db: Async SQLAlchemy session.
    :param bool fallback_to_postgres: If ``True`` (default), returns a
        :class:`PostgresGraphBackend` when no backend is configured or
@@ -457,7 +457,7 @@ the appropriate :class:`GraphBackend` implementation.
 
    Resolution order:
 
-   1. Read ``org_config.graph_backend`` (cache-first via OpenBao,
+   1. Read ``platform_config.graph_backend`` (cache-first via OpenBao,
       DB-authoritative).
    2. If the backend name is ``"none"`` or resolution fails: fall back to
       :class:`PostgresGraphBackend` (default) or return ``None``.
@@ -466,7 +466,7 @@ the appropriate :class:`GraphBackend` implementation.
    4. If FalkorDB is configured, use the shared ``falkordb_client``.
    5. Delegate to ``dispatcher.resolve_and_create()``.
 
-   The SurrealDB connection is only acquired when the org explicitly
+   The SurrealDB connection is only acquired when the user explicitly
    configures ``"surrealdb"`` — avoiding unnecessary network round-trips
    for orgs using Postgres or no graph backend.  If SurrealDB is configured
    but unreachable, the error propagates loudly — no silent fallback.
@@ -475,14 +475,14 @@ the appropriate :class:`GraphBackend` implementation.
 
        from workers.backend import resolve_graph_backend
 
-       async def my_worker(ctx, org_id):
+       async def my_worker(ctx, user_id):
            async with db_session_factory() as db:
-               backend = await resolve_graph_backend(ctx, org_id, db)
+               backend = await resolve_graph_backend(ctx, user_id, db)
                if backend is None:
                    # Graph disabled — use Postgres fallback
                    ...
                await backend.link_entity_to_episode(
-                   org_id=org_id,
+                   user_id=user_id,
                    project_id=project_id,
                    episode_id=episode_id,
                    entity_id=entity_id,
@@ -510,7 +510,7 @@ Every task follows the ARQ contract:
 ``enrich_episode`` — Combined LLM Enrichment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: enrich_episode(ctx, episode_id, org_id, project_id, content, session_id=None, trace_id="", metadata=None, role="user")
+.. function:: enrich_episode(ctx, episode_id, user_id, project_id, content, session_id=None, trace_id="", metadata=None, role="user")
 
    **Queue**: High
 
@@ -527,7 +527,7 @@ Every task follows the ARQ contract:
 
    **Pipeline**:
 
-   1. Open session, set RLS context via ``app.org_id``.
+   1. Open session, set RLS context via ``app.user_id``.
    2. Check idempotency — skip if all 4 LLM bits already set.
    3. Resolve ``user_id`` from the episode record.
    4. Render ``enrich_episode_v1.jinja2`` prompt with auto-injected context
@@ -554,7 +554,7 @@ Every task follows the ARQ contract:
            "enrich_episode",
            queue_name="high",
            episode_id=str(episode.id),
-           org_id=str(episode.organization_id),
+           user_id=str(episode.organization_id),
            project_id=str(episode.project_id),
            content=episode.content,
            session_id=str(episode.session_id),
@@ -565,7 +565,7 @@ Every task follows the ARQ contract:
 ``classify_dialog`` — Dialog Classification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: classify_dialog(ctx, episode_id, org_id, project_id, content, trace_id="", session_id=None, user_id=None, metadata=None)
+.. function:: classify_dialog(ctx, episode_id, user_id, project_id, content, trace_id="", session_id=None, user_id=None, metadata=None)
 
    **Queue**: High
 
@@ -600,7 +600,7 @@ Every task follows the ARQ contract:
 ``extract_entities`` — Entity Extraction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: extract_entities(ctx, episode_id, org_id, project_id, content, session_id=None, trace_id="", metadata=None)
+.. function:: extract_entities(ctx, episode_id, user_id, project_id, content, session_id=None, trace_id="", metadata=None)
 
    **Queue**: High
 
@@ -611,7 +611,7 @@ Every task follows the ARQ contract:
    **Pipeline**:
 
    1. Resolve ``user_id`` from episode record.
-   2. Resolve graph backend for this org.
+   2. Resolve graph backend for this platform.
    3. Fetch entity type ontology (``extraction_schemas type='entity_type'``).
    4. Fetch known entities from previous turns if ``session_id`` is provided
       (for delta extraction).
@@ -648,7 +648,7 @@ Every task follows the ARQ contract:
 ``extract_facts`` — Fact Extraction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: extract_facts(ctx, episode_id, org_id, project_id, content, session_id=None, trace_id="", metadata=None)
+.. function:: extract_facts(ctx, episode_id, user_id, project_id, content, session_id=None, trace_id="", metadata=None)
 
    **Queue**: High
 
@@ -694,7 +694,7 @@ Every task follows the ARQ contract:
 ``embed_episode`` — Episode Embedding
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: embed_episode(ctx, episode_id, org_id, project_id, content, trace_id="", metadata=None)
+.. function:: embed_episode(ctx, episode_id, user_id, project_id, content, trace_id="", metadata=None)
 
    **Queue**: High
 
@@ -705,8 +705,8 @@ Every task follows the ARQ contract:
    **Pipeline**:
 
    1. Check idempotency (bit 1).
-   2. Fetch per-org config from OpenBao — resolves embedding backend,
-      model, and dimension from ``org_config.embedding_backend``,
+   2. Fetch per-user config from OpenBao — resolves embedding backend,
+      model, and dimension from ``platform_config.embedding_backend``,
       ``embedding_model``, ``embedding_dim``.  **There is no env-var
       fallback** — if any required field is ``None``, the task raises
       :class:`SearchLegFailedError` so ARQ retries.
@@ -716,7 +716,7 @@ Every task follows the ARQ contract:
    6. Store the vector in ``episodes.embedding`` (pgvector).
    7. Set bit 1.
 
-   :raises SearchLegFailedError: If org config fetch fails, org is not found,
+   :raises SearchLegFailedError: If platform config fetch fails, user is not found,
        or no embedding backend is configured.
    :raises ValueError: If the returned embedding dimension does not match
        the configured dimension.
@@ -727,7 +727,7 @@ Every task follows the ARQ contract:
            "embed_episode",
            queue_name="high",
            episode_id=str(episode.id),
-           org_id=str(org_id),
+           user_id=str(user_id),
            project_id=str(project_id),
            content=episode.content,
            trace_id=trace_id,
@@ -751,7 +751,7 @@ Every task follows the ARQ contract:
    **Pipeline**:
 
    1. Fetch fact content from DB if not provided as parameter.
-   2. Fetch per-org config from OpenBao.
+   2. Fetch per-user config from OpenBao.
    3. Resolve embedding backend, generate embedding, validate dimension.
    4. Store vector in ``facts.embedding``.
 
@@ -762,7 +762,7 @@ Every task follows the ARQ contract:
 ``extract_structured`` — Structured Extraction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: extract_structured(ctx, episode_id, org_id, project_id, session_id, content, trace_id="", metadata=None)
+.. function:: extract_structured(ctx, episode_id, user_id, project_id, session_id, content, trace_id="", metadata=None)
 
    **Queue**: High
 
@@ -798,7 +798,7 @@ Every task follows the ARQ contract:
 ``link_entities_to_episode`` — Entity–Episode Linking
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: link_entities_to_episode(ctx, episode_id, org_id, project_id, content, role, trace_id="", metadata=None)
+.. function:: link_entities_to_episode(ctx, episode_id, user_id, project_id, content, role, trace_id="", metadata=None)
 
    **Queue**: Low
 
@@ -818,7 +818,7 @@ Every task follows the ARQ contract:
    7. **Chain** ``compute_observations`` on the low-priority queue
       (with per-project 30-second dedup in Redis).
    8. Optionally **chain** ``summarise_community`` (when
-      ``AUTO_RUN_COMMUNITY_DETECTION`` is ``True``, with per-org 1-hour
+      ``AUTO_RUN_COMMUNITY_DETECTION`` is ``True``, with per-user 1-hour
       dedup in Redis).
 
    If the graph backend is unavailable, the task logs a warning and
@@ -828,7 +828,7 @@ Every task follows the ARQ contract:
 ``compute_observations`` — Graph-Topology Observations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: compute_observations(ctx, episode_id, org_id, project_id, trace_id="")
+.. function:: compute_observations(ctx, episode_id, user_id, project_id, trace_id="")
 
    **Queue**: Low
 
@@ -866,7 +866,7 @@ Every task follows the ARQ contract:
 ``summarise_community`` — Community Detection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: summarise_community(ctx, org_id=None)
+.. function:: summarise_community(ctx, user_id=None)
 
    **Queue**: Low
 
@@ -879,7 +879,7 @@ Every task follows the ARQ contract:
 
    **Pipeline**:
 
-   1. Determine orgs to process: all eligible orgs (when ``org_id`` is
+   1. Determine orgs to process: all eligible orgs (when ``user_id`` is
       ``None``) or a single org.
    2. For each org, resolve graph backend and find projects with graph data.
    3. Per project:
@@ -889,14 +889,14 @@ Every task follows the ARQ contract:
          (:func:`detect_communities_label_propagation`).
       d. For each community (≥ 2 entities), generate an LLM summary.
       e. Store community entity + ``MEMBER_OF`` edges via the backend.
-   4. Commit per-org transaction.
+   4. Commit per-user transaction.
 
    **Can be invoked in two modes**:
 
    * **Scheduled nightly** (default, 02:00 UTC) — configured as a cron job
      on the low-priority pool when ``AUTO_RUN_COMMUNITY_DETECTION=False``.
    * **Event-driven** — chained after ``link_entities_to_episode`` when
-     ``AUTO_RUN_COMMUNITY_DETECTION=True`` (with per-org 1-hour Redis dedup).
+     ``AUTO_RUN_COMMUNITY_DETECTION=True`` (with per-user 1-hour Redis dedup).
 
    :returns: A dict with ``status``, ``orgs_processed``, ``orgs_failed``,
        ``communities_created``.
@@ -905,7 +905,7 @@ Every task follows the ARQ contract:
 ``merge_duplicate_entities`` — Entity Dedup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: merge_duplicate_entities(ctx, org_id=None)
+.. function:: merge_duplicate_entities(ctx, user_id=None)
 
    **Queue**: Low
 
@@ -917,7 +917,7 @@ Every task follows the ARQ contract:
 
    **Pipeline**:
 
-   1. Determine orgs: all eligible (when ``org_id`` is ``None``) or single.
+   1. Determine orgs: all eligible (when ``user_id`` is ``None``) or single.
    2. For each org, resolve graph backend and find active projects.
    3. Per project:
       a. Fetch all non-merged entities.
@@ -929,7 +929,7 @@ Every task follows the ARQ contract:
          - ``backend.merge_entities()`` — atomic rewire + dedup + soft-delete.
          - Write ``audit_log`` entry with before/after snapshot.
       e. 7-day recovery window via ``is_merged`` soft-delete flag.
-   4. Per-org commit (project-level rollback on failure).
+   4. Per-user commit (project-level rollback on failure).
 
    **Batch size**: 100 entity clusters per transaction.  If all clusters
    in a project fail, the project is marked as failed (still continues to
@@ -942,7 +942,7 @@ Every task follows the ARQ contract:
 ``ingest_business_data`` — Batch Fact Ingestion
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: ingest_business_data(ctx, org_id, project_id, user_id, facts, job_id=None, trace_id="")
+.. function:: ingest_business_data(ctx, user_id, project_id, user_id, facts, job_id=None, trace_id="")
 
    **Queue**: Low
 
@@ -977,7 +977,7 @@ Every task follows the ARQ contract:
 ``generate_user_summary`` — User Profiling
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. function:: generate_user_summary(ctx, org_id, user_id, project_id=None, trace_id="")
+.. function:: generate_user_summary(ctx, user_id, user_id, project_id=None, trace_id="")
 
    **Queue**: Low
 
@@ -1142,7 +1142,7 @@ independently, and the reconciliation cron handles any gaps.
                │
                ▼
    ┌───────────────────────────────┐
-   │   embed_episode               │  ← pgvector, per-org embedding config
+   │   embed_episode               │  ← pgvector, per-user embedding config
    │   (bit 1)                     │
    └───────────┬───────────────────┘
                │
@@ -1196,10 +1196,10 @@ injected into every task invocation:
   result writes.  Total: ~4 Redis connections per worker process.
 * **FalkorDB**: Optional.  One connection pool (``max_connections=10``,
   default) shared across all tasks.
-* **SurrealDB**: Lazy per-org connection pool.  Connections are created on
+* **SurrealDB**: Lazy per-user connection pool.  Connections are created on
   demand and cached within the worker process.
 * **OpenBao client**: One persistent authenticated client shared across all
-  tasks for org config resolution.
+  tasks for platform config resolution.
 
 
 Deployment Sizing
@@ -1233,7 +1233,7 @@ Metric                                     Type       Labels
 ``openzync_worker_tasks_total``             Counter    ``task_type``, ``status`` (``"success"`` / ``"failure"``)
 ``openzync_worker_task_duration_seconds``   Histogram  ``task_type`` (buckets: 1, 2.5, 5, 10, 15, 30, 60, 120, 300, 600)
 ``openzync_worker_queue_depth``             Gauge      ``queue_name``
-``openzync_worker_tasks_per_org_total``     Counter    ``org_id``, ``task_type``, ``status``
+``openzync_worker_tasks_per_org_total``     Counter    ``user_id``, ``task_type``, ``status``
 =========================================== ========== ================================================
 
 Health Check
@@ -1253,7 +1253,7 @@ Structured Logging
 
 The worker uses ``structlog`` with a JSON renderer in production.  Every log
 entry is automatically enriched with ``timestamp``, ``level``, ``logger``
-(``OpenZync.worker``), and per-task context (``trace_id``, ``org_id``,
+(``OpenZync.worker``), and per-task context (``trace_id``, ``user_id``,
 ``task_type``, ``job_id``) bound via ``structlog.contextvars.bind_contextvars``.
 
 In development, ``STRUCTLOG_FORMAT=console`` produces human-readable output.
@@ -1285,7 +1285,7 @@ To add a new worker task:
 1. **Create the task module** in ``workers/tasks/{task_name}.py``::
 
        @with_retry(max_retries=3, base_delay_s=2.0)
-       async def my_new_task(ctx, episode_id, org_id, **kwargs):
+       async def my_new_task(ctx, episode_id, user_id, **kwargs):
            """Docstring following Google style."""
            ...
 
@@ -1324,7 +1324,7 @@ To add a new worker task:
            "my_new_task",
            queue_name="high" if is_realtime else "low",
            episode_id=str(episode.id),
-           org_id=str(org.org_id),
+           user_id=str(org.user_id),
            ...
        )
 

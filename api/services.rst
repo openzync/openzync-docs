@@ -133,7 +133,7 @@ services.metrics\_service module
 services.org\_config\_service module
 ------------------------------------
 
-.. automodule:: services.org_config_service
+.. automodule:: services.platform_config_service
    :members:
    :show-inheritance:
    :undoc-members:

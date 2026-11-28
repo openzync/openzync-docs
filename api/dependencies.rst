@@ -28,7 +28,7 @@ dependencies.db module
 dependencies.org\_config module
 -------------------------------
 
-.. automodule:: dependencies.org_config
+.. automodule:: dependencies.platform_config
    :members:
    :show-inheritance:
    :undoc-members:
